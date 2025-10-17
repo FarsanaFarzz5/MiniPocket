@@ -1,0 +1,220 @@
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ===========================
+   BODY LAYOUT
+=========================== */
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden; /* no scroll */
+}
+
+body {
+  background: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100lvh; /* ✅ low viewport height handles mobile bars */
+}
+
+/* ===========================
+   OUTER CONTAINER
+=========================== */
+.container {
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  padding: 20px;
+  height: 100%; /* ✅ fills body completely */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0;
+}
+
+/* ===========================
+   INNER CONTAINER
+=========================== */
+.inner-container {
+  text-align: center;
+  width: 100%;
+}
+
+/* ===========================
+   LOGO
+=========================== */
+.logo-register img,
+.logo-login img {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+/* ===========================
+   INPUT FIELDS
+=========================== */
+form input {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 15px;
+  border: 1px solid #e7e7e7;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  background: #fff;
+}
+
+form input::placeholder {
+  color: rgba(0, 0, 0, 0.25);
+}
+
+form input:focus {
+  border-color: #f4731d;
+  outline: none;
+  box-shadow: 0 0 6px rgba(244, 115, 29, 0.25);
+}
+
+/* ===========================
+   NAME ROW
+=========================== */
+.name-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.name-row input {
+  width: 50%;
+  margin-bottom: 0;
+}
+
+/* ===========================
+   BUTTONS
+=========================== */
+button,
+.register-btn,
+.login-btn {
+  display: block;
+  width: 70%;
+  margin: 20px auto;
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  background: #f4731d;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(255, 102, 0, 0.2);
+  padding-bottom: 39px;
+}
+
+button:hover,
+.register-btn:hover,
+.login-btn:hover {
+  background: #e05500;
+  box-shadow: 0 6px 14px rgba(255, 102, 0, 0.3);
+}
+
+/* ===========================
+   LINKS BELOW FORMS
+=========================== */
+.login-link,
+.register-link {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+.login-link a,
+.register-link a {
+  color: #f4731d;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-link a:hover,
+.register-link a:hover {
+  color: #e05500;
+}
+
+/* ===========================
+   FIX ZOOM ON FOCUS (iOS)
+=========================== */
+input,
+button,
+select,
+textarea {
+  font-size: 16px !important; /* prevent zoom */
+}
+
+/* ===========================
+   VALIDATION MESSAGES
+=========================== */
+.error-text {
+  color: #e74c3c;
+  font-size: 13px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  text-align: left;
+  padding-left: 4px;
+}
+
+/* ===========================
+   ERROR AND ALERT STYLES
+=========================== */
+.alert-error {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 16px;
+  padding: 10px 12px;
+  background: #fdecea;
+  color: #b71c1c;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  font-size: 14px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.error-text {
+  color: #e74c3c;
+  font-size: 13px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  text-align: left;
+  padding-left: 4px;
+}
+
+.input-error {
+  border-color: #e74c3c !important;
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.15);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ===========================
+   MOBILE UPWARD ADJUSTMENT
+=========================== */
+@media (max-width: 768px) {
+  .container {
+    justify-content: flex-start;
+    padding-top: 60px;
+  }
+
+  /* ✅ LOGIN PAGE ONLY - Move slightly down */
+  .logo-login {
+    margin-top: 90px; /* adjust this value (20–60px) for perfect position */
+  }
+}

@@ -1,121 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Parent Register</title>
-    <style>
-        /* Reset some default styles */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
+  <meta charset="UTF-8">
+  <title>Mini Pocket - Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-        }
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-        .container {
-            background: #fff;
-            padding: 40px 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 400px;
-        }
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-        }
-
-        form input {
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        form input:focus {
-            border-color: #6a11cb;
-            outline: none;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #6a11cb;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: #2575fc;
-        }
-
-        .errors {
-            background: #ffe0e0;
-            color: #c00;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .errors div {
-            margin-bottom: 5px;
-        }
-
-        .login-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #6a11cb;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s;
-        }
-
-        .login-link:hover {
-            color: #2575fc;
-        }
-    </style>
+  <!-- Auth Styles -->
+  <link rel="stylesheet" href="{{ asset('assets/css/auth.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>Parent Register</h1>
+  <div class="container">
+    <div class="inner-container">
+      <!-- Logo -->
+      <div class="logo-register">
+        <img src="{{ asset('images/moneylogo.jpg') }}" alt="Mini Pocket Logo">
+      </div>
 
-        @if($errors->any())
-            <div class="errors">
-                @foreach($errors->all() as $error)
-                    <div>{{ $error }}</div>
-                @endforeach
-            </div>
-        @endif
+      <!-- Register Form -->
+      <form method="POST" action="{{ route('register') }}" novalidate>
+        @csrf
 
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
-            <input type="text" name="first_name" placeholder="First Name" value="{{ old('first_name') }}">
-            <input type="text" name="second_name" placeholder="Second Name" value="{{ old('second_name') }}">
-            <input type="email" name="email" placeholder="Email" value="{{ old('email') }}">
-            <input type="text" name="phone_no" placeholder="Phone" value="{{ old('phone_no') }}">
-            <input type="password" name="password" placeholder="Password">
-            <input type="password" name="password_confirmation" placeholder="Confirm Password">
-            <button type="submit">Register</button>
-        </form>
+        <div class="name-row">
+          <input type="text" name="first_name" placeholder="First Name"
+                 value="{{ old('first_name') }}" required
+                 pattern="[A-Za-z]+" title="Only letters allowed">
+          <input type="text" name="second_name" placeholder="Second Name"
+                 value="{{ old('second_name') }}" required
+                 pattern="[A-Za-z]+" title="Only letters allowed">
+        </div>
+        @error('first_name') <p class="error-text">{{ $message }}</p> @enderror
+        @error('second_name') <p class="error-text">{{ $message }}</p> @enderror
 
-        <a href="{{ route('login.form') }}" class="login-link">Already have an account? Login</a>
+        <input type="email" name="email" placeholder="Email"
+               value="{{ old('email') }}" required>
+        @error('email') <p class="error-text">{{ $message }}</p> @enderror
+
+ <input type="text" 
+       name="phone_no" 
+       placeholder="Phone" 
+       value="{{ old('phone_no') }}" 
+       required 
+       pattern="[0-9]{10}" 
+       maxlength="10" 
+       title="Enter a valid 10-digit number">
+        @error('phone_no') <p class="error-text">{{ $message }}</p> @enderror
+
+        <input type="password" name="password" placeholder="Password"
+               minlength="6" required>
+        <input type="password" name="password_confirmation"
+               placeholder="Confirm Password" minlength="6" required>
+        @error('password') <p class="error-text">{{ $message }}</p> @enderror
+
+        <button type="submit" class="register-btn">Register</button>
+      </form>
+
+      <!-- Login Link -->
+      <p class="login-link">
+        Already have an account? <a href="{{ route('login') }}">Login</a>
+      </p>
     </div>
+  </div>
+
+  <!-- ✅ Perfect viewport height fix -->
+  <script>
+    function updateViewportHeight() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    updateViewportHeight();
+    window.addEventListener('resize', updateViewportHeight);
+    window.addEventListener('orientationchange', updateViewportHeight);
+  </script>
 </body>
 </html>

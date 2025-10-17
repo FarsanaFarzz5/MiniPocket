@@ -1,90 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 40px;
-            background-color: #f9f9f9;
-        }
-        .container {
-            max-width: 400px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        .error {
-            color: red;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .register-link {
-            text-align: center;
-            margin-top: 15px;
-            display: block;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Mini Pocket - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
+  <!-- Auth Styles -->
+  <link rel="stylesheet" href="{{ asset('assets/css/auth.css') }}">
 </head>
 <body>
+  <div class="container">
+    <div class="inner-container">
+      <!-- Logo -->
+      <div class="logo-login">
+        <img src="{{ asset('images/moneylogo.jpg') }}" alt="Mini Pocket Logo">
+      </div>
 
-<div class="container">
-    <h1>Login</h1>
+      <!-- Invalid Credentials Alert -->
+      @if ($errors->has('error'))
+        <div class="alert-error" role="alert">
+          {{ $errors->first('error') }}
+        </div>
+      @endif
 
-    {{-- Show error messages --}}
-    @if($errors->any())
-        <div class="error">{{ $errors->first() }}</div>
-    @endif
-
-    @if(session('error'))
-        <div class="error">{{ session('error') }}</div>
-    @endif
-
-    {{-- Login form --}}
-    <form method="POST" action="{{ route('login') }}">
+      <!-- Login Form -->
+      <form method="POST" action="{{ route('login') }}" novalidate>
         @csrf
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
 
-    {{-- Show register link only for parent login (role=1) --}}
-    @if(isset($role) && $role == 1)
-        <a class="register-link" href="{{ route('register.form', ['role' => 1]) }}">
-            Don’t have an account? Register here
-        </a>
-    @endif
+        <div class="form-group">
+          <input type="email" name="email" placeholder="Email Address"
+                 value="{{ old('email') }}" required
+                 class="@error('error') input-error @enderror @error('email') input-error @enderror">
+          @error('email')
+            <p class="error-text">{{ $message }}</p>
+          @enderror
+        </div>
 
-</div>
+        <div class="form-group">
+          <input type="password" name="password" placeholder="Password"
+                 minlength="6" required
+                 class="@error('error') input-error @enderror @error('password') input-error @enderror">
+          @error('password')
+            <p class="error-text">{{ $message }}</p>
+          @enderror
+        </div>
 
+        <!-- Login Button -->
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+
+<!-- Register Link -->
+@if(!isset($role) || $role != 2)
+  <p class="register-link">
+    Don’t have an account? <a href="{{ route('register') }}">Register</a>
+  </p>
+@endif
+
+
+    </div>
+  </div>
 </body>
 </html>

@@ -1,57 +1,209 @@
-{{-- resources/views/auth/resetpassword.blade.php --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Set Your Password</title>
-    {{-- You can include Bootstrap CSS from CDN for quick styling --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Set Password - Mini Pocket</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Sidebar CSS -->
+  <link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
+
+  <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* ========================= BODY ========================= */
+  body {
+    background: #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  /* ========================= CONTAINER ========================= */
+  .container {
+    width: 100%;
+    max-width: 420px;
+    height: 100dvh; /* ✅ Full screen height */
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 0; /* full height look */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 24px;
+  }
+
+  .inner-container {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* ========================= LOGO ========================= */
+  .logo-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .logo-section img {
+    width: 75px;
+    height: auto;
+    display: block;
+    filter: brightness(1.1) saturate(1.1);
+    transition: transform 0.3s ease;
+  }
+
+  .logo-section img:hover {
+    transform: scale(1.05);
+  }
+
+  /* ========================= TITLE ========================= */
+  h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 22px;
+  }
+
+  /* ========================= FORM ========================= */
+  .reset-form {
+    width: 100%;
+    display: grid;
+    gap: 14px;
+    text-align: left;
+  }
+
+  .reset-form input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid #e7e7e7;
+    border-radius: 10px;
+    font-size: 14px;
+    background: #fff;
+    color: #222;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .reset-form input::placeholder {
+    color: #bfbfbf;
+  }
+
+  .reset-form input:focus {
+    border-color: #f4731d;
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(244,115,29,.15);
+  }
+
+  /* ========================= ALERT ========================= */
+  .alert {
+    background: #ffeaea;
+    color: #d93025;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 15px;
+    text-align: left;
+  }
+
+  .alert ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+
+  /* ========================= BUTTON ========================= */
+  button {
+    display: block;
+    width: 100%;
+    padding: 13px 0;
+    background: #f4731d;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 10px auto;
+    box-shadow: 0 5px 10px rgba(244, 115, 29, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  button:hover {
+    background: #e25f00;
+    transform: translateY(-2px);
+  }
+
+  /* ========================= RESPONSIVE ========================= */
+  @media (max-width: 480px) {
+    .container {
+      max-width: 100%;
+      height: 100dvh;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 0 20px;
+    }
+
+    h1 {
+      font-size: 15px;
+    }
+
+    button {
+      font-size: 14px;
+      padding: 11px 0;
+      border-radius: 8px;
+    }
+  }
+  </style>
 </head>
-<body class="bg-light">
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h3 class="mb-4 text-center">Set Your Password</h3>
+<body>
+  <div class="container">
+    <div class="inner-container">
 
-            {{-- Show validation errors --}}
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+      <!-- Logo -->
+      <div class="logo-section">
+        <img src="{{ asset('images/moneylogo.jpg') }}" alt="Mini Pocket Logo">
+      </div>
 
-            {{-- The reset password form --}}
-            <form method="POST" action="{{ route('kid.resetpassword.submit', ['token' => $token]) }}">
-                @csrf
+      <!-- Title -->
+      <h1>Set Your Password</h1>
 
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control" value="{{ $email }}" disabled>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">New Password</label>
-                    <input type="password" name="password" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Confirm Password</label>
-                    <input type="password" name="password_confirmation" class="form-control" required>
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100">Set Password</button>
-            </form>
+      <!-- Validation Errors -->
+      @if ($errors->any())
+        <div class="alert">
+          <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
         </div>
-    </div>
-</div>
+      @endif
 
-{{-- Optional Bootstrap JS --}}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+      <!-- Reset Password Form -->
+      <form method="POST" action="{{ route('kid.resetpassword.submit', ['token' => $token]) }}" class="reset-form">
+        @csrf
+
+        <input type="email" value="{{ $email }}" disabled placeholder="Email">
+
+        <input type="password" name="password" placeholder="New Password" required>
+
+        <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
+
+        <button type="submit">Set Password</button>
+      </form>
+    </div>
+  </div>
 </body>
 </html>

@@ -1,0 +1,260 @@
+/* =========================
+   🌟 GLOBAL RESET
+========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden; /* stop vertical scroll */
+}
+
+body {
+  background: #f2f2f2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* =========================
+   🧱 MAIN CONTAINER
+========================= */
+.container {
+  width: 100%;
+  max-width: 420px;
+  min-height: 100vh;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden !important;
+  height: 100dvh;
+  padding-bottom: 0 !important;
+}
+
+.inner-container {
+  width: 100%;
+  text-align: center;
+  height: 100%;
+  overflow-y: auto;
+  padding-bottom: 0 !important;
+}
+
+
+
+/* =========================
+   💰 HEADER — Sidebar & Logo Same Line
+========================= */
+.header {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;        /* ✅ aligns items to the top */
+  justify-content: space-between;
+  padding: 0 14px;                /* no top padding so logo hugs top */
+  margin-top: -10px;              /* pushes header slightly upward */
+  position: relative;
+}
+
+/* ===== Hamburger ===== */
+.hamburger {
+  width: 28px;
+  height: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;    /* ✅ aligns bars to top edge */
+  gap: 4px;
+  cursor: pointer;
+  margin-top: 2px;                /* fine-tuned for perfect alignment */
+}
+
+.hamburger span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background-color: #888;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.hamburger:hover span {
+  background-color: #f4731d;
+}
+
+/* ===== Logo Section ===== */
+.logo-section {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;        /* ✅ ensures top alignment */
+  margin: 0;
+  padding-top: 0;
+}
+
+.logo-section img {
+  height: 42px;                   /* slightly smaller to visually align */
+  width: auto;
+  object-fit: contain;
+  filter: brightness(1.1) saturate(1.1);
+  transition: transform 0.3s ease;
+  margin-top: 0;                  /* ✅ removes extra offset */
+}
+
+.logo-section img:hover {
+  transform: scale(1.05);
+}
+
+
+/* =========================
+   👨‍👩‍👧 PARENT CARD
+========================= */
+.content-section {
+  margin-top: 25px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  justify-content: space-between;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.parent-card {
+  background: #fff5e6;
+  border-radius: 20px;
+  padding: 24px 20px;          /* increased padding */
+  display: flex;
+  align-items: center;
+  gap: 35px;                   /* wider gap between image & text */
+  margin: 0 auto 30px;
+  width: 100%;                 /* make it fill container width */
+  max-width: 95%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.parent-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.parent-card img {
+  width: 95px;                 /* larger avatar */
+  height: auto;
+  object-fit: contain;
+}
+
+.parent-info .name {
+  font-weight: 700;
+  color: #1b5e20;
+  font-size: 18px;             /* bigger name text */
+  margin-bottom: 6px;
+  text-align: left;
+}
+
+.parent-info .detail {
+  font-size: 12.5px;           /* slightly larger details */
+  line-height: 1.8;
+  text-align: left;
+}
+
+/* =========================
+   🔘 BUTTON STYLE
+========================= */
+button, .btn {
+    display: block;
+    width: 90%;
+    padding: 13px 0;
+    background: #f4731d;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 0px auto;
+    box-shadow: 0 5px 10px rgba(244, 115, 29, 0.3);
+    transition: all 0.3s ease;
+}
+
+button:hover, .btn:hover {
+  background: #e25f00;
+  transform: translateY(-2px);
+}
+
+/* =========================
+   💵 SEND MONEY BOX
+========================= */
+.send-money-box {
+  background: transparent;
+  border-radius: 16px;
+  padding: 10px 0px;
+  width: 100%;
+  max-width: 95%;              /* match parent card width */
+  text-align: center;
+  margin-top: -18px;
+}
+
+button, .btn {
+  display: block;
+  width: 100%;                 /* fill entire width */
+  max-width: 360px;            /* keep button inside container */
+  padding: 16px 0;             /* thicker button */
+  background: #f4731d;
+  color: #fff;
+  font-size: 16px;             /* bigger font */
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  margin: 10px auto;
+  box-shadow: 0 6px 12px rgba(244, 115, 29, 0.35);
+  transition: all 0.3s ease;
+}
+
+button:hover, .btn:hover {
+  background: #e25f00;
+  transform: translateY(-2px);
+}
+
+/* =========================
+   📱 RESPONSIVE
+========================= */
+@media (max-width: 480px) {
+  .parent-card {
+    gap: 26px;
+    padding: 22px 16px;
+  }
+
+  .parent-card img {
+    width: 90px;
+  }
+
+  .parent-info .name {
+    font-size: 19px;
+    text-align: left;
+  }
+
+  .parent-card .detail{
+    font-size: 14px;
+    text-align: left;
+  }
+
+  .send-money-box {
+    max-width: 100%;
+    margin-top: -20px;
+  }
+
+  button, .btn {
+    width: 95%;
+    padding: 15px 0;
+    font-size: 16px;
+  }
+}

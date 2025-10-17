@@ -16,9 +16,9 @@ class AuthController extends Controller
      */
     public function showRegisterForm(Request $request)
     {
-        if ($request->get('role') != 1) {
-            abort(403, 'Unauthorized');
-        }
+        // if ($request->get('role') != 1) {
+        //     abort(403, 'Unauthorized');
+        // }
 
         return view('auth.register'); // resources/views/auth/register.blade.php
     }

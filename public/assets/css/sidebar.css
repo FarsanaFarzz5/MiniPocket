@@ -1,0 +1,201 @@
+/* ===== Sidebar + Topbar Styles ===== */
+
+/* ===== Topbar ===== */
+.topbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ===== Hamburger Icon ===== */
+.hamburger {
+  position: relative;
+  width: 26px;
+  height: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  z-index: 200;
+  transition: all 0.3s ease;
+}
+.hamburger span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background-color: #b0abab;
+  border-radius: 3px;
+  transition: all 0.4s ease;
+}
+.hamburger:hover span {
+  background-color: #f4731d;
+}
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg);
+  position: absolute;
+  top: 8px;
+  background-color: #f4731d;
+}
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg);
+  position: absolute;
+  top: 8px;
+  background-color: #f4731d;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  position: absolute;
+  top: 0;
+  left: -250px;
+  width: 220px;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: 3px 0 12px rgba(0, 0, 0, 0.08);
+  transition: left 0.35s ease;
+  padding-top: 80px;
+  z-index: 150;
+  font-family: 'Inter', 'Nunito', sans-serif;
+}
+.sidebar.open {
+  left: 0;
+}
+
+/* ===== Sidebar Structure ===== */
+.sidebar ul {
+  list-style: none;
+  padding-left: 25px;
+}
+.sidebar ul li {
+  margin-bottom: 10px;
+  position: relative;
+  padding-bottom: 5px;
+}
+.sidebar ul li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 85%;
+  height: 1px;
+  background: #f0f0f0;
+  border-radius: 2px;
+}
+
+/* ===== Sidebar Links ===== */
+.sidebar ul li a {
+  text-decoration: none;
+  color: #777;
+  font-weight: 500;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  padding: 6px 0;
+  letter-spacing: 0.2px;
+}
+.sidebar ul li a:hover {
+  color: #f4731d;
+  transform: translateX(3px);
+}
+
+/* ===== ✏️ Edit Profile Special ===== */
+.sidebar ul li a[href*="editprofile"] {
+  color: #444;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
+.sidebar ul li a[href*="editprofile"]:hover {
+  color: #f4731d;
+  transform: translateX(3px);
+}
+
+/* ------------------------------
+   🔽 Kid Dropdown Button + Arrow
+--------------------------------*/
+.dropdown-btn {
+  color: #777;
+  font-weight: 500;
+  font-size: 13.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  transition: all 0.3s ease;
+  letter-spacing: 0.2px;
+}
+.dropdown-btn:hover {
+  color: #f4731d;
+  transform: translateX(3px);
+}
+
+/* 🔽 Arrow beside "Kid" */
+.dropdown .arrow {
+  font-size: 18px;
+  color: #999;
+  margin-left: 4px;
+  line-height: 1;
+  position: absolute;
+  right: 10%;
+  transition: transform 0.25s ease, color 0.25s ease;
+  display: inline-block;
+  transform: rotate(0deg);
+}
+.dropdown-btn:hover .arrow {
+  color: #f4731d;
+}
+.dropdown.open .arrow {
+  transform: rotate(180deg);
+  color: #f4731d;
+  margin-top: 2px;
+}
+
+/* ===== Dropdown Menu ===== */
+.dropdown-menu {
+  list-style: none;
+  padding-left: 20px;
+  margin-top: 6px;
+  display: none;
+}
+.dropdown.open .dropdown-menu {
+  display: block;
+  animation: fadeIn 0.25s ease;
+}
+.dropdown-menu li {
+  margin-bottom: 6px;
+}
+.dropdown-menu li a {
+  font-size: 13px;
+  color: #777;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dropdown-menu li a:hover {
+  color: #f4731d;
+  transform: translateX(3px);
+}
+
+/* ===== Fade Animation ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .sidebar {
+    width: 200px;
+  }
+  .sidebar ul li a {
+    font-size: 13px;
+  }
+}

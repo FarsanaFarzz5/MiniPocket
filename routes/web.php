@@ -12,17 +12,22 @@ use App\Http\Controllers\Kid\KidInvitationController;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application.
+| These routes are loaded by the RouteServiceProvider and all
+| of them will be assigned to the "web" middleware group.
 |
 */
 
-// Default redirect
+// ====================================================
+// 🏠 Landing Page
+// ====================================================
 Route::get('/', function () {
-    return redirect()->route('login.form', ['role' => 1]);
+    return view('welcome'); // Mini Pocket login/signup landing page
 });
 
-// --------------------
-// Auth / Registration
-// --------------------
+
+// ====================================================
+// 🔐 Authentication Routes
+// ====================================================
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 
@@ -33,29 +38,36 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout')
     ->middleware('auth');
 
-// --------------------
-// Kid dashboard & profile
-// --------------------
-Route::get('/kid/dashboard', [KidController::class, 'dashboard'])
-    ->name('kid.dashboard')
-    ->middleware('auth');
 
-Route::get('/kid/edit', [KidController::class, 'editProfile'])
-    ->name('kid.edit')
-    ->middleware('auth');
+// ====================================================
+// 👦 Kid Dashboard & Profile Routes
+// ====================================================
+Route::middleware(['auth'])->group(function () {
 
-Route::post('/kid/update', [KidController::class, 'updateProfile'])
-    ->name('kid.update')
-    ->middleware('auth');
+    // Kid Dashboard
+    Route::get('/kid/dashboard', [KidController::class, 'dashboard'])
+        ->name('kid.dashboard');
 
-// NEW: kid send money (debit)
-Route::post('/kid/send-money', [KidController::class, 'sendMoney'])
-    ->name('kid.send.money')
-    ->middleware('auth');
+    // ✏️ Edit Kid Profile
+    Route::get('/kid/edit', [KidController::class, 'editKid'])
+        ->name('kid.edit');
 
-// --------------------
-// Kid invitation / password setup
-// --------------------
+    // 💾 Update Kid Profile
+    Route::post('/kid/update', [KidController::class, 'updateKid'])
+        ->name('kid.update');
+
+    // 💸 Spend Money (Kid)
+    Route::post('/kid/send-money', [KidController::class, 'sendMoney'])
+        ->name('kid.send.money');
+
+    Route::get('/kid/transactions', [KidController::class, 'kidTransactions'])
+    ->name('kid.transactions');
+});
+
+
+// ====================================================
+// ✉️ Kid Invitation & Password Reset
+// ====================================================
 Route::get('/invite/{token}', [KidInvitationController::class, 'acceptInvite'])
     ->name('kid.invite.accept');
 
@@ -65,26 +77,56 @@ Route::get('/reset-password/{token}', [KidInvitationController::class, 'showRese
 Route::post('/reset-password/{token}', [KidInvitationController::class, 'resetPassword'])
     ->name('kid.resetpassword.submit');
 
-// --------------------
-// Parent actions
-// --------------------
-Route::get('/parent', [ParentController::class, 'dashboard'])
-    ->name('dashboard.parent')
-    ->middleware('auth');
 
-Route::post('/parent/add-profile', [ParentController::class, 'addProfile'])
-    ->name('parent.add.profile')
-    ->middleware('auth');
+// ====================================================
+// 👨‍👧 Parent Routes (Requires Authentication)
+// ====================================================
+Route::middleware('auth')->group(function () {
 
-Route::post('/parent/send-money', [ParentController::class, 'sendMoney'])
-    ->name('parent.send.money')
-    ->middleware('auth');
+    // 🏠 Dashboard (parent info, summary)
+    Route::get('/parent', [ParentController::class, 'dashboard'])
+        ->name('dashboard.parent');
 
-Route::post('/kids/store', [ParentController::class, 'storeKid'])
-    ->name('kids.store')
-    ->middleware('auth');
+    // 💰 Send Money Page (Kid List)
+    Route::get('/parent/send-money', [ParentController::class, 'showSendMoneyPage'])
+        ->name('parent.sendmoney.page');
 
-Route::post('/kids/{id}/resend-invite', [ParentController::class, 'resendInvite'])
-    ->name('kids.resend.invite')
-    ->middleware('auth');
+    // 💵 Individual Kid Payment Page
+    Route::get('/parent/send-money/{kid}', [ParentController::class, 'showKidPaymentPage'])
+        ->name('parent.pay.kid.page');
 
+    // 💸 Send money to a kid (form submission)
+    Route::post('/parent/send-money', [ParentController::class, 'sendMoney'])
+        ->name('parent.send.money');
+
+    // ✏️ Edit Profile Page
+    Route::get('/parent/edit-profile', [ParentController::class, 'editProfile'])
+        ->name('parent.editprofile');
+
+    // 🔄 Update Profile (Form Submission)
+    Route::post('/parent/update-profile', [ParentController::class, 'updateProfile'])
+        ->name('parent.update.profile');
+
+    // 👦 Add Kid page (form)
+    Route::get('/parent/add-kid', [ParentController::class, 'addKid'])
+        ->name('parent.addkid');
+
+    // 📋 Kid Details page
+    Route::get('/parent/kid-details', [ParentController::class, 'kidDetails'])
+        ->name('parent.kiddetails');
+
+    // ➕ Store new kid
+    Route::post('/kids/store', [ParentController::class, 'storeKid'])
+        ->name('kids.store');
+
+    // 🔁 Re-send invitation email
+    Route::post('/kids/{id}/resend-invite', [ParentController::class, 'resendInvite'])
+        ->name('kids.resend.invite');
+
+    // 💰 Set kid daily limit
+    Route::post('/kids/{id}/set-limit', [ParentController::class, 'setKidLimit'])
+        ->name('kids.set.limit');
+
+        Route::get('/parent/transactions', [ParentController::class, 'transactionHistory'])
+    ->name('parent.transactions');
+});

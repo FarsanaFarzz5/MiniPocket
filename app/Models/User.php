@@ -22,6 +22,7 @@ protected $fillable = [
     'dob',
     'gender',
     'profile_img',
+    'daily_limit',
 ];
 
     protected $hidden = [

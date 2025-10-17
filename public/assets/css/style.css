@@ -1,0 +1,129 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+/* ===== Body ===== */
+body {
+  background: #f2f2f2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden; /* ✅ removes scroll */
+}
+
+/* ===== Container ===== */
+.container {
+  width: 100%;
+  max-width: 420px;
+  height: 100vh; /* ✅ fills screen height exactly */
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* ✅ vertical centering */
+  position: relative;
+  overflow: hidden;
+  border-radius: 0;
+  transition: all 0.3s ease;
+}
+
+/* ===== Inner Container ===== */
+.inner-container {
+  width: 100%;
+  text-align: center;
+}
+
+/* ===== Banner ===== */
+.banner img {
+  width: 35%;
+  margin: 20px 0 25px;
+}
+
+/* ===== Logo ===== */
+.logo img {
+  width: 30%;
+  max-width: 80px;
+  margin-bottom: 5px;
+}
+
+/* ===== Text ===== */
+.title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #2c3e50;
+  margin: 5px 0;
+}
+
+.subtitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #006400;
+  margin-bottom: 25px;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  margin: 12px auto;
+  padding: 14px 0;
+  background: #f0f0f0;
+  color: #006400;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+/* ===== Green Button ===== */
+button {
+  width: 100%;
+  padding: 14px 0;
+  margin-bottom: 12px;
+  background: #006400;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: #004d00;
+}
+
+/* ===== Mobile Adjustment ===== */
+@media (max-width: 768px) {
+  .container {
+    justify-content: flex-start; /* move up slightly */
+    padding-top: 60px; /* lift content up */
+  }
+}

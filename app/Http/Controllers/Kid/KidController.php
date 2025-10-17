@@ -12,90 +12,81 @@ use App\Models\User;
 class KidController extends Controller
 {
     /**
-     * Show kid dashboard with balance and transactions.
+     * 🏠 Kid Dashboard — balance and summary
      */
     public function dashboard()
     {
-        /** @var User $user */
         $user = Auth::user();
+        if ($user->role != 2) abort(403, 'Unauthorized');
 
-        // Role 2 = Kid
-        if ($user->role != 2) {
-            abort(403, 'Unauthorized');
-        }
-
-        /**
-         * In the DB we always store “debit” when parent sends money.
-         * For the kid view we treat those as “credit”.
-         */
-
-        // Money received from parent (in DB stored as debit but for kid we treat as credit)
+        // ✅ Total received (credits from parent)
         $receivedMoney = Transaction::where('kid_id', $user->id)
-            ->where('type', 'credit') // stored as debit in DB
+            ->where('type', 'credit')
             ->sum('amount');
 
-        // Money sent by kid (actual debit transactions created by kid)
-        $sentMoney = Transaction::where('kid_id', $user->id)
+        // ✅ Total spent (debits by kid)
+        $spentMoney = Transaction::where('kid_id', $user->id)
             ->where('type', 'debit')
-            ->whereNotNull('description') // optional filter for kid’s own spending
+            ->where('source', 'kid_spending')
             ->sum('amount');
 
-        // Available balance
-        $balance = $receivedMoney - $sentMoney;
+        // ✅ Current balance
+        $balance = $receivedMoney - $spentMoney;
 
-        // Fetch all transactions (latest first) and flip type for display
+        // ✅ Remaining daily limit
+        $spentToday = Transaction::where('kid_id', $user->id)
+            ->where('type', 'debit')
+            ->where('source', 'kid_spending')
+            ->whereDate('created_at', now()->toDateString())
+            ->sum('amount');
+
+        $remainingLimit = $user->daily_limit > 0
+            ? max($user->daily_limit - $spentToday, 0)
+            : null;
+
+        // ✅ All related transactions (credits + kid spending)
         $transactions = Transaction::where('kid_id', $user->id)
+            ->where(function ($query) {
+                $query->where('type', 'credit')
+                      ->orWhere(function ($q) {
+                          $q->where('type', 'debit')
+                            ->where('source', 'kid_spending');
+                      });
+            })
             ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($t) {
-                // flip type for display only
-                if ($t->parent_id && $t->type === 'debit') {
-                    $t->display_type = 'credit';
-                } else {
-                    $t->display_type = $t->type;
-                }
-                return $t;
-            });
+            ->get();
 
-        return view('dashboard.kid', compact(
+        return view('kid.kiddashboard', compact(
             'user',
             'receivedMoney',
-            'sentMoney',
+            'spentMoney',
             'balance',
+            'remainingLimit',
             'transactions'
         ));
     }
 
     /**
-     * Show the profile edit form.
+     * ✏️ Edit profile page
      */
-    public function editProfile()
+    public function editKid()
     {
-        /** @var User $user */
         $user = Auth::user();
+        if ($user->role != 2) abort(403, 'Unauthorized');
 
-        if ($user->role != 2) {
-            abort(403, 'Unauthorized');
-        }
-
-        return view('dashboard.kid_edit', compact('user'));
+        return view('kid.kidedit', compact('user'));
     }
 
     /**
-     * Update kid profile.
+     * 💾 Update profile
      */
-    public function updateProfile(Request $request)
+    public function updateKid(Request $request)
     {
-        /** @var User $user */
         $user = Auth::user();
-
-        if ($user->role != 2) {
-            abort(403, 'Unauthorized');
-        }
+        if ($user->role != 2) abort(403, 'Unauthorized');
 
         $validator = Validator::make($request->all(), [
             'first_name'  => 'required|string|max:50',
-            'second_name' => 'nullable|string|max:50',
             'phone_no'    => 'nullable|string|max:15',
             'dob'         => 'nullable|date',
             'gender'      => 'nullable|in:male,female,other',
@@ -106,72 +97,101 @@ class KidController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // Handle profile image upload
         if ($request->hasFile('profile_img')) {
-            $user->profile_img = $request->file('profile_img')
-                ->store('profile_images', 'public');
+            $user->profile_img = $request->file('profile_img')->store('profile_images', 'public');
         }
+        
+        /** @var \App\Models\User $user */
+        $user->update($request->only('first_name', 'phone_no', 'dob', 'gender'));
 
-        // Update profile fields
-        $user->first_name  = $request->first_name;
-        $user->second_name = $request->second_name;
-        $user->phone_no    = $request->phone_no;
-        $user->dob         = $request->dob;
-        $user->gender      = $request->gender;
-
-        $user->save();
-
-        return redirect()->route('kid.dashboard')
-            ->with('success', 'Profile updated successfully!');
+        return redirect()->route('kid.dashboard')->with('success', 'Profile updated successfully!');
     }
 
     /**
-     * Kid sends money (creates a debit transaction).
+     * 💸 Kid spends money (creates debit)
      */
-/**
- * Kid sends money (creates a debit transaction for kid and a credit for parent).
- */
-public function sendMoney(Request $request)
+    public function sendMoney(Request $request)
+    {
+        $user = Auth::user();
+        if ($user->role != 2) abort(403, 'Unauthorized');
+
+        $request->validate([
+            'amount'      => 'required|numeric|min:1',
+            'description' => 'nullable|string|max:255',
+        ]);
+
+        // Check for parent link
+        if (!$user->parent_id) {
+            return back()->withErrors(['parent' => 'No parent assigned.']);
+        }
+
+        // Current balance
+        $receivedMoney = Transaction::where('kid_id', $user->id)->where('type', 'credit')->sum('amount');
+        $spentMoney = Transaction::where('kid_id', $user->id)->where('type', 'debit')->where('source', 'kid_spending')->sum('amount');
+        $balance = $receivedMoney - $spentMoney;
+
+        if ($request->amount > $balance) {
+            return back()->withErrors(['amount' => 'Insufficient balance. Available ₹' . number_format($balance, 2)]);
+        }
+
+        // ✅ Daily limit check
+        if ($user->daily_limit > 0) {
+            $spentToday = Transaction::where('kid_id', $user->id)
+                ->where('type', 'debit')
+                ->where('source', 'kid_spending')
+                ->whereDate('created_at', now()->toDateString())
+                ->sum('amount');
+
+            if (($spentToday + $request->amount) > $user->daily_limit) {
+                $remaining = max($user->daily_limit - $spentToday, 0);
+                return back()->withErrors(['amount' => 'Daily limit exceeded. You can still spend ₹' . number_format($remaining, 2)]);
+            }
+        }
+
+        // ✅ Create debit transaction for kid spending
+        Transaction::create([
+            'parent_id'   => $user->parent_id,
+            'kid_id'      => $user->id,
+            'amount'      => $request->amount,
+            'type'        => 'debit',
+            'status'      => 'completed',
+            'source'      => 'kid_spending',
+            'description' => $request->description,
+        ]);
+
+        return back()->with('success', 'Amount spent successfully!');
+    }
+
+public function kidTransactions()
 {
-    /** @var User $user */
     $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
 
-    if ($user->role != 2) {
-        abort(403, 'Unauthorized');
-    }
+    // ✅ Fetch credit & debit (kid spending)
+    $transactions = Transaction::where('kid_id', $user->id)
+        ->where(function ($query) {
+            $query->where('type', 'credit')
+                  ->orWhere(function ($q) {
+                      $q->where('type', 'debit')
+                        ->where('source', 'kid_spending');
+                  });
+        })
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-    $request->validate([
-        'amount'      => 'required|numeric|min:1',
-        'description' => 'nullable|string|max:255',
-    ]);
+    // ✅ Calculate balance
+    $receivedMoney = Transaction::where('kid_id', $user->id)
+        ->where('type', 'credit')
+        ->sum('amount');
 
-    $parentId = $user->parent_id;
+    $spentMoney = Transaction::where('kid_id', $user->id)
+        ->where('type', 'debit')
+        ->where('source', 'kid_spending')
+        ->sum('amount');
 
-    if (!$parentId) {
-        return back()->withErrors(['parent' => 'No parent assigned. Cannot send money.']);
-    }
+    $balance = $receivedMoney - $spentMoney;
 
-    // 1. Debit transaction for kid (money out)
-    Transaction::create([
-        'parent_id'   => $parentId,
-        'kid_id'      => $user->id,
-        'amount'      => $request->amount,
-        'type'        => 'debit', // kid's money going out
-        'status'      => 'completed',
-        'description' => $request->description,
-    ]);
-
-    // 2. Credit transaction for parent (money in)
-    // Transaction::create([
-    //     'parent_id'   => $parentId,
-    //     'kid_id'      => $user->id,
-    //     'amount'      => $request->amount,
-    //     'type'        => 'credit', // parent's money coming in
-    //     'status'      => 'completed',
-    //     'description' => $request->description,
-    // ]);
-
-    return back()->with('success', 'Amount sent successfully!');
+    // ✅ Pass $user too (required by sidebar)
+    return view('kid.kidtransaction', compact('user', 'transactions', 'balance'));
 }
-
 }
