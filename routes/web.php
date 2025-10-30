@@ -60,8 +60,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kid/send-money', [KidController::class, 'sendMoney'])
         ->name('kid.send.money');
 
+    Route::get('/kid/scan-qr', [KidController::class, 'scanQR'])->name('kid.scanqr');
+
+    Route::get('/kid/pay', [KidController::class, 'pay'])->name('kid.pay');
+
+
     Route::get('/kid/transactions', [KidController::class, 'kidTransactions'])
     ->name('kid.transactions');
+
+    Route::get('/kid/moneytransfer', [KidController::class, 'moneyTransferPage'])->name('kid.moneytransfer');
+
 });
 
 
@@ -129,4 +137,11 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/parent/transactions', [ParentController::class, 'transactionHistory'])
     ->name('parent.transactions');
+Route::get('/parent/bankaccounts', [ParentController::class, 'bankAccounts'])->name('parent.bankaccounts');
+Route::get('/parent/bankaccounts/add', [ParentController::class, 'addBankAccount'])->name('parent.addbankaccount');
+Route::get('/parent/bankaccounts/add/{bank}', [ParentController::class, 'addSpecificBank'])->name('parent.addbankaccount.specific');
+Route::post('/parent/bankaccounts/store', [ParentController::class, 'storeBankAccount'])->name('parent.add.bank');
+Route::get('/parent/bankaccounts/select/{id}', [ParentController::class, 'selectBank'])->name('parent.select.bank');
+Route::post('/parent/clear-bank-session', [ParentController::class, 'clearBankSession'])
+    ->name('parent.clear.bank.session');
 });

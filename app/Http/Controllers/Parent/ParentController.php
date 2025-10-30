@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Transaction;
+use App\Models\BankAccount;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -18,26 +19,52 @@ class ParentController extends Controller
     /**
      * 🏠 Display the Parent Dashboard (parent info + transactions summary)
      */
-    public function dashboard()
-    {
-        $user = Auth::user();
+ // 🏠 Dashboard
+public function dashboard()
+{
+    $user = Auth::user();
 
-        // Transactions where parent sent money to kids
-        $transactions = Transaction::with('kid')
-            ->where('parent_id', $user->id)
-            ->where('type', 'debit')
-            ->where('source', 'parent_to_kid')
-            ->orderBy('created_at', 'desc')
-            ->get();
+    // ✅ Load only parent_to_kid debit transactions
+    $transactions = Transaction::with('kid')
+        ->where('parent_id', $user->id)
+        ->where('type', 'debit')
+        ->where('source', 'parent_to_kid')
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-        // All kids created by this parent
-        $children = User::where('parent_id', $user->id)->get();
+    // ✅ Fetch children of this parent
+    $children = User::where('parent_id', $user->id)->get();
 
-        // Total amount sent to kids
-        $totalSent = $transactions->sum('amount');
+    // ✅ Total amount sent to kids
+    $totalSent = $transactions->sum('amount');
 
-        return view('parent.parentdashboard', compact('user', 'transactions', 'children', 'totalSent'));
-    }
+    // ✅ Fetch all bank accounts linked to the parent
+    $bankAccounts = BankAccount::where('user_id', $user->id)->get();
+
+    // ✅ Use selected bank from session or fallback to first
+    $selectedBank = session('active_bank_account')
+        ? BankAccount::find(session('active_bank_account'))
+        : $bankAccounts->first();
+
+    // ✅ Generate wallet ID (4-digit padded user ID)
+    $walletId = str_pad($user->id, 4, '0', STR_PAD_LEFT);
+
+    // ✅ Count total kids linked to this parent
+    $kidsLinked = $children->count();
+
+    // ✅ Return to parent dashboard view
+    return view('parent.parentdashboard', compact(
+        'user',
+        'transactions',
+        'children',
+        'totalSent',
+        'bankAccounts',
+        'selectedBank',
+        'walletId',
+        'kidsLinked'
+    ));
+}
+
 
     /**
      * 💰 Show "Send Money" page (list of kids)
@@ -76,13 +103,27 @@ class ParentController extends Controller
     /**
      * 📋 Show Kid Details (list of all kids)
      */
-    public function kidDetails()
-    {
-        $user = Auth::user();
-        $children = User::where('parent_id', $user->id)->get();
+  public function kidDetails()
+{
+    $user = Auth::user();
+    $children = User::where('parent_id', $user->id)->get();
 
-        return view('parent.kiddetails', compact('user', 'children'));
+    // ✅ Calculate each kid’s balance
+    foreach ($children as $child) {
+        $received = \App\Models\Transaction::where('kid_id', $child->id)
+            ->where('type', 'credit')
+            ->sum('amount');
+
+        $spent = \App\Models\Transaction::where('kid_id', $child->id)
+            ->where('type', 'debit')
+            ->where('source', 'kid_spending')
+            ->sum('amount');
+
+        $child->balance = $received - $spent;
     }
+
+    return view('parent.kiddetails', compact('user', 'children'));
+}
 
   /**
  * ➕ Store a new Kid account
@@ -299,5 +340,107 @@ public function transactionHistory()
 
     return view('parent.transaction', compact('user', 'transactions'));
 }
+
+    /**
+     * 🏦 View All Bank Accounts
+     */
+    public function bankAccounts()
+    {
+        $user = Auth::user();
+        $accounts = BankAccount::where('user_id', $user->id)->get();
+
+        return view('parent.bankaccounts', compact('user', 'accounts'));
+    }
+
+    /**
+     * ➕ Show Add Bank Account Page
+     */
+    public function addBankAccount()
+    {
+        $user = Auth::user();
+        return view('parent.addbankaccount', compact('user'));
+    }
+
+    public function addSpecificBank($bank)
+{
+    $bankName = ucwords(strtolower($bank));
+
+    // Map logo + color
+    $bankMap = [
+        'canara bank' => ['file' => 'canara.png', 'color' => '#2b8ccd'],
+        'axis bank'   => ['file' => 'axis.png',   'color' => '#a1005f'],
+        'hdfc bank'   => ['file' => 'hdfc.png',   'color' => '#004ba0'],
+        'icici bank'  => ['file' => 'icici.png',  'color' => '#e65100'],
+        'sbi bank'    => ['file' => 'sbi.png',    'color' => '#1a73e8'],
+        'kotak bank'=> ['file' => 'kotak.png',   'color' => '#1976d2'],
+    ];
+
+    $key = strtolower(trim($bankName));
+    $bankFile = $bankMap[$key]['file'] ?? 'kotak.png';
+    $cardColor = $bankMap[$key]['color'] ?? '#1976d2';
+
+    return view('parent.addbankaccount', compact('bankName', 'bankFile', 'cardColor'));
+}
+
+    /**
+     * 💾 Store a New Bank Account
+     */
+/**
+ * 💳 Store a New Bank Card (card_number, expiry_date, cvv)
+ */
+public function storeBankAccount(Request $request)
+{
+    $request->validate([
+        'bank_name'   => 'required|string|max:255',
+        'card_number' => 'required|string|max:30',
+        'expiry_date' => 'required|string|max:10',
+        'cvv'         => 'required|string|max:10',
+    ]);
+
+    BankAccount::create([
+        'user_id'     => Auth::id(),
+        'bank_name'   => $request->bank_name,
+        'card_number' => $request->card_number,
+        'expiry_date' => $request->expiry_date,
+        'cvv'         => $request->cvv,
+        'branch_name' => $request->branch_name,
+    ]);
+
+    return redirect()->route('parent.bankaccounts')
+        ->with('success', 'Card added successfully!');
+}
+
+
+    /**
+     * ✅ Select Bank Account as Primary
+     */
+    public function selectBank($id)
+    {
+        $user = Auth::user();
+
+        // Unselect all accounts
+        BankAccount::where('user_id', $user->id)->update(['is_selected' => false]);
+
+        // Select chosen one
+        $selected = BankAccount::where('id', $id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($selected) {
+            $selected->update(['is_selected' => true]);
+            session(['active_bank_account' => $selected->id]);
+        }
+
+        return redirect()->route('parent.bankaccounts')->with('success', 'Primary bank account updated.');
+    }
+
+    public function clearBankSession()
+{
+    session()->forget('active_bank_account');
+    return response()->json(['message' => 'Bank session cleared']);
+}
+
+
+
 
 }

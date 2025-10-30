@@ -1,0 +1,188 @@
+
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+  html, body { width: 100%; height: 100%; background: #fff; overflow-x: hidden; }
+  body { display: flex; justify-content: center; align-items: flex-start; min-height: 100svh; background: #fff; padding-bottom: env(safe-area-inset-bottom); }
+
+.container {
+  width: 100%;
+  max-width: 500px; /* increased width */
+  min-height: 100svh;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  padding: 16px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow-y: auto;
+}
+
+  .inner-container { width: 100%; text-align: center; }
+
+  /* ===== Header ===== */
+  .header-bar { width: 100%; display: flex; justify-content: flex-start; margin-bottom: 10px; }
+  .menu-icon { width: 26px; height: 20px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; margin-top: 4px; margin-left: 6px; }
+  .menu-icon div { width: 100%; height: 3px; background-color: #bfbfbf; border-radius: 2px; transition: all 0.3s ease; }
+  .menu-icon:hover div:nth-child(1), .menu-icon:hover div:nth-child(3){width:70%;}
+
+  /* ===== Logo ===== */
+  .logo-section { display: flex; justify-content: center; align-items: center; margin: 8px 0 14px; }
+  .logo-section img { width: 65px; transition: transform 0.3s ease; }
+  .logo-section img:hover { transform: scale(1.05); }
+
+  h1 { font-size: 15px; font-weight: 600; color: #2c3e50; margin-bottom: 18px; }
+
+  /* ===== Profile Picture ===== */
+  .profile-preview {
+    position: relative; width: 90px; height: 90px;
+    margin: 0 auto 22px;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .profile-preview img {
+    width: 85px; height: 85px; border-radius: 50%;
+    border: 2px solid #4caf50; object-fit: cover;
+  }
+  .edit-icon {
+    position: absolute; bottom: 4px; right: 4px;
+    width: 26px; height: 26px; background: #4caf50; color: #fff;
+    border-radius: 50%; display: flex; justify-content: center; align-items: center;
+    font-size: 13px; cursor: pointer; border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: all 0.2s ease;
+  }
+  .edit-icon:hover { transform: scale(1.1); }
+  input[type="file"] { display: none; }
+
+  /* ===== Floating Label Fields ===== */
+  .kid-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center; /* Center all fields */
+  }
+
+  .field {
+    position: relative;
+    width: 100%; /* Reduced width for better centering */
+  }
+
+  .field input,
+  .field select {
+    width: 100%;
+    height: 46px;
+    padding: 10px 12px;
+    font-size: 13px;
+    border: 1.6px solid #dcdcdc;
+    border-radius: 10px;
+    background: #fff;
+    color: #333;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  }
+
+  /* ✅ DATE INPUT FIX */
+  input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
+    color: #333;
+    background: #fff;
+    font-size: 13px;
+    text-align: left !important;
+    text-align-last: left !important;
+    padding-left: 12px;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+  }
+
+  input[type="date"][readonly] {
+    pointer-events: none;
+    background: #f9f9f9;
+    color: #555;
+  }
+
+  input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+  input[type="date"]::-webkit-datetime-edit,
+  input[type="date"]::-webkit-datetime-edit-text,
+  input[type="date"]::-webkit-datetime-edit-month-field,
+  input[type="date"]::-webkit-datetime-edit-day-field,
+  input[type="date"]::-webkit-datetime-edit-year-field {
+    text-align: left; color: #333;
+  }
+
+  .field input:focus,
+  .field select:focus {
+    border-color: #4caf50;
+    box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
+    outline: none;
+  }
+
+  .field label {
+    position: absolute;
+    left: 14px; top: 12px;
+    font-size: 13px; color: #777;
+    background: #fff; padding: 0 4px;
+    pointer-events: none;
+    transition: all 0.2s ease;
+  }
+
+  /* Float label */
+  .field input:focus + label,
+  .field input:not(:placeholder-shown) + label,
+  .field select:focus + label,
+  .field select:not([value=""]) + label {
+    top: -8px;
+    left: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #4caf50;
+  }
+
+  /* Readonly & Disabled Fields */
+  .kid-form input[readonly],
+  .kid-form select[disabled] {
+    background: #ffffff;
+    color: #333; /* ✅ Corrected gender field color */
+    cursor: not-allowed;
+  }
+
+  select[disabled] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none;
+  }
+
+  /* ===== Button ===== */
+  button {
+    width: 100px;
+    padding: 12px 0;
+    background: #4caf50;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 12px;
+    box-shadow: 0 3px 8px rgba(76,175,80,0.3);
+    transition: all 0.3s ease;
+    display: none;
+  }
+
+  button.show { display: block; animation: fadeIn 0.3s ease; }
+  button:hover { background: #43a047; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .container { max-width: 100%; box-shadow: none; }
+    .profile-preview img { width: 78px; height: 78px; }
+    h1 { font-size: 14px; margin-bottom: 14px; }
+  }
+ 

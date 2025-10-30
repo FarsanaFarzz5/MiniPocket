@@ -1,0 +1,122 @@
+
+  * {margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+  html,body {width:100%;height:100%;background:#f2f2f2;overflow:hidden;}
+  body {display:flex;justify-content:center;align-items:center;height:100dvh;}
+
+  .container {
+    width:100%;
+    max-width:420px;
+    height:100dvh;
+    background:#fff;
+    box-shadow:0 6px 20px rgba(0,0,0,0.08);
+    padding:24px 24px 45px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:relative;
+  }
+
+  .inner-container {
+    width:100%;
+    text-align:center;
+    margin-top:110px !important;
+  }
+
+  /* ========== TOP BAR ========== */
+  .top-bar {
+    position:absolute;
+    top:18px;
+    left:20px;
+    display:flex;
+    align-items:center;
+  }
+
+  .back-btn {
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:#2c3e50;
+    font-size:14px;
+    font-weight:500;
+    border-radius:8px;
+    padding:8px 14px;
+    text-decoration:none;
+    cursor:pointer;
+    transition:all 0.3s ease;
+  }
+  .back-btn svg {width:18px;height:18px;fill:#00c853;transition:transform .2s ease;}
+  .back-btn:hover {background:#ffffff;color:#000000;transform:translateY(-2px);}
+  .back-btn:hover svg {fill:#00c853;transform:translateX(-3px);}
+
+  /* Logo */
+  .logo-section {display:flex;justify-content:center;margin:10px 0 16px;}
+  .logo-section img {
+    width:75px;filter:brightness(1.1) saturate(1.1);
+    transition:transform .3s ease;transform: translateX(-7px);
+  }
+  .logo-section img:hover {transform:scale(1.05);}
+  h1 {font-size:17px;font-weight:600;color:#2c3e50;margin-bottom:18px;transform:translateX(-14px);}
+
+  /* ✨ Premium Styled Alerts */
+  .alert-toast {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%) translateY(40px);
+    padding: 14px 26px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    z-index: 999;
+    opacity: 0;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    transition: all 0.4s ease;
+  }
+  .alert-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    animation: fadeHold 2.5s ease forwards;
+  }
+  .alert-success {background: linear-gradient(135deg,#00c853,#2ecc71);}
+  .alert-error {background: linear-gradient(135deg,#e53935,#ff6b6b);}
+  .alert-warning {background: linear-gradient(135deg,#f6b93b,#f39c12);}
+
+  @keyframes fadeHold {
+    0% {opacity: 0; transform: translateX(-50%) translateY(40px);}
+    10%, 60% {opacity: 1; transform: translateX(-50%) translateY(0);}
+    100% {opacity: 0; transform: translateX(-50%) translateY(40px);}
+  }
+
+  /* Amount */
+  .amount-wrapper {margin:30px 0 20px;}
+  .amount-field {
+    font-family:'Nunito',sans-serif;font-size:44px !important;font-weight:800;color:#00c853;
+    display:inline-flex;justify-content:center;align-items:baseline;gap:2px;margin-top:-13px; transform: translateX(25px);
+  }
+  .amount-field input {
+    background:none;border:none;outline:none;font-family:inherit;font-size:inherit;
+    font-weight:inherit;color:inherit;text-align:left;width:5ch;min-width:60px;
+    max-width:170px;padding-left:6px;transition:width 0.25s ease;appearance:textfield;
+  }
+  .amount-field input::-webkit-inner-spin-button,
+  .amount-field input::-webkit-outer-spin-button {-webkit-appearance:none;}
+
+  /* Reason box */
+  .reason-box {
+    width:100%;padding:12px 14px;border:1px solid #e0e0e0;border-radius:10px;
+    font-size:14px;color:#444;margin-bottom:24px;transition:all .2s ease;
+  }
+  .reason-box:focus {border-color:#f4731d;box-shadow:0 0 0 3px rgba(244,115,29,0.15);outline:none;}
+
+  /* Button */
+  .btn {
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;
+    padding:14px 0;background:linear-gradient(135deg,#f4731d 0%,#f68c40 100%);
+    color:#fff;font-size:15px;font-weight:600;border:none;border-radius:10px;
+    cursor:pointer;box-shadow:0 5px 15px rgba(244,115,29,0.35);transition:all .3s ease;
+  }
+  .btn:hover {background:linear-gradient(135deg,#e25f00 0%,#f4731d 100%);transform:translateY(-2px);}
+  .btn:active {transform:scale(.98);}
+  .icon {width:20px;height:20px;fill:#fff;}

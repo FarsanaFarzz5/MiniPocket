@@ -107,60 +107,137 @@ class KidController extends Controller
         return redirect()->route('kid.dashboard')->with('success', 'Profile updated successfully!');
     }
 
-    /**
-     * 💸 Kid spends money (creates debit)
-     */
-    public function sendMoney(Request $request)
-    {
-        $user = Auth::user();
-        if ($user->role != 2) abort(403, 'Unauthorized');
+public function sendMoney(Request $request)
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
 
-        $request->validate([
-            'amount'      => 'required|numeric|min:1',
-            'description' => 'nullable|string|max:255',
-        ]);
+    $request->validate([
+        'amount'      => 'required|numeric|min:1',
+        'description' => 'nullable|string|max:255',
+    ]);
 
-        // Check for parent link
-        if (!$user->parent_id) {
-            return back()->withErrors(['parent' => 'No parent assigned.']);
-        }
-
-        // Current balance
-        $receivedMoney = Transaction::where('kid_id', $user->id)->where('type', 'credit')->sum('amount');
-        $spentMoney = Transaction::where('kid_id', $user->id)->where('type', 'debit')->where('source', 'kid_spending')->sum('amount');
-        $balance = $receivedMoney - $spentMoney;
-
-        if ($request->amount > $balance) {
-            return back()->withErrors(['amount' => 'Insufficient balance. Available ₹' . number_format($balance, 2)]);
-        }
-
-        // ✅ Daily limit check
-        if ($user->daily_limit > 0) {
-            $spentToday = Transaction::where('kid_id', $user->id)
-                ->where('type', 'debit')
-                ->where('source', 'kid_spending')
-                ->whereDate('created_at', now()->toDateString())
-                ->sum('amount');
-
-            if (($spentToday + $request->amount) > $user->daily_limit) {
-                $remaining = max($user->daily_limit - $spentToday, 0);
-                return back()->withErrors(['amount' => 'Daily limit exceeded. You can still spend ₹' . number_format($remaining, 2)]);
-            }
-        }
-
-        // ✅ Create debit transaction for kid spending
-        Transaction::create([
-            'parent_id'   => $user->parent_id,
-            'kid_id'      => $user->id,
-            'amount'      => $request->amount,
-            'type'        => 'debit',
-            'status'      => 'completed',
-            'source'      => 'kid_spending',
-            'description' => $request->description,
-        ]);
-
-        return back()->with('success', 'Amount spent successfully!');
+    if (!$user->parent_id) {
+        return response()->json([
+            'success' => false,
+            'message' => 'No parent assigned.',
+            'remaining_limit' => 0
+        ], 400);
     }
+
+    // ✅ Calculate balance
+    $receivedMoney = Transaction::where('kid_id', $user->id)
+        ->where('type', 'credit')
+        ->sum('amount');
+
+    $spentMoney = Transaction::where('kid_id', $user->id)
+        ->where('type', 'debit')
+        ->where('source', 'kid_spending')
+        ->sum('amount');
+
+    $balance = $receivedMoney - $spentMoney;
+
+    if ($request->amount > $balance) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Insufficient balance. Available ₹' . number_format($balance, 2),
+            'remaining_limit' => $user->daily_limit - $spentMoney // 👈 include here too
+        ], 400);
+    }
+
+    // ✅ Daily limit check
+    if ($user->daily_limit > 0) {
+        $spentToday = Transaction::where('kid_id', $user->id)
+            ->where('type', 'debit')
+            ->where('source', 'kid_spending')
+            ->whereDate('created_at', now()->toDateString())
+            ->sum('amount');
+
+        $remainingLimit = max($user->daily_limit - $spentToday, 0);
+
+        // 🚫 Case: exceeds daily limit
+        if (($spentToday + $request->amount) > $user->daily_limit) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Daily limit exceeded. You can still spend ₹' . number_format($remainingLimit, 2),
+                'remaining_limit' => $remainingLimit // 👈 THIS is what frontend checks
+            ], 400);
+        }
+    }
+
+    // ✅ Create transaction
+    Transaction::create([
+        'parent_id'   => $user->parent_id,
+        'kid_id'      => $user->id,
+        'amount'      => $request->amount,
+        'type'        => 'debit',
+        'status'      => 'completed',
+        'source'      => 'kid_spending',
+        'description' => $request->description,
+    ]);
+
+    // ✅ Calculate updated remaining limit
+    $spentTodayAfter = Transaction::where('kid_id', $user->id)
+        ->where('type', 'debit')
+        ->where('source', 'kid_spending')
+        ->whereDate('created_at', now()->toDateString())
+        ->sum('amount');
+
+    $remainingLimitAfter = max($user->daily_limit - $spentTodayAfter, 0);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Amount spent successfully!',
+        'remaining_limit' => $remainingLimitAfter // 👈 return updated limit even on success
+    ]);
+}
+
+
+    public function scanQR()
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
+
+    return view('kid.scanqr', compact('user'));
+}
+
+public function pay(Request $request)
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
+
+    $data = $request->get('data'); // e.g. item=pen&price=30
+    parse_str($data, $details);
+    $amount = $details['price'] ?? 0;
+    $item = $details['item'] ?? 'Purchase';
+
+    if ($amount <= 0) {
+        return redirect()->route('kid.dashboard')->withErrors(['invalid' => 'Invalid QR code']);
+    }
+
+    // Fetch balance
+    $received = Transaction::where('kid_id', $user->id)->where('type', 'credit')->sum('amount');
+    $spent = Transaction::where('kid_id', $user->id)->where('type', 'debit')->sum('amount');
+    $balance = $received - $spent;
+
+    if ($amount > $balance) {
+        return redirect()->route('kid.dashboard')->withErrors(['amount' => 'Insufficient balance']);
+    }
+
+    // Record transaction
+    Transaction::create([
+        'parent_id' => $user->parent_id,
+        'kid_id' => $user->id,
+        'amount' => $amount,
+        'type' => 'debit',
+        'status' => 'completed',
+        'source' => 'kid_spending',
+        'description' => 'Paid for ' . $item,
+    ]);
+
+    return redirect()->route('kid.dashboard')->with('success', "₹{$amount} paid for {$item}");
+}
+
 
 public function kidTransactions()
 {
@@ -194,4 +271,12 @@ public function kidTransactions()
     // ✅ Pass $user too (required by sidebar)
     return view('kid.kidtransaction', compact('user', 'transactions', 'balance'));
 }
+
+public function moneyTransferPage()
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
+    return view('kid.moneytransfer', compact('user'));
+}
+
 }

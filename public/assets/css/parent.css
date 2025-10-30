@@ -1,6 +1,6 @@
-/* =========================
-   🌟 GLOBAL RESET
-========================= */
+/* ===========================================================
+🌟 GLOBAL RESET
+=========================================================== */
 * {
   margin: 0;
   padding: 0;
@@ -9,70 +9,83 @@
 }
 
 html, body {
+  width: 100%;
   height: 100%;
-  overflow: hidden; /* stop vertical scroll */
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
-  background: #f2f2f2;
+  background: #fff;
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  align-items: flex-start;
+  min-height: -webkit-fill-available;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* =========================
-   🧱 MAIN CONTAINER
-========================= */
+/* ===========================================================
+🧱 MAIN CONTAINER
+=========================================================== */
 .container {
   width: 100%;
   max-width: 420px;
-  min-height: 100vh;
+  min-height: 100dvh;
   background: #fff;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  padding: 20px 22px;
+  padding: 20px 22px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  overflow: hidden !important;
-  height: 100dvh;
-  padding-bottom: 0 !important;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  z-index: 1;
 }
 
 .inner-container {
   width: 100%;
   text-align: center;
-  height: 100%;
-  overflow-y: auto;
-  padding-bottom: 0 !important;
+  height: auto;
+  overflow: visible;
 }
 
+@supports (padding: max(0px)) {
+  .container {
+    padding-bottom: max(100px, env(safe-area-inset-bottom));
+  }
+}
 
-
-/* =========================
-   💰 HEADER — Sidebar & Logo Same Line
-========================= */
-.header {
+/* ===========================================================
+🧭 TOPBAR — Sidebar + Logo in one line
+=========================================================== */
+.topbar {
   width: 100%;
   display: flex;
-  align-items: flex-start;        /* ✅ aligns items to the top */
   justify-content: space-between;
-  padding: 0 14px;                /* no top padding so logo hugs top */
-  margin-top: -10px;              /* pushes header slightly upward */
-  position: relative;
+  align-items: center;
+  background: #fff;
+  margin-bottom: 12px;
 }
 
-/* ===== Hamburger ===== */
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
 .hamburger {
   width: 28px;
   height: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;    /* ✅ aligns bars to top edge */
-  gap: 4px;
+  justify-content: space-between;
   cursor: pointer;
-  margin-top: 2px;                /* fine-tuned for perfect alignment */
 }
 
 .hamburger span {
@@ -88,163 +101,257 @@ body {
   background-color: #f4731d;
 }
 
-/* ===== Logo Section ===== */
 .logo-section {
   display: flex;
   justify-content: flex-end;
-  align-items: flex-start;        /* ✅ ensures top alignment */
-  margin: 0;
-  padding-top: 0;
+  align-items: center;
 }
 
 .logo-section img {
-  height: 42px;                   /* slightly smaller to visually align */
-  width: auto;
+  width: 48px;
+  height: auto;
   object-fit: contain;
   filter: brightness(1.1) saturate(1.1);
   transition: transform 0.3s ease;
-  margin-top: 0;                  /* ✅ removes extra offset */
 }
 
 .logo-section img:hover {
   transform: scale(1.05);
 }
 
-
-/* =========================
-   👨‍👩‍👧 PARENT CARD
-========================= */
-.content-section {
-  margin-top: 25px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  justify-content: space-between;
-  margin-bottom: 0 !important;
-  padding-bottom: 0 !important;
-}
-
+/* ===========================================================
+👨‍👩‍👧 PARENT CARD — Compact + Mobile-Optimized
+=========================================================== */
 .parent-card {
-  background: #fff5e6;
-  border-radius: 20px;
-  padding: 24px 20px;          /* increased padding */
+  background: linear-gradient(180deg, #fff9f3 0%, #fff6eb 100%);
+  border-radius: 22px;
   display: flex;
+  flex-direction: row; /* 🔄 changed from column → row */
   align-items: center;
-  gap: 35px;                   /* wider gap between image & text */
-  margin: 0 auto 30px;
-  width: 100%;                 /* make it fill container width */
-  max-width: 95%;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  justify-content: center; /* ✅ keeps avatar & details side by side */
+  gap: 20px; /* 🧩 space between image and text */
+  padding: 28px 20px;
+  width: 100%;
+  max-width: 380px;
+  margin: 16px auto 28px;
+  
   transition: all 0.3s ease;
+  text-align: left; /* ✅ align text properly beside image */
 }
 
-.parent-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-}
 
-.parent-card img {
-  width: 95px;                 /* larger avatar */
+
+
+.parent-avatar img {
+  width: 120px;
   height: auto;
   object-fit: contain;
+  display: block;
 }
 
-.parent-info .name {
+.parent-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.parent-name {
+  font-size: 19px;
   font-weight: 700;
-  color: #1b5e20;
-  font-size: 18px;             /* bigger name text */
+  color: #7a4a20;
   margin-bottom: 6px;
-  text-align: left;
 }
 
-.parent-info .detail {
-  font-size: 12.5px;           /* slightly larger details */
-  line-height: 1.8;
-  text-align: left;
+.bank-name {
+  font-size: 15px;
+  color: #6e5134;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
-/* =========================
-   🔘 BUTTON STYLE
-========================= */
-button, .btn {
-    display: block;
-    width: 90%;
-    padding: 13px 0;
-    background: #f4731d;
-    color: #fff;
-    font-size: 15px;
-    font-weight: 600;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    margin: 0px auto;
-    box-shadow: 0 5px 10px rgba(244, 115, 29, 0.3);
-    transition: all 0.3s ease;
+.wallet-info,
+.kids-linked {
+  font-size: 14px;
+  color: #4a4a4a;
+  font-weight: 500;
+    margin: 1px 0; /* ⬇ reduced gap between Wallet ID & Kids Linked */
+  line-height: 1.7;
 }
 
-button:hover, .btn:hover {
-  background: #e25f00;
-  transform: translateY(-2px);
+.bank-name i {
+  margin-right: 4px;
+  color: #6e5134;
 }
 
-/* =========================
-   💵 SEND MONEY BOX
-========================= */
+.wallet-info span,
+.kids-linked span {
+  font-weight: 700;
+  color: #000;
+}
+
+/* ===========================================================
+💵 SEND MONEY BUTTON
+=========================================================== */
 .send-money-box {
   background: transparent;
   border-radius: 16px;
-  padding: 10px 0px;
+  padding: 10px 0;
   width: 100%;
-  max-width: 95%;              /* match parent card width */
+  max-width: 95%;
   text-align: center;
-  margin-top: -18px;
+  margin-top: -10px;
 }
 
-button, .btn {
+button,
+.btn {
   display: block;
-  width: 100%;                 /* fill entire width */
-  max-width: 360px;            /* keep button inside container */
-  padding: 16px 0;             /* thicker button */
+  width: 100%;
+  max-width: 360px;
+  padding: 16px 0;
   background: #f4731d;
   color: #fff;
-  font-size: 16px;             /* bigger font */
+  font-size: 16px;
   font-weight: 700;
   border: none;
   border-radius: 12px;
   cursor: pointer;
   margin: 10px auto;
-  box-shadow: 0 6px 12px rgba(244, 115, 29, 0.35);
   transition: all 0.3s ease;
 }
 
-button:hover, .btn:hover {
-  background: #e25f00;
-  transform: translateY(-2px);
+
+/* ===========================================================
+💳 TRANSACTION SECTION
+=========================================================== */
+.transaction-section {
+  width: 100%;
+  margin-top: 25px;
+  background: transparent;
+  padding: 0 8px;
 }
 
-/* =========================
-   📱 RESPONSIVE
-========================= */
+.transaction-section h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  padding: 14px 14px 8px;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.transaction-item:last-child {
+  border-bottom: none;
+}
+
+.transaction-item .left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.transaction-item .left span:first-child {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.transaction-item .left span:last-child {
+  font-size: 12px;
+  color: #777;
+}
+
+.transaction-item .right {
+  text-align: right;
+}
+
+.transaction-item .right span:first-child {
+  font-size: 14px;
+  font-weight: 600;
+  color: #23a541;
+}
+
+.transaction-item .right span:last-child {
+  font-size: 12px;
+  color: #999;
+  display: block;
+}
+
+.no-data {
+  text-align: center;
+  color: #aaa;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.all-transactions {
+  text-align: center;
+  margin-top: 18px;
+}
+
+.all-transactions button {
+  width: 100%;
+  background: #f4f4f4;
+  border: none;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 0;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.all-transactions button:hover {
+  background: #e6e6e6;
+  transform: translateY(-1px);
+}
+
+/* ===========================================================
+📱 RESPONSIVE DESIGN (Mobile)
+=========================================================== */
 @media (max-width: 480px) {
-  .parent-card {
-    gap: 26px;
-    padding: 22px 16px;
+.parent-card {
+  max-width: 95%;
+  padding: 24px 20px; /* ⬆ increased inner space */
+  gap: 30px; /* ⬆ more space between avatar & text */
+  border-radius: 20px;
+  transform: scale(1.03); /* ⬆ slightly enlarge the whole card */
+}
+
+  .parent-avatar img {
+    width: 85px;
   }
 
-  .parent-card img {
-    width: 90px;
+  .parent-name {
+    font-size: 16.5px;
   }
 
-  .parent-info .name {
-    font-size: 19px;
-    text-align: left;
+  .bank-name {
+    font-size: 13.5px;
   }
 
-  .parent-card .detail{
-    font-size: 14px;
-    text-align: left;
+  .wallet-info,
+  .kids-linked {
+    font-size: 12.5px;
   }
 
   .send-money-box {
@@ -252,8 +359,9 @@ button:hover, .btn:hover {
     margin-top: -20px;
   }
 
-  button, .btn {
-    width: 95%;
+  button,
+  .btn {
+    width: 100%;
     padding: 15px 0;
     font-size: 16px;
   }

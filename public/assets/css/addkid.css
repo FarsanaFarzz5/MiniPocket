@@ -1,0 +1,289 @@
+/* ✅ Base Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ✅ BODY — make sure gray never peeks through */
+body {
+  background: #fff; /* ✅ set body same as container */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100%;
+  min-height: -webkit-fill-available;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ✅ CONTAINER — full white height + smooth scroll */
+.container {
+  width: 100%;
+  max-width: 420px;
+  min-height: 100dvh; /* ✅ use dynamic viewport height (fixes mobile gap) */
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 20px 24px 40px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  z-index: 1;
+}
+
+
+/* ✅ Safe-area bottom padding for iPhones */
+@supports (padding: max(0px)) {
+  .container {
+    padding-bottom: max(100px, env(safe-area-inset-bottom));
+  }
+}
+/* Inner wrapper */
+.inner-container {
+  width: 100%;
+  text-align: center;
+}
+
+/* Logo */
+.logo-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.logo-section img {
+  width: 75px;
+  height: auto;
+  display: block;
+  filter: brightness(1.1) saturate(1.1);
+  transition: transform 0.3s ease;
+}
+
+.logo-section img:hover {
+  transform: scale(1.05);
+}
+
+/* Page Title */
+h1 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 22px;
+}
+
+/* ✅ Form */
+.kid-form {
+  width: 100%;
+  display: grid;
+  gap: 14px;
+  text-align: left;
+  margin-bottom: 40px; /* more space before bottom */
+}
+
+.kid-form .row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Inputs & Selects */
+.kid-form input,
+.kid-form select {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid #e7e7e7;
+  border-radius: 10px;
+  font-size: 14px;
+  background: #fff;
+  color: #222;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.kid-form input::placeholder {
+  color: #bfbfbf;
+}
+
+.kid-form input:focus,
+.kid-form select:focus {
+  border-color: #f4731d;
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(244,115,29,.15);
+}
+
+/* Select Dropdown */
+.kid-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,<svg width='12' height='8' xmlns='http://www.w3.org/2000/svg'><path d='M1 1l5 5 5-5' stroke='%238c8c8c' stroke-width='2' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px 8px;
+}
+.kid-form select:invalid { color: #bfbfbf; }
+.kid-form select:valid { color: #222; }
+
+/* ✅ Date Picker */
+.date-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.date-wrapper input[type="date"] {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid #e7e7e7;
+  border-radius: 10px;
+  font-size: 14px;
+  background-color: #fff;
+  color: transparent;
+  appearance: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.date-wrapper .date-placeholder {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #bfbfbf;
+  font-size: 14px;
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+
+.date-wrapper input[type="date"]:focus + .date-placeholder,
+.date-wrapper input[type="date"]:valid + .date-placeholder {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.date-wrapper input[type="date"]:focus,
+.date-wrapper input[type="date"]:valid {
+  color: #222;
+}
+
+/* ✅ Avatar Section */
+.avatar-row {
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+
+.avatar-option {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #e5e5e5;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.avatar-option img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.avatar-option.selected {
+  border-color: #f4731d;
+  box-shadow: 0 0 8px rgba(244,115,29,0.5);
+  transform: scale(1.05);
+}
+
+/* ✅ Button */
+button {
+  display: block;
+  width: 100%;
+  padding: 13px 0;
+  background: #f4731d;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 25px auto 0;
+  box-shadow: 0 5px 10px rgba(244,115,29,0.3);
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: #e25f00;
+  transform: translateY(-2px);
+}
+
+/* ✅ Error Message */
+.error-text {
+  color: #d93025;
+  font-size: 13px;
+  margin-top: 4px;
+  margin-left: 5px;
+}
+#avatarError { display: none; }
+
+.alert-toast {
+  position: fixed;
+  bottom: 35px;
+  left: 50%;
+  transform: translateX(-50%) translateY(40px);
+  padding: 14px 28px;
+  border-radius: 40px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  z-index: 99999;
+  opacity: 0;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  pointer-events: none;
+  transition: all 0.4s ease;
+  width:90%;
+}
+
+.alert-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  animation: fadeHold 2.8s ease forwards;
+}
+
+.alert-success {
+  background: linear-gradient(135deg, #00c853, #2ecc71);
+}
+.alert-warning {
+  background: linear-gradient(135deg, #ffb300, #ff8f00);
+}
+
+@keyframes fadeHold {
+  0% {opacity: 0; transform: translateX(-50%) translateY(40px);}
+  10%, 70% {opacity: 1; transform: translateX(-50%) translateY(0);}
+  100% {opacity: 0; transform: translateX(-50%) translateY(40px);}
+}
+
+
+/* ✅ Responsive */
+@media (max-width: 480px) {
+  body { align-items: flex-start; }
+  .container {
+    max-width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    padding-bottom: 100px;
+  }
+  h1 { font-size: 15px; }
+  .avatar-option { width: 50px; height: 50px; }
+  button { font-size: 14px; padding: 11px 0; border-radius: 8px; }
+}
