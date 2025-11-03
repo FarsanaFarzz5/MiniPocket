@@ -9,65 +9,59 @@
 }
 
 /* ===========================================================
-✅ BODY — full white, scroll safe
+✅ BODY
 =========================================================== */
 body {
-  background: #fff;
+  background: #fafafa;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  height: 100%;
-  min-height: -webkit-fill-available;
+  width: 100%;
+  min-height: 100vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 /* ===========================================================
-✅ CONTAINER — centered mobile card
+✅ CONTAINER
 =========================================================== */
 .container {
   width: 100%;
   max-width: 420px;
-  min-height: 100dvh;
   background: #fff;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  padding: 20px 24px 40px !important;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  padding: 35px 28px 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  z-index: 1;
+  overflow: visible;
 }
 
 @supports (padding: max(0px)) {
   .container {
-    padding-bottom: max(80px, env(safe-area-inset-bottom));
+    padding-bottom: max(90px, env(safe-area-inset-bottom));
   }
 }
 
-/* ===========================================================
-✅ INNER & LOGO
-=========================================================== */
 .inner-container {
-  width: 100%;
-  text-align: center;
+  margin-top: 30px;
 }
 
+/* ===========================================================
+🎨 LOGO SECTION
+=========================================================== */
 .logo-section {
   display: flex;
   justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin-top: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .logo-section img {
-  width: 75px;
+  width: 90px;
   height: auto;
-  filter: brightness(1.1) saturate(1.1);
+  filter: brightness(1.1) saturate(1.15);
   transition: transform 0.3s ease;
 }
 
@@ -76,35 +70,39 @@ body {
 }
 
 /* ===========================================================
-✅ TITLE
+🎨 HEADING
 =========================================================== */
 h1 {
-  font-size: 16px;
+  width: 100%;
+  text-align: center;
+  font-size: 17px;
   font-weight: 600;
   color: #2c3e50;
-  margin-bottom: 22px;
   text-transform: capitalize;
+  letter-spacing: 0.2px;
+  margin-bottom: 25px;
 }
 
 /* ===========================================================
-✅ FORM GRID
+✅ FORM STRUCTURE
 =========================================================== */
 .profile-form {
   width: 100%;
-  display: grid;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
   text-align: left;
-  margin-bottom: 40px;
+  margin-bottom: 50px;
 }
 
-.profile-form .row-2 {
+.row-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 16px;
 }
 
 /* ===========================================================
-🌟 FLOATING LABEL AT BORDER LINE
+🌟 INPUTS
 =========================================================== */
 .floating-group {
   position: relative;
@@ -113,79 +111,92 @@ h1 {
 
 .floating-group input {
   width: 100%;
-  height: 52px;
-  padding: 14px 14px 0 14px;
-  border: 1.5px solid #e7e7e7;
+  height: 50px;
+  padding: 14px;
+  border: 1.6px solid #e4e4e4;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 15px;
   color: #222;
   background: #fff;
   transition: border-color 0.25s, box-shadow 0.25s;
 }
 
-/* Label sits at top border */
-.floating-group label {
-  position: absolute;
-  top: 1px;
-  left: 14px;
-  background: #fff;
-  padding: 0 6px;
-  font-size: 14px;
-  color: #999;
-  pointer-events: none;
-  transform: translateY(50%);
-  transition: all 0.25s ease;
-}
-
-/* Float label upward on focus/value */
-.floating-group input:focus + label,
-.floating-group input:not(:placeholder-shown) + label {
-  top: -8px;
-  font-size: 12px;
-  color: #f4731d;
-  transform: none;
-  padding: 0 5px;
+.floating-group input:focus {
+  border-color: #f4731d;
+  box-shadow: 0 0 0 3px rgba(244, 115, 29, 0.1);
+  outline: none;
 }
 
 /* ===========================================================
-📅 DATE FIELD FIX — mobile safe
+📅 DATE INPUT
 =========================================================== */
 .floating-group input[type="date"] {
-  text-align: left;
-  text-align-last: left;
-  padding: 14px 14px 0 14px;
-  height: 52px;
   appearance: none;
   -webkit-appearance: none;
+  -moz-appearance: none;
+  color: transparent;
+  line-height: normal;
+}
+
+
+.floating-group input[type="date"]:focus,
+.floating-group input[type="date"]:valid {
   color: #222;
 }
 
-.floating-group input[type="date"]:focus + label,
-.floating-group input[type="date"]:not(:placeholder-shown) + label,
-.floating-group input[type="date"]:valid + label {
-  top: -8px;
-  font-size: 12px;
-  color: #f4731d;
-  transform: none;
+.floating-group input[type="date"]::before {
+  content: attr(placeholder);
+  color: #999999cf;
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.floating-group input[type="date"]:focus::before,
+.floating-group input[type="date"]:valid::before {
+  content: "";
 }
 
 .floating-group input[type="date"]::-webkit-calendar-picker-indicator {
   position: absolute;
-  right: 14px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background-color: transparent;
   cursor: pointer;
   opacity: 0.6;
 }
 
-/* ===========================================================
-❌ INVALID FIELD STATES
-=========================================================== */
-.floating-group input:invalid:not(:focus):not(:placeholder-shown) {
-  border-color: #ff4b2b;
+.floating-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }
-.floating-group input:invalid:not(:focus):not(:placeholder-shown) + label {
-  color: #ff4b2b;
+
+/* ===========================================================
+📅 FIX: Ensure Date Text Aligns Left on Mobile (iOS + Android)
+=========================================================== */
+.floating-group input[type="date"] {
+  text-align: left;               /* Default left alignment */
+  text-align-last: left;          /* Firefox fix */
+  padding-left: 14px;             /* Maintain spacing */
+  -webkit-appearance: none;       /* Remove iOS native center alignment */
+  -moz-appearance: none;
+}
+
+/* ✅ Force Safari on iOS to stay left-aligned */
+@supports (-webkit-touch-callout: none) {
+  .floating-group input[type="date"] {
+    text-align: left !important;
+  }
+}
+
+/* ✅ For Chrome Android */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .floating-group input[type="date"] {
+    text-align: left;
+  }
 }
 
 /* ===========================================================
@@ -194,36 +205,58 @@ h1 {
 button {
   display: block;
   width: 100%;
-  padding: 13px 0;
-  background: #f4731d;
+  padding: 14px 0;
+  background: linear-gradient(135deg, #f4731d, #ff9240);
   color: #fff;
   font-size: 15px;
   font-weight: 600;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
-  margin: 25px auto 0;
-  box-shadow: 0 5px 10px rgba(244,115,29,0.3);
+  margin-top: 20px;
   transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(244, 115, 29, 0.3);
 }
 
 button:hover {
-  background: #e25f00;
+  background: linear-gradient(135deg, #e8680d, #f68832);
   transform: translateY(-2px);
 }
 
 /* ===========================================================
-✅ TOAST (SUCCESS / ERROR / WARNING)
+🔹 LOGOUT SECTION
 =========================================================== */
+.logout-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -28px;
+}
+
+.logout-icon {
+  display: flex;
+  align-items: center;
+  color: #f4731d;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: rgba(244, 115, 29, 0.08);
+  transition: all 0.3s ease;
+}
+
+.logout-icon:hover {
+  background: rgba(244, 115, 29, 0.15);
+  transform: translateY(-2px);
+}
+
 /* ===========================================================
-✅ TOAST (SUCCESS / ERROR / WARNING) — inside container
-=========================================================== */
-/* ===========================================================
-✅ TOAST (SUCCESS / ERROR / WARNING) — fixed + perfectly centered
+✅ TOAST
 =========================================================== */
 .alert-toast {
-  position: fixed;                /* ✅ fix to viewport for reliability */
-  bottom: 25px;                   /* ✅ visible at bottom center */
+  position: fixed;
+  bottom: 25px;
   left: 50%;
   transform: translateX(-50%) translateY(80px);
   padding: 14px 26px;
@@ -231,7 +264,7 @@ button:hover {
   font-size: 13px;
   font-weight: 500;
   color: #fff;
-  z-index: 9999;                  /* ✅ above everything */
+  z-index: 9999;
   opacity: 0;
   backdrop-filter: blur(10px);
   box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
@@ -242,46 +275,58 @@ button:hover {
   max-width: 360px;
 }
 
-/* ✅ Visible State */
 .alert-toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
   animation: fadeHold 2.8s ease forwards;
 }
 
-/* ✅ Color Variants */
 .alert-success {
   background: linear-gradient(135deg, #00c853, #2ecc71);
-  box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4);
-}
-.alert-error {
-  background: linear-gradient(135deg, #ff4b2b, #ff416c);
-  box-shadow: 0 8px 20px rgba(255, 65, 108, 0.4);
-}
-.alert-warning {
-  background: linear-gradient(135deg, #ffb300, #ff8f00);
-  box-shadow: 0 8px 20px rgba(255, 143, 0, 0.4);
 }
 
-/* ✅ Animation */
+.alert-error {
+  background: linear-gradient(135deg, #ff4b2b, #ff416c);
+}
+
+.alert-warning {
+  background: linear-gradient(135deg, #ffb300, #ff8f00);
+}
+
 @keyframes fadeHold {
-  0% {opacity: 0; transform: translateX(-50%) translateY(80px);}
-  10%, 70% {opacity: 1; transform: translateX(-50%) translateY(0);}
-  100% {opacity: 0; transform: translateX(-50%) translateY(80px);}
+  0% { opacity: 0; transform: translateX(-50%) translateY(80px); }
+  10%, 70% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(80px); }
 }
 
 /* ===========================================================
 📱 RESPONSIVE
 =========================================================== */
 @media (max-width: 480px) {
-  body { align-items: flex-start; }
   .container {
     max-width: 100%;
     border-radius: 0;
     box-shadow: none;
-    padding-bottom: 100px;
+    padding: 30px 20px 100px;
   }
-  h1 { font-size: 15px; }
-  button { font-size: 14px; padding: 11px 0; border-radius: 8px; }
-  input[type="date"] { font-size: 13px; height: 52px; }
+
+  h1 {
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+
+  .floating-group input {
+    height: 52px;
+    font-size: 14px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 12px 0;
+  }
+
+  .logout-icon {
+    font-size: 13px;
+    padding: 8px 18px;
+  }
 }

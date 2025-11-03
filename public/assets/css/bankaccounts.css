@@ -1,4 +1,6 @@
-/* ========== GLOBAL RESET ========== */
+/* ===========================================================
+🌟 GLOBAL RESET
+=========================================================== */
 * {
   margin: 0;
   padding: 0;
@@ -9,7 +11,7 @@
 html, body {
   width: 100%;
   height: 100%;
-  background: #ffffff;
+  background: #f4f6fb; /* ✅ light grey-blue */
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -17,298 +19,311 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* ✅ Perfect scrolling container (not full-screen fixed) */
+/* ===========================================================
+🌟 CONTAINER
+=========================================================== */
 .container {
   width: 100%;
   max-width: 420px;
-  min-height: 100vh; /* ✅ uses natural viewport height */
+  min-height: 100vh;
   background: #fff;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  border-radius: 0;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 18px 40px;
+  padding: 20px 18px 80px;
   overflow-y: auto;
   overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
   position: relative;
-
-  /* ✅ fixes grey strip at bottom for mobile safe areas */
-  padding-bottom: env(safe-area-inset-bottom);
 }
-/* ==== PAGE HEADER (Modern Inline Style) ==== */
-/* ==== PAGE HEADER (Perfectly Centered) ==== */
+
+/* ===========================================================
+🌟 LOGO & HEADING
+=========================================================== */
+.logo-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.logo-section img {
+  width: 90px;
+  height: auto;
+  filter: brightness(1.1) saturate(1.15);
+  transition: transform 0.3s ease;
+}
+
+.logo-section img:hover {
+  transform: scale(1.05);
+}
+
 .page-header {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 25px;
-  animation: fadeIn 0.6s ease;
 }
 
-.header-inline {
+.page-header h1 {
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  color: #2c3e50;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ===========================================================
+🌟 BANK CARD LIST (from first CSS)
+=========================================================== */
+.bank-list {
+  display: flex;
+  flex-direction: column;
   width: 100%;
+
+}
+
+.bank-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid #e7e7e7;
+  border-radius: 10px;
+  background: #fbfbfb;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.bank-card:hover {
+  transform: none;
+  background: #fbfbfb;
+  border-color: #e7e7e7;
+}
+
+/* ✅ Active (Primary Bank) */
+.bank-card.active {
+  background: #fff;
+  border-color: #f4731d;
+  box-shadow: 0 4px 10px rgba(244,115,29,0.08);
+}
+
+.bank-left {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* equal spacing */
-  position: relative;
+  gap: 10px;
 }
 
-/* left icon */
-.back-btn {
-  font-size: 18px;
-  color: #333;
-  cursor: pointer;
-  transition: 0.2s ease;
-  width: 36px;
-  height: 36px;
+.bank-left img {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: contain;
+  border: 1px solid #dcdcdc;
+  padding: 6px;
+  background: #fff;
+}
+
+.bank-info h4 {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: #2c3e50;
+}
+
+.bank-info p {
+  font-size: 11.5px;
+  color: #8c8c8c;
+  margin-top: 2px;
+}
+
+.status-tag {
+  background: #eafbea;
+  color: #00b386;
+  border: 1px solid #c8efc9;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* ===========================================================
+🌟 ADD BANK SHORTCUT
+=========================================================== */
+.add-bank-shortcut {
   display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1.5px dashed #bbb;
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: #666;
+  font-size: 14px;
+  margin-top: 20px;
+  cursor: pointer;
+  justify-content: center;
+  transition: all 0.25s ease;
+  width: 100%;
+  background: #fff;
+}
+
+.add-bank-shortcut:hover {
+  border-color: #bbb;
+  color: #666;
+}
+
+.add-bank-shortcut[data-active="true"] {
+  border-color: #1f1814;
+  color: #1f1814;
+}
+
+.add-bank-shortcut[data-active="true"]:hover {
+  border-color: #2b231e;
+  color: #2b231e;
+}
+
+/* ===========================================================
+🌟 BANK GRID
+=========================================================== */
+#bankGrid {
+  display: none;
+  margin-top: 20px;
+  width: 100%;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  justify-items: center;
+}
+
+.bank-option {
+  width: 90px;
+  height: 90px;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.25s;
 }
 
+.bank-option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(244, 115, 29, 0.2);
+}
 
-/* centered title */
-.page-header h1 {
-  font-family: 'Nunito', sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  color: #1e1e1e;
+.bank-option img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  margin-bottom: 5px;
+}
+
+.bank-option span {
+  font-size: 12px;
+  color: #333;
   text-align: center;
-  flex: 1; /* allows it to stay centered */
-  padding-left: 17px;
 }
 
-/* invisible element to balance spacing */
-.spacer {
-  width: 36px; /* same width as back button */
+/* ===========================================================
+🌟 POPUP MODAL
+=========================================================== */
+.popup-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
 }
 
-
-
-    /* ========== BANK LIST ========== */
-    .bank-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-    }
-
-    .bank-card {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: #fff;
-      border: 1px solid #eee;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .bank-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .bank-left img {
-      width: 42px;
-      height: 42px;
-      object-fit: contain;
-      border-radius: 8px;
-      border: 1px solid #eee;
-      padding: 4px;
-    }
-
-    .bank-info h4 {
-      font-size: 15px;
-      font-weight: 600;
-      color: #111;
-    }
-
-    .bank-info p {
-      font-size: 13px;
-      color: #666;
-      margin-top: 2px;
-    }
-
-    .status-tag {
-      background: #e8f5e9;
-      color: #00c853;
-      border: 1px solid #b7e4b9;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 10px;
-      font-weight: 500;
-    }
-
-/* ========== ADD BANK SHORTCUT ========== */
-.add-bank-shortcut {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  border:1.5px dashed #bbb;
-  border-radius:12px;
-  padding:12px 14px;
-  color:#666;
-  font-size:14px;
-  margin-top:20px;
-  cursor:pointer;
-  justify-content:center;
-  transition:all .25s ease;
-  width:100%;
-  background:#fff;
+.popup-box {
+  background: #fff;
+  padding: 22px 25px;
+  border-radius: 14px;
+  text-align: center;
+  width: 85%;
+  max-width: 320px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.25s ease;
 }
 
-/* default hover */
-.add-bank-shortcut:hover {
-  border-color:#bbb;
-  color:#666;
+.popup-box h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 14px;
 }
 
-/* when active (bank grid visible) */
-.add-bank-shortcut[data-active="true"] {
-  border-color:#1f1814;
-  color:#1f1814;
+.popup-btns {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 10px;
 }
 
-/* keep brown hover only when active */
-.add-bank-shortcut[data-active="true"]:hover {
-  
-  border-color:#2b231e;
-  color:#2b231e;
-}
-
-.card-mask {
+.popup-btns button {
+  border: none;
+  outline: none;
+  padding: 7px 16px;
+  border-radius: 8px;
   font-size: 13px;
-  color: #555;
-  letter-spacing: 1px;
-  margin-top: 3px;
-}
-
-.card-mask span {
-  font-family: 'Courier New', monospace;
   font-weight: 500;
-  color: #111;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
+.yes-btn {
+  background: #00c853;
+  color: #fff;
+}
 
-    /* ========== BANK GRID ========== */
-    #bankGrid {
-      display: none;
-      margin-top: 20px;
-      width: 100%;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      justify-items: center;
-    }
+.yes-btn:hover {
+  background: #00b34a;
+}
 
-    .bank-option {
-      width: 90px;
-      height: 90px;
-      border: 1px solid #eee;
-      border-radius: 14px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      transition: 0.25s;
-    }
+.no-btn {
+  background: #f4731d;
+  color: #fff;
+}
 
-    .bank-option:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 12px rgba(244, 115, 29, 0.2);
-    }
+.no-btn:hover {
+  background: #e06612;
+}
 
-    .bank-option img {
-      width: 38px;
-      height: 38px;
-      object-fit: contain;
-      margin-bottom: 5px;
-    }
+@keyframes fadeIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 
-    .bank-option span {
-      font-size: 12px;
-      color: #333;
-      text-align: center;
-    }
+/* ===========================================================
+🌟 RESPONSIVE
+=========================================================== */
+@media (max-width: 430px) {
+  .container {
+    padding: 24px 18px 90px;
+    border-radius: 0;
+  }
 
-    /* ========== POPUP MODAL ========== */
-    .popup-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(3px);
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-    }
+  .page-header h1 {
+    font-size: 15px;
+  }
 
-    .popup-box {
-      background: #fff;
-      padding: 22px 25px;
-      border-radius: 14px;
-      text-align: center;
-      width: 85%;
-      max-width: 320px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-      animation: fadeIn 0.25s ease;
-    }
-
-    .popup-box h3 {
-      font-size: 16px;
-      font-weight: 600;
-      color: #222;
-      margin-bottom: 14px;
-    }
-
-    .popup-btns {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-top: 10px;
-    }
-
-    .popup-btns button {
-      border: none;
-      outline: none;
-      padding: 7px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .yes-btn {
-      background: #00c853;
-      color: #fff;
-    }
-
-    .yes-btn:hover {
-      background: #00b34a;
-    }
-
-    .no-btn {
-      background: #f4731d;
-      color: #fff;
-    }
-
-    .no-btn:hover {
-      background: #e06612;
-    }
-
-    @keyframes fadeIn {
-      from {transform: scale(0.95); opacity: 0;}
-      to {transform: scale(1); opacity: 1;}
-    }
+  .add-bank-shortcut {
+    font-size: 13px;
+  }
+}

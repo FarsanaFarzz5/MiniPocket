@@ -70,6 +70,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/kid/moneytransfer', [KidController::class, 'moneyTransferPage'])->name('kid.moneytransfer');
 
+
+    Route::get('/kid/goals', [KidController::class, 'kidGoals'])->name('kid.goals'); // We'll add this below
+    Route::post('/kid/goals/store', [KidController::class, 'storeGoal'])->name('goals.store');
+    Route::post('/kid/goals/{goal}/add-savings', [KidController::class, 'addSavings'])->name('goals.addSavings');
+    Route::get('/kid/goals/{goal}/details', [KidController::class, 'goalDetails'])->name('goals.details');
+
+    // 🎁 Gifts
+    Route::get('/kid/gifts', [KidController::class, 'showGifts'])->name('kid.gifts');
+    Route::post('/kid/gifts', [KidController::class, 'storeGift'])->name('kid.gifts.store');
+    Route::post('/kid/gifts/add', [KidController::class, 'addGiftSaving'])->name('kid.gifts.add');
+    
 });
 
 
@@ -144,4 +155,8 @@ Route::post('/parent/bankaccounts/store', [ParentController::class, 'storeBankAc
 Route::get('/parent/bankaccounts/select/{id}', [ParentController::class, 'selectBank'])->name('parent.select.bank');
 Route::post('/parent/clear-bank-session', [ParentController::class, 'clearBankSession'])
     ->name('parent.clear.bank.session');
+
+Route::post('/parent/bank/set-primary/{bankId}', [ParentController::class, 'setPrimaryBank'])->name('bank.setPrimary');
+Route::post('/parent/bank/unset-primary/{bankId}', [ParentController::class, 'unsetPrimaryBank'])->name('bank.unsetPrimary');
+
 });

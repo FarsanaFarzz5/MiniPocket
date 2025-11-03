@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Send Money - Mini Pocket</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="format-detection" content="telephone=no,email=no,address=no">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/sendmoney.css') }}">
-
 </head>
 
 <body>
@@ -17,20 +19,20 @@
     <div class="inner-container">
       @include('sidebar.sidebar')
 
-      <!-- Logo -->
+      <!-- ✅ Logo Section -->
       <div class="logo-section">
-        <img src="{{ asset('images/moneylogo.jpg') }}" alt="Mini Pocket Logo">
+        <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
       </div>
 
-      <!-- Heading -->
-      <h3>Select a Kid to Send Money</h3>
+      <!-- ✅ Heading -->
+      <h1>Select a Kid to Send Money</h1>
 
-      <!-- Search -->
+      <!-- ✅ Search Box -->
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="Search kid by name...">
       </div>
 
-      <!-- Kids List -->
+      <!-- ✅ Kids List -->
       @if($children->count() > 0)
         <div id="kidList">
           @foreach($children as $child)
@@ -54,10 +56,14 @@
                 <img src="{{ $img }}" alt="{{ $child->first_name }}">
                 <div class="kid-info">
                   <div class="name">{{ ucfirst($child->first_name) }}</div>
-                  <div class="gender">{{ ucfirst($child->gender) }}</div>
+                  <div class="gender">{{ ucfirst($child->gender ?? 'N/A') }}</div>
                 </div>
               </div>
-              <div class="amount">₹{{ $child->daily_limit ?? 0 }}</div>
+
+              <div class="amount-box">
+                <div class="amount">₹{{ $child->daily_limit ?? 0 }}</div>
+                <div class="limit-label">Daily Limit</div>
+              </div>
             </a>
           @endforeach
         </div>
@@ -67,7 +73,6 @@
     </div>
   </div>
 
-<script src="{{ asset('assets/js/sendmoney.js') }}"></script>
-
+  <script src="{{ asset('assets/js/sendmoney.js') }}"></script>
 </body>
 </html>

@@ -24,7 +24,7 @@
 
       <!-- Logo -->
       <div class="logo-section" style="transform: translateX(-6px);">
-        <img src="{{ asset('images/moneylogo.jpg') }}" alt="Mini Pocket Logo">
+        <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
       </div>
 
       <!-- Title -->
@@ -54,9 +54,17 @@
       <div class="amount-wrapper">
         <div class="amount-field">
           ₹
-          <input type="number" id="amountInput" name="amount" value="0" min="0" max="100000"
-                 onfocus="if(this.value=='0') this.value='';"
-                 onblur="if(this.value=='') this.value='0';">
+          <input 
+            type="text"
+            id="amountInput"
+            name="amount"
+            value="0"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="6"
+            onfocus="if(this.value=='0') this.value='';"
+            onblur="if(this.value=='') this.value='0';"
+          >
         </div>
       </div>
 
@@ -78,24 +86,23 @@
     </div>
   </div>
 
-  <!-- Add this just before </body> -->
-<div id="successMsg" style="
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #00c853;
-  color: #fff;
-  padding: 12px 22px;
-  border-radius: 30px;
-  font-weight: 500;
-  font-size: 14px;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-  z-index: 999;
-">Amount Paid Successfully ✅</div>
+  <!-- Success Message -->
+  <div id="successMsg" style="
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #00c853;
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 30px;
+    font-weight: 500;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    z-index: 999;
+  ">Amount Paid Successfully ✅</div>
 
-<script src="{{ asset('assets/js/paykid.js') }}"></script>
-
+  <script src="{{ asset('assets/js/paykid.js') }}"></script>
 </body>
 </html>

@@ -10,6 +10,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
 
+  <!-- Font Awesome (CSS) -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      integrity="sha512-... (auto) ..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <!-- External CSS -->
   <link rel="stylesheet" href="{{ asset('assets/css/parent.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
@@ -19,16 +24,16 @@
 <body>
   <div class="container">
     <div class="inner-container">
+        @include('sidebar.sidebar')
 
-      <!-- 🧭 Topbar -->
-      <div class="topbar">
-        <div class="sidebar-logo" style="margin-top: -12px;">
-          @include('sidebar.sidebar')
-          <div class="logo-section">
-            <img src="{{ asset('images/moneylogo.jpg') }}" alt="Mini Pocket Logo">
-          </div>
-        </div>
-      </div>
+ <!-- 🧭 Topbar -->
+<div class="topbar">
+  <div class="logo-center">
+    <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
+  </div>
+</div>
+
+
 
       <!-- 👨‍👩‍👧 Parent Info -->
       <div class="content-section">

@@ -37,6 +37,19 @@
   </a>
 </li>
 <li>
+  <a href="{{ route('kid.goals') }}">
+    <i class="fa-solid fa-bullseye"></i> My Goals
+  </a>
+</li>
+
+    <li>
+      <a href="{{ route('kid.gifts') }}">
+        <i class="fa-solid fa-gift"></i> My Gifts
+      </a>
+    </li>
+
+
+<li>
   <a href="#" onclick="event.preventDefault(); document.getElementById('logoutFormKid').submit();">
     <i class="fa-solid fa-right-from-bracket"></i> Logout
   </a>

@@ -11,7 +11,7 @@
   <!-- Layout & Sidebar -->
   <link rel="stylesheet" href="{{ asset('assets/css/parent.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
-  <link rel="stylesheet" href="{{asset('assets/css/addkid.css')}}">
+  <link rel="stylesheet" href="{{ asset('assets/css/addkid.css') }}">
 </head>
 
 <body>
@@ -19,8 +19,9 @@
     <div class="inner-container">
       @include('sidebar.sidebar')
 
+      <!-- ✅ Keep logo.png -->
       <div class="logo-section">
-        <img src="{{ asset('images/moneylogo.jpg') }}" alt="Mini Pocket Logo">
+        <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
       </div>
 
       <h1>Add Kid Account</h1>
@@ -29,35 +30,30 @@
         @csrf
 
         <div class="row-2">
-          <div>
+          <div class="floating-group">
             <input type="text" name="first_name" id="first_name" placeholder="Child Name" required>
-            <p class="error-text" id="nameError"></p>
           </div>
-          <div class="date-wrapper">
-            <input type="date" name="dob" id="dob" required onfocus="this.showPicker && this.showPicker()">
-            <span class="date-placeholder">Date of Birth</span>
-            <p class="error-text" id="dobError"></p>
+
+          <div class="floating-group">
+            <input type="date" name="dob" id="dob" placeholder="Date of Birth" required>
           </div>
         </div>
 
-        <div>
-          <input type="text" name="phone_no" id="phone_no" placeholder="Mobile Number" maxlength="10">
-          <p class="error-text" id="phoneError"></p>
+        <div class="floating-group">
+          <input type="text" name="phone_no" id="phone_no" placeholder="Mobile Number" maxlength="10" required>
         </div>
 
-        <div>
+        <div class="floating-group">
           <input type="email" name="email" id="email" placeholder="Email" required>
-          <p class="error-text" id="emailError"></p>
         </div>
 
-        <div>
+        <div class="floating-group">
           <select name="gender" id="gender" required>
             <option value="" disabled selected hidden>Select Gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
           </select>
-          <p class="error-text" id="genderError"></p>
         </div>
 
         <div class="avatar-row" id="avatarRow">
@@ -68,15 +64,14 @@
             </label>
           @endforeach
         </div>
+
         <p class="error-text" id="avatarError" style="text-align:center;"></p>
 
         <button type="submit">Save</button>
-        
       </form>
     </div>
   </div>
 
-<script src="{{ asset('assets/js/addkid.js') }}"></script>
-
+  <script src="{{ asset('assets/js/addkid.js') }}"></script>
 </body>
 </html>

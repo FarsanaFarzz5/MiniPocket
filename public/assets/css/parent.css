@@ -66,58 +66,25 @@ body {
 .topbar {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center !important; /* ✅ centers logo horizontally */
   align-items: center;
   background: #fff;
   margin-bottom: 12px;
+  position: relative;
 }
 
-.sidebar-logo {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.hamburger {
-  width: 28px;
-  height: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  cursor: pointer;
-}
-
-.hamburger span {
-  display: block;
-  height: 3px;
-  width: 100%;
-  background-color: #888;
-  border-radius: 3px;
-  transition: all 0.3s ease;
-}
-
-.hamburger:hover span {
-  background-color: #f4731d;
-}
-
-.logo-section {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.logo-section img {
-  width: 48px;
+.logo-center img {
+  width: 95px; /* ✅ same scale as shown in the screenshot */
   height: auto;
   object-fit: contain;
   filter: brightness(1.1) saturate(1.1);
   transition: transform 0.3s ease;
 }
 
-.logo-section img:hover {
+.logo-center img:hover {
   transform: scale(1.05);
 }
+
 
 /* ===========================================================
 👨‍👩‍👧 PARENT CARD — Compact + Mobile-Optimized
@@ -253,12 +220,13 @@ button,
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee; /* ✅ default border */
 }
 
-.transaction-item:last-child {
-  border-bottom: none;
+/* 🚫 Remove border for the last (3rd) transaction */
+.transaction-item:last-of-type {
+  border-bottom: none !important;
 }
 
 .transaction-item .left {
@@ -294,6 +262,9 @@ button,
   display: block;
 }
 
+
+
+
 .no-data {
   text-align: center;
   color: #aaa;
@@ -303,7 +274,6 @@ button,
 
 .all-transactions {
   text-align: center;
-  margin-top: 18px;
 }
 
 .all-transactions button {

@@ -1,185 +1,200 @@
+/* ===========================================================
+🌟 GLOBAL RESET
+=========================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
 
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-  }
+/* ===========================================================
+🌟 BODY
+=========================================================== */
+body {
+  background: #f4f5f7;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
-  body {
-    /* background: #f2f2f2; */
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-/* ✅ OUTER CONTAINER – static, no scroll here */
+/* ===========================================================
+🌟 CONTAINER
+=========================================================== */
 .container {
   width: 100%;
   max-width: 420px;
-  height: 100dvh; /* full device height including safe areas */
+  min-height: 100vh;
   background: #fff;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  padding: 0; /* we’ll pad inside inner-container */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 35px 28px 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden; /* disable scrolling on container itself */
+  justify-content: flex-start;
   position: relative;
+  margin: 0 auto;
 }
 
-/* ✅ SCROLLABLE INNER SECTION */
+@supports (padding: max(0px)) {
+  .container {
+    padding-bottom: max(90px, env(safe-area-inset-bottom));
+  }
+}
+
 .inner-container {
+  margin-top: 25px;
   width: 100%;
-  flex: 1; /* take full height available */
-  text-align: center;
-  padding: 20px 24px 60px; /* bottom padding ensures last item visible */
-  overflow-y: scroll; /* enable scroll here */
-  -webkit-overflow-scrolling: touch; /* 🔥 iOS momentum scroll */
-  scroll-behavior: smooth; /* smooth transition */
 }
-  .logo-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 8px;
-    margin-bottom: 10px;
-  }
 
-  .logo-section img {
-    width: 75px;
-    height: auto;
-    display: block;
-    filter: brightness(1.1) saturate(1.1);
-    transition: transform 0.3s ease;
-  }
+/* ===========================================================
+🌟 LOGO & HEADING
+=========================================================== */
+.logo-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
 
-  .logo-section img:hover { transform: scale(1.05); }
+.logo-section img {
+  width: 90px;
+  height: auto;
+  filter: brightness(1.1) saturate(1.1);
+}
+
+h1 {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  text-transform: capitalize;
+  margin-bottom: 22px;
+  letter-spacing: 0.3px;
+}
+
+/* ===========================================================
+🌟 TRANSACTION LIST
+=========================================================== */
+.transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  background: transparent;
+}
+
+/* ===========================================================
+🌟 TRANSACTION CARD
+=========================================================== */
+.transaction-card {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid #e7e7e7;
+  border-radius: 10px;
+  background: #fbfbfb;
+}
+
+/* LEFT SIDE */
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.left img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #00c853;
+  box-shadow: 0 0 6px rgba(0,200,83,0.25);
+}
+
+.details {
+  text-align: left;
+  line-height: 1.3;
+}
+
+.details h4 {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: #2c3e50;
+}
+
+.details p {
+  font-size: 11.5px;
+  color: #8c8c8c;
+}
+
+/* RIGHT SIDE */
+.right {
+  text-align: right;
+}
+
+.right h4 {
+  font-weight: 700;
+  color: #00b386;
+  font-size: 13.5px;
+}
+
+.right span {
+  font-size: 11px;
+  color: #8c8c8c;
+}
+
+.type {
+  font-size: 11.5px;
+  color: #f4731d;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* ===========================================================
+🌟 EMPTY STATE
+=========================================================== */
+.no-data {
+  text-align: center;
+  color: #999;
+  font-size: 13.5px;
+  margin-top: 40px;
+}
+
+/* ===========================================================
+🌟 RESPONSIVE
+=========================================================== */
+@media (max-width: 430px) {
+  .container {
+    padding: 24px 18px 90px;
+    border-radius: 0;
+  }
 
   h1 {
-    font-size: 16px;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 18px;
+    font-size: 15px;
+    margin-bottom: 20px;
   }
 
-  /* ========================= Transaction List ========================= */
-  .transaction-list {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    text-align: left;
-    width: 100%;
-    padding-bottom: 10px;
-  }
-
-  /* ========================= Transaction Card ========================= */
   .transaction-card {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 14px;
-    border: 1px solid #e7e7e7;
-    border-radius: 10px;
-    background: #fbfbfb;
-    transition: all 0.3s ease;
-   
-  }
-
-  .transaction-card:hover {
-    background: #fafafa;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-  }
-
-  .left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .left img {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #00c853;
-    box-shadow: 0 0 6px rgba(0,200,83,0.25);
-  }
-
-  .details {
-    text-align: left;
-    line-height: 1.3;
+    padding: 10px 12px;
   }
 
   .details h4 {
-    font-size: 13.5px;
-    color: #2c3e50;
-    font-weight: 600;
+    font-size: 13px;
   }
 
-  .details p {
-    font-size: 11.5px;
-    color: #8c8c8c;
-  }
-
-  .right {
-    text-align: right;
+  .details p,
+  .right span {
+    font-size: 11px;
   }
 
   .right h4 {
-    font-weight: 700;
-    color: #23a541;
-    font-size: 13.5px;
+    font-size: 13px;
   }
-
-  .right span {
-    font-size: 11px;
-    color: #8c8c8c;
-  }
-
-  .type {
-    font-size: 11.5px;
-    color: #ff7b00;
-    font-weight: 600;
-    margin-top: 2px;
-  }
-
-  .no-data {
-    text-align: center;
-    color: #aaa;
-    font-size: 13.5px;
-    margin-top: 30px;
-  }
-
-  /* 🔧 Remove the white panel around the list */
-.inner-container .transaction-list {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  padding: 0 !important;    /* optional: tighten spacing if panel padding came from here */
-  margin: 0 !important;
 }
-
-/* In case the white panel is drawn with pseudo-elements */
-.inner-container .transaction-list::before,
-.inner-container .transaction-list::after {
-  content: none !important;
-}
-
-/* ✅ HIDE SCROLLBAR but allow scroll */
-.inner-container::-webkit-scrollbar { display: none; }
-.inner-container {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-  @media (max-width: 480px) {
-    .container { max-width: 100%; box-shadow: none; border-radius: 0; }
-    .logo-section img { width: 65px; }
-    h1 { font-size: 15px; }
-    .transaction-card { padding: 10px 12px; }
-  }
- 

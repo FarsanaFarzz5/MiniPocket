@@ -8,6 +8,8 @@
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/kiddetails.css') }}">
 </head>
@@ -18,17 +20,18 @@
 
       @include('sidebar.sidebar')
 
-      <!-- Logo -->
+      <!-- ✅ Logo Section -->
       <div class="logo-section">
-        <img src="{{ asset('images/moneylogo.jpg') }}" alt="Mini Pocket Logo">
+        <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
       </div>
 
-      <!-- Heading -->
+      <!-- ✅ Heading -->
       <h1>{{ $user->first_name }}’s Kids</h1>
 
       @if($children->count() > 0)
         @foreach($children as $index => $child)
-          <div class="kid-card" onclick="toggleDetails({{ $index }})">
+          <!-- ✅ Kid Card -->
+          <div class="kid-card" data-index="{{ $index }}">
             <div class="kid-left">
               @if($child->profile_img)
                 <img src="{{ asset('storage/' . $child->profile_img) }}" alt="{{ $child->first_name }}">
@@ -37,23 +40,24 @@
               @endif
               <div class="kid-info">
                 <div class="name">{{ ucfirst($child->first_name) }}</div>
-                <div class="gender">{{ ucfirst($child->gender) ?? 'N/A' }}</div>
+                <div class="gender">{{ ucfirst($child->gender ?? 'N/A') }}</div>
               </div>
             </div>
+
             <div class="amount-box">
               <div class="amount">₹{{ $child->daily_limit ?? 0 }}</div>
               <div class="limit-label">Money Limit</div>
             </div>
           </div>
 
+          <!-- ✅ Kid Details Box -->
           <div class="details" id="details-{{ $index }}">
             <p><strong>Name:</strong> {{ $child->first_name }} {{ $child->second_name ?? '' }}</p>
             <p><strong>Email:</strong> {{ $child->email }}</p>
             <p><strong>Phone:</strong> {{ $child->phone_no ?? 'N/A' }}</p>
             <p><strong>Date of Birth:</strong> {{ $child->dob ?? 'N/A' }}</p>
-            <p><strong>Gender:</strong> {{ ucfirst($child->gender) ?? 'N/A' }}</p>
+            <p><strong>Gender:</strong> {{ ucfirst($child->gender ?? 'N/A') }}</p>
             <p class="balance-line"><strong>Balance:</strong> ₹{{ $child->balance ?? 0 }}</p>
-
 
             <form method="POST" action="{{ route('kids.set.limit', $child->id) }}">
               @csrf
@@ -69,6 +73,27 @@
     </div>
   </div>
 
-<script src="{{ asset('assets/js/kiddetails.js') }}"></script>
+  <!-- ✅ JavaScript -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll(".kid-card");
+
+      cards.forEach((card) => {
+        card.addEventListener("click", () => {
+          const index = card.dataset.index;
+          const clickedDetails = document.getElementById("details-" + index);
+          const isVisible = clickedDetails.style.display === "block";
+
+          document.querySelectorAll(".details").forEach((d) => d.style.display = "none");
+          cards.forEach((c) => c.classList.remove("active"));
+
+          if (!isVisible) {
+            clickedDetails.style.display = "block";
+            card.classList.add("active");
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>

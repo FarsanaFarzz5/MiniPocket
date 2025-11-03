@@ -103,7 +103,7 @@ public function dashboard()
     /**
      * 📋 Show Kid Details (list of all kids)
      */
-  public function kidDetails()
+public function kidDetails()
 {
     $user = Auth::user();
     $children = User::where('parent_id', $user->id)->get();
@@ -114,9 +114,10 @@ public function dashboard()
             ->where('type', 'credit')
             ->sum('amount');
 
+        // ✅ Include both kid spending and goal saving in total spent
         $spent = \App\Models\Transaction::where('kid_id', $child->id)
             ->where('type', 'debit')
-            ->where('source', 'kid_spending')
+            ->whereIn('source', ['kid_spending', 'goal_saving'])
             ->sum('amount');
 
         $child->balance = $received - $spent;
@@ -124,6 +125,7 @@ public function dashboard()
 
     return view('parent.kiddetails', compact('user', 'children'));
 }
+
 
   /**
  * ➕ Store a new Kid account
@@ -441,6 +443,30 @@ public function storeBankAccount(Request $request)
 }
 
 
+public function setPrimaryBank($bankId)
+{
+    $user = Auth::user();
+    $parentId = $user->id;
 
+    \App\Models\BankAccount::where('user_id', $parentId)
+        ->update(['is_primary' => false]);
 
+    \App\Models\BankAccount::where('id', $bankId)
+        ->where('user_id', $parentId)
+        ->update(['is_primary' => true]);
+
+    return response()->json(['success' => true]);
+}
+
+public function unsetPrimaryBank($bankId)
+{
+    $user = Auth::user();
+    $parentId = $user->id;
+
+    \App\Models\BankAccount::where('id', $bankId)
+        ->where('user_id', $parentId)
+        ->update(['is_primary' => false]);
+
+    return response()->json(['success' => true]);
+}
 }

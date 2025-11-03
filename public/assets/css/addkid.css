@@ -1,4 +1,6 @@
-/* ✅ Base Reset */
+/* ===========================================================
+✅ BASE RESET
+=========================================================== */
 * {
   margin: 0;
   padding: 0;
@@ -6,65 +8,60 @@
   font-family: 'Poppins', sans-serif;
 }
 
-/* ✅ BODY — make sure gray never peeks through */
+/* ===========================================================
+✅ BODY
+=========================================================== */
 body {
-  background: #fff; /* ✅ set body same as container */
+  background: #fafafa;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  height: 100%;
-  min-height: -webkit-fill-available;
+  width: 100%;
+  min-height: 100vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-/* ✅ CONTAINER — full white height + smooth scroll */
+/* ===========================================================
+✅ CONTAINER — elegant white card
+=========================================================== */
 .container {
   width: 100%;
   max-width: 420px;
-  min-height: 100dvh; /* ✅ use dynamic viewport height (fixes mobile gap) */
   background: #fff;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  padding: 20px 24px 40px !important;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  padding: 35px 28px 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: visible;
   position: relative;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  z-index: 1;
 }
 
-
-/* ✅ Safe-area bottom padding for iPhones */
 @supports (padding: max(0px)) {
   .container {
-    padding-bottom: max(100px, env(safe-area-inset-bottom));
+    padding-bottom: max(90px, env(safe-area-inset-bottom));
   }
 }
-/* Inner wrapper */
+
 .inner-container {
-  width: 100%;
-  text-align: center;
+  margin-top: 30px;
 }
 
-/* Logo */
+/* ===========================================================
+🎨 LOGO + HEADING
+=========================================================== */
 .logo-section {
   display: flex;
   justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin-top: 8px;
-  margin-bottom: 10px;
-  position: relative;
-  z-index: 2;
+  margin-bottom: 14px;
 }
 
 .logo-section img {
-  width: 75px;
+  width: 90px;
   height: auto;
-  display: block;
-  filter: brightness(1.1) saturate(1.1);
+  filter: brightness(1.1) saturate(1.15);
   transition: transform 0.3s ease;
 }
 
@@ -72,218 +69,213 @@ body {
   transform: scale(1.05);
 }
 
-/* Page Title */
+/* ===========================================================
+🎨 PAGE HEADING
+=========================================================== */
 h1 {
-  font-size: 16px;
+  width: 100%;
+  text-align: center;
+  font-size: 17px;
   font-weight: 600;
   color: #2c3e50;
-  margin-bottom: 22px;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+  margin-bottom: 25px;
 }
 
-/* ✅ Form */
+/* ===========================================================
+✅ FORM GRID
+=========================================================== */
 .kid-form {
   width: 100%;
-  display: grid;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
   text-align: left;
-  margin-bottom: 40px; /* more space before bottom */
+  margin-bottom: 50px;
 }
 
-.kid-form .row-2 {
+.row-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 16px;
 }
 
-/* Inputs & Selects */
-.kid-form input,
-.kid-form select {
-  width: 100%;
-  height: 48px;
-  padding: 0 14px;
-  border: 1px solid #e7e7e7;
-  border-radius: 10px;
-  font-size: 14px;
-  background: #fff;
-  color: #222;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.kid-form input::placeholder {
-  color: #bfbfbf;
-}
-
-.kid-form input:focus,
-.kid-form select:focus {
-  border-color: #f4731d;
-  outline: 0;
-  box-shadow: 0 0 0 3px rgba(244,115,29,.15);
-}
-
-/* Select Dropdown */
-.kid-form select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,<svg width='12' height='8' xmlns='http://www.w3.org/2000/svg'><path d='M1 1l5 5 5-5' stroke='%238c8c8c' stroke-width='2' fill='none' stroke-linecap='round'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 12px 8px;
-}
-.kid-form select:invalid { color: #bfbfbf; }
-.kid-form select:valid { color: #222; }
-
-/* ✅ Date Picker */
-.date-wrapper {
+/* ===========================================================
+🌟 INPUTS & SELECTS
+=========================================================== */
+.floating-group {
   position: relative;
   width: 100%;
 }
 
-.date-wrapper input[type="date"] {
+.floating-group input,
+.floating-group select {
   width: 100%;
-  height: 48px;
-  padding: 0 14px;
-  border: 1px solid #e7e7e7;
+  height: 50px;
+  padding: 14px;
+  border: 1.6px solid #e4e4e4;
   border-radius: 10px;
-  font-size: 14px;
-  background-color: #fff;
-  color: transparent;
+  font-size: 15px;
+  color: #222;
+  background: #fff;
+  transition: border-color 0.25s, box-shadow 0.25s;
   appearance: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
-.date-wrapper .date-placeholder {
+.floating-group input:focus,
+.floating-group select:focus {
+  border-color: #f4731d;
+  box-shadow: 0 0 0 3px rgba(244, 115, 29, 0.1);
+  outline: none;
+}
+
+/* ===========================================================
+🎨 PLACEHOLDER
+=========================================================== */
+.floating-group input::placeholder {
+  color: #999999cf;
+}
+
+.floating-group input:focus::placeholder {
+  color: transparent;
+}
+
+/* ===========================================================
+📅 DATE FIELD
+=========================================================== */
+.floating-group input[type="date"] {
+  padding: 14px;
+  color: transparent;
+}
+
+.floating-group input[type="date"]:focus,
+.floating-group input[type="date"]:valid {
+  color: #222;
+}
+
+.floating-group input[type="date"]::before {
+  color: #999999cf !important;
+  content: attr(placeholder);
   position: absolute;
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #bfbfbf;
-  font-size: 14px;
-  pointer-events: none;
-  transition: 0.2s ease;
 }
 
-.date-wrapper input[type="date"]:focus + .date-placeholder,
-.date-wrapper input[type="date"]:valid + .date-placeholder {
-  opacity: 0;
-  visibility: hidden;
+.floating-group input[type="date"]:focus::before,
+.floating-group input[type="date"]:valid::before {
+  content: "";
 }
 
-.date-wrapper input[type="date"]:focus,
-.date-wrapper input[type="date"]:valid {
-  color: #222;
+.floating-group input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  opacity: 0.6;
 }
 
-/* ✅ Avatar Section */
+.floating-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+.floating-group select:invalid {
+  color: #999;
+}
+
+/* ===========================================================
+🧒 AVATAR SECTION
+=========================================================== */
 .avatar-row {
   display: flex;
   justify-content: center;
   gap: 36px;
   flex-wrap: wrap;
-  margin-top: 5px;
+  margin-top: 10px;
 }
 
 .avatar-option {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   border: 2px solid #e5e5e5;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s ease;
 }
+
 .avatar-option img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
+
 .avatar-option.selected {
   border-color: #f4731d;
-  box-shadow: 0 0 8px rgba(244,115,29,0.5);
+  box-shadow: 0 0 8px rgba(244, 115, 29, 0.5);
   transform: scale(1.05);
 }
 
-/* ✅ Button */
+/* ===========================================================
+✅ BUTTON
+=========================================================== */
 button {
   display: block;
   width: 100%;
-  padding: 13px 0;
-  background: #f4731d;
+  padding: 14px 0;
+  background: linear-gradient(135deg, #f4731d, #ff9240);
   color: #fff;
   font-size: 15px;
   font-weight: 600;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
-  margin: 25px auto 0;
-  box-shadow: 0 5px 10px rgba(244,115,29,0.3);
+  margin-top: 0px;
+  box-shadow: 0 6px 15px rgba(244, 115, 29, 0.3);
   transition: all 0.3s ease;
 }
 
 button:hover {
-  background: #e25f00;
+  background: linear-gradient(135deg, #e8680d, #f68832);
   transform: translateY(-2px);
 }
 
-/* ✅ Error Message */
-.error-text {
-  color: #d93025;
-  font-size: 13px;
-  margin-top: 4px;
-  margin-left: 5px;
-}
-#avatarError { display: none; }
-
-.alert-toast {
-  position: fixed;
-  bottom: 35px;
-  left: 50%;
-  transform: translateX(-50%) translateY(40px);
-  padding: 14px 28px;
-  border-radius: 40px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #fff;
-  z-index: 99999;
-  opacity: 0;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
-  text-align: center;
-  pointer-events: none;
-  transition: all 0.4s ease;
-  width:90%;
-}
-
-.alert-toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-  animation: fadeHold 2.8s ease forwards;
-}
-
-.alert-success {
-  background: linear-gradient(135deg, #00c853, #2ecc71);
-}
-.alert-warning {
-  background: linear-gradient(135deg, #ffb300, #ff8f00);
-}
-
-@keyframes fadeHold {
-  0% {opacity: 0; transform: translateX(-50%) translateY(40px);}
-  10%, 70% {opacity: 1; transform: translateX(-50%) translateY(0);}
-  100% {opacity: 0; transform: translateX(-50%) translateY(40px);}
-}
-
-
-/* ✅ Responsive */
+/* ===========================================================
+📱 RESPONSIVE
+=========================================================== */
 @media (max-width: 480px) {
-  body { align-items: flex-start; }
   .container {
     max-width: 100%;
     border-radius: 0;
     box-shadow: none;
-    padding-bottom: 100px;
+    padding: 30px 20px 100px;
   }
-  h1 { font-size: 15px; }
-  .avatar-option { width: 50px; height: 50px; }
-  button { font-size: 14px; padding: 11px 0; border-radius: 8px; }
+
+  h1 {
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+
+  .floating-group input,
+  .floating-group select {
+    height: 52px;
+    font-size: 14px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 12px 0;
+    margin-top: 0px;
+  }
+
+  .avatar-option {
+    width: 54px;
+    height: 54px;
+  }
 }

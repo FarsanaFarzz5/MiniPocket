@@ -1,238 +1,171 @@
-  /* ========================= GLOBAL RESET ========================= */
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-  }
+/* ===========================================================
+🌟 GLOBAL RESET
+=========================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
 
-  html, body {
-    width: 100%;
-    height: 100%;
-    background: #f2f2f2;
-    overflow: hidden; /* ✅ prevent any scroll gap */
-  }
+/* ===========================================================
+🌟 BODY
+=========================================================== */
+body {
+  background: #f4f5f7;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
-  /* ========================= BODY ========================= */
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: stretch; /* ✅ fills full height */
-    height: 100dvh; /* ✅ dynamic viewport height for all devices */
-  }
+/* ===========================================================
+🌟 CONTAINER
+=========================================================== */
+.container {
+  width: 100%;
+  max-width: 420px;
+  min-height: 100vh;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 35px 28px 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: visible;
+  position: relative;
+  margin: 0 auto;
+}
 
-  /* ========================= CONTAINER ========================= */
+@supports (padding: max(0px)) {
   .container {
-    width: 100%;
-    max-width: 420px;
-    height: 100dvh; /* ✅ fill viewport exactly */
-    background: #fff;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    padding: 20px 24px 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-y: auto;
-    position: relative;
+    padding-bottom: max(90px, env(safe-area-inset-bottom));
   }
+}
 
-  .inner-container {
-    width: 100%;
-    text-align: center;
-    flex-grow: 1;
-  }
+.inner-container {
+  margin-top: 25px;
+  width: 100%;
+}
 
-  /* ========================= LOGO SECTION ========================= */
-  .logo-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin-top: 8px;
-    margin-bottom: 10px;
-  }
+/* ===========================================================
+🌟 LOGO & HEADING
+=========================================================== */
+.logo-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
 
-  .logo-section img {
-    width: 75px;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-    filter: brightness(1.1) saturate(1.1);
-    transition: transform 0.3s ease;
-  }
+.logo-section img {
+  width: 90px;
+  height: auto;
+  filter: brightness(1.1) saturate(1.1);
+  transition: transform 0.3s ease;
+}
 
-  .logo-section img:hover {
-    transform: scale(1.05);
-  }
+.logo-section img:hover {
+  transform: scale(1.05);
+}
 
-  /* ========================= PAGE HEADING ========================= */
-  h1 {
-    font-size: 16px;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 22px;
-    text-transform: capitalize;
-  }
+h1 {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  text-transform: capitalize;
+  margin-bottom: 22px;
+  letter-spacing: 0.3px;
+}
 
-  /* ========================= KID CARD ========================= */
-  .kid-card {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 14px;
-    border: 1px solid #e7e7e7;
-    border-radius: 10px;
-    background: #fbfbfb;
-    margin-bottom: 12px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-  }
+/* ===========================================================
+🌟 KID CARD (with Hover)
+=========================================================== */
+/* ===========================================================
+🌟 KID CARD (Hover only when expanded)
+=========================================================== */
+.kid-card {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid #e7e7e7;
+  border-radius: 10px;
+  background: #fbfbfb;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
 
-  .kid-card:hover {
-    background: #fafafa;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-  }
+/* ✅ Normal hover disabled */
+.kid-card:hover {
+  transform: none;
+  box-shadow: none;
+  background: #fbfbfb;
+  border-color: #e7e7e7;
+}
 
-  .kid-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+/* ✅ When active (expanded), hover is enabled */
+.kid-card.active:hover {
+  background: #fff;
+  border-color: #f4731d;
+  box-shadow: 0 4px 10px rgba(244,115,29,0.08);
+  transform: translateY(-1px);
+}
 
-  .kid-left img {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #00c853;
-    box-shadow: 0 0 6px rgba(0,200,83,0.25);
-  }
+/* ✅ Active base style */
+.kid-card.active {
+  background: #fff;
+  border-color: #f4731d;
+  box-shadow: 0 4px 10px rgba(244,115,29,0.08);
+}
 
-  .kid-info {
-    text-align: left;
-    line-height: 1.3;
-  }
+/* Left Section */
+.kid-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-  .kid-info .name {
-    font-weight: 600;
-    font-size: 13.5px;
-    color: #2c3e50;
-  }
+.kid-left img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #00c853;
+  box-shadow: 0 0 6px rgba(0,200,83,0.25);
+}
 
-  .kid-info .gender {
-    font-size: 11.5px;
-    color: #8c8c8c;
-  }
+.kid-info {
+  text-align: left;
+  line-height: 1.3;
+}
 
-  .amount {
-    font-weight: 700;
-    color: #000;
-    font-size: 13.5px;
-    white-space: nowrap;
-  }
-
-
-
-  /* ========================= DETAILS BOX ========================= */
-  .details {
-    background: #fff;
-    border-radius: 12px;
-    padding: 16px;
-    width: 100%;
-    margin-bottom: 16px;
-    text-align: left;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    display: none;
-    animation: fadeIn 0.3s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .details p {
-    font-size: 13px;
-    color: #444;
-    margin-bottom: 6px;
-  }
-
-    /* ========================= BALANCE LINE ========================= */
-.details p strong {
+.kid-info .name {
+  font-weight: 600;
+  font-size: 13.5px;
   color: #2c3e50;
 }
 
-.details p.balance-line {
-  font-weight: 600;
-  color: #00b386;              /* ✅ soft green tone for balance */
-  font-size: 13.5px;
+.kid-info .gender {
+  font-size: 11.5px;
+  color: #8c8c8c;
 }
 
-.details p.balance-line strong {
-  color: #00a46c;              /* slightly darker label text */
-}
-
-  /* ========================= INPUT ========================= */
-  .input-box {
-    width: 100%;
-    height: 48px;
-    padding: 0 14px;
-    border: 1px solid #e7e7e7;
-    border-radius: 10px;
-    font-size: 14px;
-    background: #fff;
-    color: #222;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  .input-box:focus {
-    border-color: #f4731d;
-    box-shadow: 0 0 0 3px rgba(244,115,29,0.15);
-    outline: none;
-  }
-
-  /* ========================= BUTTON ========================= */
-  .btn {
-    display: block;
-    width: 100%;
-    padding: 13px 0;
-    background: #f4731d;
-    color: #fff;
-    font-size: 15px;
-    font-weight: 600;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-top: 12px;
-    box-shadow: 0 5px 10px rgba(244,115,29,0.3);
-    transition: all 0.3s ease;
-  }
-
-  .btn:hover {
-    background: #e25f00;
-    transform: translateY(-2px);
-  }
-
-  /* ========================= EMPTY STATE ========================= */
-  .empty {
-    color: #aaa;
-    font-size: 13.5px;
-    text-align: center;
-    margin-top: 30px;
-  }
-
-  .amount-box {
+/* Right Section */
+.amount-box {
   text-align: right;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
 }
 
 .amount-box .amount {
   font-weight: 700;
-  color: #2c3e50;
+  color: #111;
   font-size: 13.5px;
 }
 
@@ -242,24 +175,119 @@
   margin-top: 2px;
 }
 
-  /* ========================= RESPONSIVE ========================= */
-  @media (max-width: 430px) {
-    .container {
-      padding: 16px;
-      height: 100dvh;
-    }
-    .logo-section img {
-      width: 65px;
-    }
-    h1 {
-      font-size: 15px;
-      margin-bottom: 18px;
-    }
-    .kid-card {
-      padding: 10px 12px;
-    }
-    .btn {
-      font-size: 14px;
-      padding: 11px 0;
-    }
+/* ===========================================================
+🌟 DETAILS SECTION
+=========================================================== */
+.details {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  width: 100%;
+  margin-bottom: 16px;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.details p {
+  font-size: 13.5px;
+  color: #444;
+  margin-bottom: 6px;
+}
+
+.details p strong {
+  color: #2c3e50;
+}
+
+.details p.balance-line {
+  font-weight: 600;
+  color: #00b386;
+  font-size: 13.5px;
+}
+
+/* ===========================================================
+🌟 INPUT + BUTTON
+=========================================================== */
+.input-box {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1.6px solid #e4e4e4;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #222;
+  margin-top: 6px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.input-box:focus {
+  border-color: #f4731d;
+  box-shadow: 0 0 0 3px rgba(244,115,29,0.15);
+  outline: none;
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  padding: 14px 0;
+  background: linear-gradient(135deg, #f4731d, #ff9240);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 12px;
+  box-shadow: 0 6px 15px rgba(244,115,29,0.25);
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: linear-gradient(135deg, #e8680d, #f68832);
+  transform: translateY(-2px);
+}
+
+/* ===========================================================
+🌟 EMPTY STATE
+=========================================================== */
+.empty {
+  color: #999;
+  font-size: 13.5px;
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* ===========================================================
+🌟 RESPONSIVE
+=========================================================== */
+@media (max-width: 430px) {
+  .container {
+    padding: 24px 18px 90px;
+    border-radius: 0;
   }
+
+  h1 {
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+
+  .kid-card {
+    padding: 10px 12px;
+  }
+
+  .input-box {
+    height: 44px;
+    font-size: 13px;
+  }
+
+  .btn {
+    font-size: 14px;
+    padding: 12px 0;
+  }
+}
