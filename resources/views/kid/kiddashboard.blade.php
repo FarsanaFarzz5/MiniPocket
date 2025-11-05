@@ -22,7 +22,7 @@
           <span>{{ ucfirst($user->first_name) }}</span>
         </div>
         <div class="logo">
-          <img src="{{ asset('images/moneylogo.jpg') }}" alt="Mini Pocket Logo" />
+          <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo" />
         </div>
       </div>
 

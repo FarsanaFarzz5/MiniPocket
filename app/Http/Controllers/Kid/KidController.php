@@ -389,14 +389,23 @@ class KidController extends Controller
     /**
      * 🎁 GIFT FUNCTIONS
      */
-    public function showGifts()
-    {
-        $kid = Auth::user();
-        if ($kid->role != 2) abort(403, 'Unauthorized');
+public function showGifts()
+{
+    $user = Auth::user();  // ✅ change to $user for uniform usage
+    if ($user->role != 2) abort(403, 'Unauthorized');
 
-        $gifts = Gift::where('kid_id', $kid->id)->get();
-        return view('kid.gifts', compact('gifts'));
-    }
+    $gifts = Gift::where('kid_id', $user->id)->get();
+    return view('kid.gifts', compact('gifts', 'user')); // ✅ send $user also
+}
+
+
+    public function addGiftPage()
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
+
+    return view('kid.addgift', compact('user'));
+}
 
     public function storeGift(Request $request)
     {

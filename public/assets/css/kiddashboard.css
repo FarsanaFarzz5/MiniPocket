@@ -80,9 +80,12 @@ body {
 }
 
 .logo img {
-  height: 36px;
+  height: 28px;
   object-fit: contain;
+  margin-right: 2px; /* ✅ move logo a bit left */
+  transform: translateX(-6px); /* ✅ shift left smoothly */
 }
+
 
 /* ========================================================= */
 /* 🟠 ORANGE CARD — Always Left Kid & Right Content          */
@@ -256,13 +259,13 @@ body {
   width: 110px;
   height: auto;
   position: absolute;
-  right: 40px;
+  right:20px;
   bottom: -10px;
   z-index: 5;
 }
 
 .footer-text {
-  font-size: 1.05rem;
+  font-size: 14px;
   color: #333;
   font-weight: 700;
   line-height: 1.5;
