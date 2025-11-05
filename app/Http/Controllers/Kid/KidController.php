@@ -289,15 +289,16 @@ class KidController extends Controller
     /**
      * 🎯 Goals
      */
-    public function kidGoals()
-    {
-        $user = Auth::user();
-        if ($user->role != 2) abort(403, 'Unauthorized');
+public function kidGoals()
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
 
-        $goals = Goal::with('savings')->where('kid_id', $user->id)->get();
+    $goals = Goal::with('savings')->where('kid_id', $user->id)->get();
 
-        return view('kid.goals', compact('goals'));
-    }
+    return view('kid.goals', compact('goals', 'user'));  // ✅ FIXED
+}
+
 
     public function storeGoal(Request $request)
     {

@@ -9,6 +9,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{asset('assets/css/header.css')}}">
 
   <style>
     /* ===== Base Layout (from Kid Dashboard) ===== */
@@ -50,12 +51,17 @@
       width: 100%;
       height: 100%;
       overflow-y: auto;
-      padding: 16px 10px 40px;
+      padding: 16px 8px 40px;
       text-align: center;
       position: relative;
       z-index: 1;
       scroll-behavior: smooth;
     }
+
+    .logo img {
+    margin-right: 2px;
+    margin-top: -2px;
+}
 
     /* ===== Falling Coins (Inside Hero) ===== */
 .coin {
@@ -93,41 +99,6 @@
 }
 
     
-    /* ===== Header ===== */
-    .gift-header {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 15px;
-    }
-
-    .gift-header .profile {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .gift-header .profile img {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      border: 2px solid #23a541;
-      object-fit: cover;
-    }
-
-    .gift-header .profile span {
-      font-size: 14px;
-      font-weight: 500;
-      color: #222;
-      text-transform: capitalize;
-    }
-
-    .gift-header .logo img {
-      height: 28px;
-      object-fit: contain;
-      transform: translateX(-6px);
-    }
 
     /* ===== Hero (Orange Banner) ===== */
     .hero {
@@ -376,17 +347,12 @@
 <body>
   <div class="container">
     <div class="inner-container">
+
       @include('sidebar.profile')
 
-      <div class="gift-header">
-        <div class="profile">
-          <img id="kidProfileToggle" src="{{ $user->profile_img ? asset('storage/'.$user->profile_img) : asset('images/default-avatar.png') }}" alt="Profile" />
-          <span>{{ ucfirst($user->first_name) }}</span>
-        </div>
-        <div class="logo">
-          <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo" />
-        </div>
-      </div>
+       @include('header')
+
+ 
 
       <!-- Hero -->
      <!-- Hero -->

@@ -49,43 +49,6 @@ body {
   scroll-behavior: smooth;
 }
 
-/* ===== Header ===== */
-.header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.profile img {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #00c853;
-}
-
-.profile span {
-  font-weight: 500;
-  color: #222;
-  font-size: 14px;
-  text-transform: capitalize;
-}
-
-.logo img {
-  height: 28px;
-  object-fit: contain;
-  margin-right: 2px; /* ✅ move logo a bit left */
-  transform: translateX(-6px); /* ✅ shift left smoothly */
-}
-
 
 /* ========================================================= */
 /* 🟠 ORANGE CARD — Always Left Kid & Right Content          */

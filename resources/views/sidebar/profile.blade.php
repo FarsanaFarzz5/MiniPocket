@@ -138,6 +138,8 @@ body { font-family: "Poppins", sans-serif; background: #fff; overflow-x: hidden;
   filter: drop-shadow(0 0 3px rgba(35, 165, 65, 0.3));
 }
 
+
+
 /* Responsive */
 @media (max-width: 480px) {
   .footer-nav { padding: 10px 0 5px; }

@@ -7,6 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="{{asset('assets/css/kiddashboard.css')}}">
+  <link rel="stylesheet" href="{{asset('assets/css/header.css')}}">
+
 
 
 </head>
@@ -16,15 +18,8 @@
     <div class="inner-container">
        @include('sidebar.profile')
       <!-- Header -->
-      <div class="header">
-        <div class="profile">
-          <img id="kidProfileToggle" src="{{ $user->profile_img ? asset('storage/'.$user->profile_img) : asset('images/default-avatar.png') }}" alt="Profile" />
-          <span>{{ ucfirst($user->first_name) }}</span>
-        </div>
-        <div class="logo">
-          <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo" />
-        </div>
-      </div>
+
+        @include('header')
 
       <!-- Orange Card -->
       <div class="orange-card">
