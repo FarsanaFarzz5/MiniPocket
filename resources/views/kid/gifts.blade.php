@@ -1,69 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎁 My Gift Savings</title>
+  <meta charset="UTF-8">
+  <title>My Gift Savings - Mini Pocket</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <!-- ✅ Bootstrap & Fonts -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{asset('assets/css/header.css')}}">
+  <!-- ✅ Fonts & CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/css/header.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/css/gifts.css') }}">
+</head>
 
-  <style>
-    /* ===== Base Layout (from Kid Dashboard) ===== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
-
-    html, body {
-      height: 100%;
-      width: 100%;
-      background: #f9f9f9;
-      overflow-x: hidden;
-    }
-
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 420px;
-      height: 100dvh;
-      background: #fff;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .inner-container {
-      width: 100%;
-      height: 100%;
-      overflow-y: auto;
-      padding: 16px 8px 40px;
-      text-align: center;
-      position: relative;
-      z-index: 1;
-      scroll-behavior: smooth;
-    }
-
-    .logo img {
-    margin-right: 2px;
-    margin-top: -2px;
+<style>
+  /* ========== GLOBAL RESET ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
 
-    /* ===== Falling Coins (Inside Hero) ===== */
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #f2f2f2;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+/* ================= CONTAINER ================= */
+.container {
+  width: 100%;
+  max-width: 420px;
+  height: 100dvh;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.inner-container {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  padding: 16px 20px 110px; /* bottom space for FAB */
+  position: relative;
+  z-index: 1;
+}
+
+/* ================= HERO ================= */
+.hero {
+  position: relative;
+  background: linear-gradient(145deg, #ffb347 0%, #ff8a00 80%);
+  border-radius: 22px;
+  margin: 0.5rem 0 1.5rem;
+  padding: 1.8rem 1rem;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(255,140,0,0.25);
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), transparent 70%);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 60%, transparent 100%);
+  transform: skewX(-25deg);
+  animation: shineMove 5s infinite;
+}
+
+@keyframes shineMove {
+  0% { left: -80%; }
+  50% { left: 120%; }
+  100% { left: 120%; }
+}
+
+.hero h2 {
+  position: relative;
+  font-weight: 700;
+  font-size: 1.35rem;
+  z-index: 3;
+  margin: 0;
+  letter-spacing: 0.4px;
+  right: 12px;
+}
+
+.gift-box {
+  position: absolute;
+  top: 6px;
+  right: 25px;
+  width: 70px;
+  animation: floatGift 3s ease-in-out infinite;
+  z-index: 3;
+}
+
+@keyframes floatGift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ================= FALLING COINS ================= */
 .coin {
   position: absolute;
   top: -20px;
@@ -77,7 +130,6 @@
   opacity: 0.9;
 }
 
-/* Position each coin differently */
 .coin:nth-child(3) { left: 25%; animation-delay: 0s; }
 .coin:nth-child(4) { left: 55%; animation-delay: 1s; }
 .coin:nth-child(5) { left: 80%; animation-delay: 2s; }
@@ -98,276 +150,224 @@
   }
 }
 
-    
+/* ================= SUMMARY CARDS ================= */
+.summary-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  margin-bottom: 1.8rem;
+  gap: 14px;
+}
 
-    /* ===== Hero (Orange Banner) ===== */
-    .hero {
-      position: relative;
-      background: linear-gradient(145deg, #ffb347 0%, #ff8a00 80%);
-      border-radius: 22px;
-      margin: 0.5rem 0 1.5rem;
-      padding: 1.8rem 1rem;
-      text-align: center;
-      color: #fff;
-      box-shadow: 0 10px 25px rgba(255,140,0,0.25);
-      overflow: hidden;
-    }
+.summary-card,
+.target-card {
+  flex: 1;
+  border-radius: 18px;
+  padding: 1.2rem 0.8rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
 
-    .hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), transparent 70%);
-    }
+.summary-card h4,
+.target-card h4 {
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
 
-    .hero::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -80%;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(120deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 60%, transparent 100%);
-      transform: skewX(-25deg);
-      animation: shineMove 5s infinite;
-    }
+.summary-card h2,
+.target-card .amount {
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin: 0;
+}
 
-    @keyframes shineMove {
-      0% { left: -80%; }
-      50% { left: 120%; }
-      100% { left: 120%; }
-    }
+.summary-card {
+  background: #f8fff8;
+  border: 1px solid #d6f5dc;
+  box-shadow: 0 6px 14px rgba(35,165,65,0.08);
+}
 
-    .hero h2 {
-      position: relative;
-      font-weight: 700;
-      font-size: 1.35rem;
-      z-index: 3;
-      margin: 0;
-      letter-spacing: 0.4px;
-      right:12px;
-    }
+.summary-card h4 { color: #4d784d; }
+.summary-card h2 { color: #23a541; }
 
-    .gift-box {
-      position: absolute;
-      top: 6px;
-      right: 25px;
-      width: 70px;
-      animation: floatGift 3s ease-in-out infinite;
-      z-index: 3;
-    }
+.target-card {
+  background: #fff9f3;
+  border: 1px solid #ffe5c2;
+  box-shadow: 0 6px 14px rgba(255,165,0,0.08);
+}
 
-    @keyframes floatGift {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
+.target-card h4 { color: #ff8a00; }
+.target-card .amount { color: #ff8a00; }
 
-    /* ===== Summary Cards ===== */
-    .summary-wrapper {
-      display: flex;
-      justify-content: space-between;
-      align-items: stretch;
-      margin-bottom: 1.8rem;
-      gap: 14px;
-    }
+/* ================= GIFT CARDS ================= */
+.gift-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
 
-    .summary-card,
-    .target-card {
-      flex: 1;
-      border-radius: 18px;
-      padding: 1.2rem 0.8rem;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      transition: all 0.3s ease;
-    }
+.gift-card {
+  background: #ffffff;
+  border: 1px solid #f2e1cc;
+  border-radius: 18px;
+  padding: 1.4rem 1.2rem 1.6rem;
+  box-shadow: 0 4px 18px rgba(255, 138, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+}
 
-    .summary-card h4,
-    .target-card h4 {
-      font-weight: 600;
-      font-size: 0.85rem;
-      margin-bottom: 6px;
-      letter-spacing: 0.3px;
-    }
+.gift-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(255, 138, 0, 0.15);
+}
 
-    .summary-card h2,
-    .target-card .amount {
-      font-size: 1.45rem;
-      font-weight: 700;
-      margin: 0;
-    }
+.gift-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
 
-    .summary-card {
-      background: #f8fff8;
-      border: 1px solid #d6f5dc;
-      box-shadow: 0 6px 14px rgba(35,165,65,0.08);
-    }
+.gift-header h5 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ff7a00;
+}
 
-    .summary-card h4 { color: #4d784d; }
-    .summary-card h2 { color: #23a541; }
+.goal-status {
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 30px;
+  padding: 5px 14px;
+  color: #fff;
+  min-width: 92px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+}
 
-    .target-card {
-      background: #fff9f3;
-      border: 1px solid #ffe5c2;
-      box-shadow: 0 6px 14px rgba(255,165,0,0.08);
-    }
+.goal-status.completed {
+  background: linear-gradient(135deg, #23a541, #33c56c);
+}
 
-    .target-card h4 { color: #ff8a00; }
-    .target-card .amount { color: #ff8a00; }
+.goal-status.progress {
+  background: linear-gradient(135deg, #ffb347, #ff8a00);
+  height: 28px;
+}
 
-    /* ===== Gift Cards ===== */
-    .gift-section {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
+.progress-line {
+  width: 100%;
+  height: 10px;
+  background: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0.6rem 0 0.8rem;
+}
 
-    .gift-card {
-      background: #ffffff;
-      border: 1px solid #f2e1cc;
-      border-radius: 18px;
-      padding: 1.4rem 1.2rem 1.6rem;
-      box-shadow: 0 4px 18px rgba(255, 138, 0, 0.08);
-      transition: all 0.3s ease;
-      position: relative;
-    }
+.progress-line span {
+  height: 100%;
+  display: block;
+  background: linear-gradient(90deg, #ffb347, #ff8a00);
+  border-radius: 10px;
+}
 
-    .gift-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(255, 138, 0, 0.15);
-    }
+.target-info {
+  font-size: 0.85rem;
+  color: #333;
+  font-weight: 500;
+  margin: 0.6rem 0 0.8rem;
+  text-align: left;
+}
 
-    .gift-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.8rem;
-    }
+.pay-now-btn {
+  display: block;
+  width: 100%;
+  background: linear-gradient(135deg, #23a541, #33c56c);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 10px 0;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(35,165,65,0.25);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
 
-    .gift-header h5 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #ff7a00;
-    }
+.pay-now-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(35,165,65,0.35);
+}
 
-    .goal-status {
-      font-size: 0.78rem;
-      font-weight: 600;
-      border-radius: 30px;
-      padding: 5px 14px;
-      color: #fff;
-      min-width: 92px;
-      text-align: center;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
-    }
+/* ================= FAB ================= */
+.fab {
+  position: fixed;
+  bottom: 75px;
+  right: calc(50% - 180px);
+  background: linear-gradient(145deg, #ffb347, #ff8a00);
+  color: #fff;
+  font-size: 1.6rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(255,138,0,0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
 
-    .goal-status.completed {
-      background: linear-gradient(135deg, #23a541, #33c56c);
-    }
+.fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 25px rgba(255,138,0,0.5);
+}
 
-    .goal-status.progress {
-      background: linear-gradient(135deg, #ffb347, #ff8a00);
-      height: 28px;
-    }
+/* ================= RESPONSIVE ================= */
+@media (max-width: 480px) {
+  .container {
+    border-radius: 0;
+    box-shadow: none;
+    max-width: 100%;
+    height: 100dvh;
+  }
+  .hero h2 { font-size: 1.2rem; }
+  .gift-box { width: 60px; }
+  .summary-card h2, .target-card .amount { font-size: 1.25rem; }
+  .pay-now-btn { font-size: 0.9rem; }
+  .gift-header h5 { font-size: 0.95rem; }
+}
 
-    .progress-line {
-      width: 100%;
-      height: 10px;
-      background: #eee;
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 0.6rem 0 0.8rem;
-    }
-
-    .progress-line span {
-      height: 100%;
-      display: block;
-      background: linear-gradient(90deg, #ffb347, #ff8a00);
-      border-radius: 10px;
-    }
-
-    .target-info {
-      font-size: 0.85rem;
-      color: #333;
-      font-weight: 500;
-      margin: 0.6rem 0 0.8rem;
-      text-align: left;
-    }
-
-    .pay-now-btn {
-      display: block;
-      width: 100%;
-      background: linear-gradient(135deg, #23a541, #33c56c);
-      color: #fff;
-      font-weight: 600;
-      font-size: 0.95rem;
-      padding: 10px 0;
-      border: none;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(35,165,65,0.25);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin-top: 10px;
-    }
-
-    .pay-now-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 7px 20px rgba(35,165,65,0.35);
-    }
-
-    .fab {
-      position: fixed;
-      bottom: 75px;
-      right: calc(50% - 180px);
-      background: linear-gradient(145deg, #ffb347, #ff8a00);
-      color: #fff;
-      font-size: 1.6rem;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 6px 18px rgba(255,138,0,0.4);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      z-index: 100;
-    }
-
-    .fab:hover {
-      transform: scale(1.1);
-      box-shadow: 0 10px 25px rgba(255,138,0,0.5);
-    }
-
-    
-  </style>
-</head>
+</style>
 
 <body>
   <div class="container">
     <div class="inner-container">
 
+      <!-- ✅ Sidebar -->
       @include('sidebar.profile')
 
-       @include('header')
+      <!-- ✅ Header -->
+      @include('header')
 
- 
+      <!-- ✅ Hero Section -->
+      <div class="hero">
+        <img src="{{ asset('images/gift-box.png') }}" alt="Gift Box" class="gift-box">
+        <h2>My Gift Savings</h2>
 
-      <!-- Hero -->
-     <!-- Hero -->
-<div class="hero">
-  <img src="{{ asset('images/gift-box.png') }}" alt="Gift Box" class="gift-box">
-  <h2>My Gift Savings</h2>
+        <!-- Floating Coins -->
+        <div class="coin"></div>
+        <div class="coin"></div>
+        <div class="coin"></div>
+      </div>
 
-  <!-- 🪙 Floating Coins -->
-  <div class="coin"></div>
-  <div class="coin"></div>
-  <div class="coin"></div>
-</div>
-
-
-      <!-- Summary -->
+      <!-- ✅ Summary Cards -->
       <div class="summary-wrapper">
         <div class="summary-card">
           <h4>Total Saved</h4>
@@ -385,7 +385,7 @@
         </div>
       </div>
 
-      <!-- Gift List -->
+      <!-- ✅ Gift List -->
       <section class="gift-section">
         @forelse($gifts as $gift)
           @php
@@ -426,13 +426,17 @@
           </div>
         @endforelse
       </section>
-    </div>
 
-    <!-- Add Button -->
+    </div> <!-- /.inner-container -->
+
+    <!-- ✅ Add Gift FAB -->
     <div class="fab" onclick="window.location.href='{{ route('kid.gifts.add') }}'">
       <i class="bi bi-plus-lg"></i>
     </div>
-  </div>
+
+    <!-- ✅ Sidebar Overlay -->
+    <div id="sidebarOverlay"></div>
+  </div> <!-- /.container -->
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>

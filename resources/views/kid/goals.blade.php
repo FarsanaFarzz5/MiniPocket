@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>🎯 My Goals – Mini Pocket</title>
 
   <!-- ✅ Fonts & Icons -->
@@ -12,214 +12,252 @@
   <link rel="stylesheet" href="{{ asset('assets/css/header.css') }}">
 
   <style>
-    * {margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif;}
+/* ===== Base Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
 
-    html, body {
-      width:100%;
-      height:100%;
-      background:#fff;
-      display:flex;
-      justify-content:center;
-      align-items:flex-start;
-      overflow-x:hidden;
-    }
+/* ===== Base Fix ===== */
+html, body {
+  height: 100%;
+  width: 100%;
+- background: #000;
+- overflow: visible;        /* ❌ allow scrolling */
++ background: #f9f9f9;
++ overflow: hidden;         /* ✅ no outer scroll, keeps footer pinned */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
 
-    .container {
-      width:100%;
-      max-width:420px;
-      min-height:100vh;
-      background:#ffffff;
-      border-radius:24px;
-      box-shadow:0 8px 24px rgba(0,0,0,0.06);
-      position:relative;
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-    }
+/* ✅ Container stays fixed in center */
+.container {
+  width: 100%;
+  max-width: 420px;
+  height: 100dvh;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+- overflow: visible;         /* ❌ causes footer lift */
++ overflow: hidden;          /* ✅ keep sidebar/footer aligned */
+  position: relative;
+  margin: 0 auto;
+}
 
-    .inner-container {
-      width:100%;
-      height:100%;
-      overflow-y:auto;
-      padding:16px 20px 70px;
-      position:relative;
-      z-index:1;
-    }
+/* ✅ Scrollable Inner Section */
+.inner-container {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  padding: 16px 20px 70px;
+  position: relative;
+  z-index: 1;
+  scroll-behavior: smooth;
+}
 
-    /* =======================================================
-       🎯 HEADER
-    ======================================================= */
+/* Optional — soft scrollbar */
+.inner-container::-webkit-scrollbar {
+  width: 6px;
+}
+.inner-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+    /* 🎯 HEADER */
     .headers {
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      margin-bottom:20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
     }
+
     .headers h1 {
-      font-size:18px;
-      font-weight:700;
+      font-size: 18px;
+      font-weight: 700;
       background: linear-gradient(135deg, #23a541, #33c56c);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    /* =======================================================
-       🎯 STATS CARDS
-    ======================================================= */
+    /* 📊 STATS CARDS */
     .stats {
-      display:flex;
-      gap:12px;
-      justify-content:space-between;
-      margin-bottom:24px;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: 24px;
     }
+
     .stat-card {
-      flex:1;
-      background:#fff;
-      border-radius:16px;
-      box-shadow:0 4px 10px rgba(0,0,0,0.05);
-      border:1px solid #e2e8f0;
-      padding:14px 10px;
-      text-align:center;
-      transition:transform 0.2s ease, box-shadow 0.3s ease;
+      flex: 1;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      padding: 14px 10px;
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
     }
+
     .stat-card:hover {
-      transform:translateY(-2px);
-      box-shadow:0 6px 16px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
     }
+
     .stat-card h3 {
-      font-size:13px;
-      font-weight:600;
-      color:#000;
-      margin-bottom:6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #000;
+      margin-bottom: 6px;
     }
+
     .stat-card p {
-      font-size:14px;
-      font-weight:600;
-      color:#000;
+      font-size: 14px;
+      font-weight: 600;
+      color: #000;
     }
 
-    /* =======================================================
-       ➕ ADD GOAL BUTTON
-    ======================================================= */
+    /* ➕ ADD GOAL BUTTON */
     .add-goal-btn {
-      display:block;
-      width:100%;
-      background:linear-gradient(135deg,#23a541,#33c56c);
-      color:#fff;
-      font-weight:600;
-      text-align:center;
-      padding:14px 0;
-      border:none;
-      border-radius:16px;
-      font-size:14px;
-      margin-bottom:25px;
-      cursor:pointer;
-      transition:all 0.3s ease;
-      box-shadow:0 4px 10px rgba(0,0,0,0.05);
-    }
-    .add-goal-btn:hover {
-      transform:translateY(-2px);
-      background:linear-gradient(90deg,#059669,#10b981);
-    }
-
-    /* =======================================================
-       🧩 POPUP FORM
-    ======================================================= */
-    .popup {
-      position:fixed;
-      top:0; left:0;
-      width:100%; height:100%;
-      display:none;
-      justify-content:center;
-      align-items:center;
-      background:rgba(0,0,0,0.4);
-      z-index:50;
-    }
-    .popup.active {display:flex;}
-    .popup-content {
-      background:#fff;
-      border-radius:20px;
-      width:90%;
-      max-width:360px;
-      padding:22px 20px;
-      box-shadow:0 8px 25px rgba(0,0,0,0.15);
-      animation:slideUp 0.4s ease forwards;
-      position:relative;
-    }
-    @keyframes slideUp {
-      from {transform:translateY(50px); opacity:0;}
-      to {transform:translateY(0); opacity:1;}
-    }
-    .popup-content h2 {
-      font-size:16px;
-      font-weight:600;
-      color:#065f46;
-      text-align:center;
-      margin-bottom:14px;
-    }
-    .popup-content input {
-      width:100%;
-      padding:10px 12px;
-      border-radius:10px;
-      border:1.5px solid #a7f3d0;
-      font-size:13px;
-      margin-bottom:10px;
-      transition:0.3s;
-    }
-    .popup-content input:focus {
-      border-color:#10b981;
-      box-shadow:0 0 0 3px rgba(16,185,129,0.2);
-    }
-    .popup-content button[type="submit"] {
-      width:100%;
+      display: block;
+      width: 100%;
       background: linear-gradient(135deg, #23a541, #33c56c);
-      border:none;
-      color:#fff;
-      font-weight:600;
-      border-radius:10px;
-      padding:10px;
-      font-size:14px;
-      cursor:pointer;
-    }
-    .close-btn {
-      position:absolute;
-      top:8px; right:12px;
-      background:none;
-      border:none;
-      font-size:22px;
-      color:#888;
-      cursor:pointer;
+      color: #fff;
+      font-weight: 600;
+      text-align: center;
+      padding: 14px 0;
+      border: none;
+      border-radius: 16px;
+      font-size: 14px;
+      margin-bottom: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
 
-    /* =======================================================
-       🏷 GOAL LIST CARD
-    ======================================================= */
+    .add-goal-btn:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(90deg, #059669, #10b981);
+    }
+
+    /* 🧩 POPUP FORM */
+    .popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 50;
+    }
+
+    .popup.active { display: flex; }
+
+    .popup-content {
+      background: #fff;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 360px;
+      padding: 22px 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      animation: slideUp 0.4s ease forwards;
+      position: relative;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .popup-content h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #065f46;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .popup-content input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1.5px solid #a7f3d0;
+      font-size: 13px;
+      margin-bottom: 10px;
+      transition: 0.3s;
+    }
+
+    .popup-content input:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.2);
+    }
+
+    .popup-content button[type="submit"] {
+      width: 100%;
+      background: linear-gradient(135deg, #23a541, #33c56c);
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: #888;
+      cursor: pointer;
+    }
+
+    /* 🏷 GOAL LIST CARD */
     .goal-card {
-      background:#fff;
-      border-radius:16px;
-      box-shadow:0 4px 10px rgba(0,0,0,0.05);
-      padding:14px 16px;
-      margin-bottom:18px;
-      border:1px solid #e2e8f0;
-      transition:all 0.2s ease;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
+      cursor: pointer;
     }
-    .goal-card:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,0.08);}
+
+    .goal-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    }
+
     .goal-item {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
+
     .goal-left {
-      display:flex;
-      align-items:center;
-      gap:10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .goal-left .num { font-weight:500; width:20px; text-align:right; }
-    .goal-left .title { font-size:14px; font-weight:600; color:#333; }
-    .goal-right p { font-size:13px; color:#065f46; margin:0; }
-    .goal-right .target { color:#94a3b8; font-size:12px; }
-    .empty { text-align:center; color:#94a3b8; font-size:14px; margin-top:20px; }
+
+    .goal-left .num { font-weight: 500; width: 20px; text-align: right; }
+    .goal-left .title { font-size: 14px; font-weight: 600; color: #333; }
+    .goal-right p { font-size: 13px; color: #065f46; margin: 0; }
+    .goal-right .target { color: #94a3b8; font-size: 12px; }
+    .empty { text-align: center; color: #94a3b8; font-size: 14px; margin-top: 20px; }
+
+    @media (max-width: 420px) {
+      html, body { align-items: flex-start; }
+      .container { height: 100svh; border-radius: 0; }
+    }
   </style>
 </head>
 
@@ -230,10 +268,7 @@
       @include('sidebar.profile')
 
       <!-- ✅ Header -->
-      
-        @include('header')
-     
-      
+      @include('header')
 
       <!-- ✅ Page Title -->
       <div class="headers">

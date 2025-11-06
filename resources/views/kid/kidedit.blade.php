@@ -5,31 +5,25 @@
   <title>Edit Kid - Mini Pocket</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <!-- Fonts -->
+  <!-- ✅ Fonts & CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/css/parent.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/css/header.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/kidedit.css') }}">
-
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
   <div class="container">
     <div class="inner-container">
 
-      <!-- Hamburger -->
-      <div class="header-bar">
-        <div id="kidMenuToggle" class="menu-icon"><div></div><div></div><div></div></div>
-      </div>
-
+      <!-- ✅ Sidebar -->
       @include('sidebar.profile')
 
-      <!-- Logo -->
-      <div class="logo-section">
-        <img src="{{ asset('images/moneylogo.jpg') }}" alt="Mini Pocket Logo">
-      </div>
+      <!-- ✅ Header -->
+      @include('header')
 
+      <!-- ✅ Page Title -->
       <h1>Edit Kid Profile</h1>
 
       <form class="kid-form" method="POST" action="{{ route('kid.update') }}" enctype="multipart/form-data">
@@ -68,7 +62,7 @@
 
         <!-- Gender -->
         <div class="field">
-          <select name="gender" disabled value="{{ old('gender', $user->gender) }}">
+          <select name="gender" disabled>
             <option value="male" {{ old('gender', $user->gender)=='male'?'selected':'' }}>Male</option>
             <option value="female" {{ old('gender', $user->gender)=='female'?'selected':'' }}>Female</option>
             <option value="other" {{ old('gender', $user->gender)=='other'?'selected':'' }}>Other</option>
@@ -76,12 +70,30 @@
           <label>Gender</label>
         </div>
 
+        <!-- Submit Button -->
         <button id="updateBtn" type="submit">Update Profile Picture</button>
       </form>
+
+      <!-- 🔹 Logout Section -->
+      <div class="logout-section">
+        <a href="{{ route('logout') }}"
+           onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+           class="logout-icon">
+      
+          <span>Logout</span>
+        </a>
+
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+          @csrf
+        </form>
+      </div>
+
     </div>
+
+    <!-- ✅ Sidebar Overlay -->
+    <div id="sidebarOverlay"></div>
   </div>
 
-<script src="{{ asset('assets/js/kidedit.js') }}"></script>
-
+  <script src="{{ asset('assets/js/kidedit.js') }}"></script>
 </body>
 </html>

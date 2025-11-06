@@ -109,7 +109,7 @@ body { font-family: "Poppins", sans-serif; background: #fff; overflow-x: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 3px ;
 }
 
 .icon-wrapper span {
