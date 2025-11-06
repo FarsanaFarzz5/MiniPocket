@@ -6,16 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <!-- ✅ Fonts & CSS -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">   <!-- ✅ Add this -->
+<link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/header.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/gifts.css') }}">
 
-  <!-- ✅ ADD THIS LINE -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
-  <link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/css/header.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/css/gifts.css') }}">
 </head>
-
 
 <style>
   /* ========== GLOBAL RESET ========== */
