@@ -161,20 +161,21 @@
       margin-top: 18px;
     }
 
-    .add-form input[type="number"] {
-      flex: 1;
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1.5px solid #a7f3d0;
-      font-size: 13px;
-      transition: all 0.3s;
-    }
+.add-form input.amount-input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #a7f3d0;
+  font-size: 13px;
+  transition: all 0.3s;
+}
 
-    .add-form input:focus {
-      border-color: #10b981;
-      box-shadow: 0 0 0 3px rgba(16,185,129,0.2);
-      outline: none;
-    }
+
+.add-form input.amount-input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.2);
+  outline: none;
+}
 
     .add-form button {
       padding: 10px 16px;
@@ -314,9 +315,24 @@
 
       <!-- ✅ Add Amount or Pay Button -->
       @if($progress < 100)
+      @php
+  $remaining = $goal->target_amount - $goal->saved_amount;
+@endphp
+
         <form action="{{ route('goals.addSavings', $goal->id) }}" method="POST" class="add-form">
           @csrf
-          <input type="number" name="saved_amount" min="1" placeholder="Enter amount to add" required>
+<input type="text" name="saved_amount" class="amount-input"
+       placeholder="Enter amount to add"
+       inputmode="numeric"
+       pattern="[0-9]*"
+       max="{{ $remaining }}"
+       oninput="
+          this.value = this.value.replace(/[^0-9]/g, '');
+          if (this.value > {{ $remaining }}) this.value = {{ $remaining }};
+       "
+       required>
+
+
           <button type="submit">Add</button>
         </form>
       @else

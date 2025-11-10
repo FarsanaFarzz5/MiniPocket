@@ -4,261 +4,309 @@
   <meta charset="UTF-8">
   <title>{{ $bankName }} - Add Account | Mini Pocket</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <style>
-    * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif;}
+  <!-- ✅ Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===========================================================
+🌟 GLOBAL RESET
+=========================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
 
 html, body {
   width: 100%;
   height: 100%;
-  background: #eef3fb;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-/* ✅ Fix viewport height correctly across mobile browsers */
-body {
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  min-height: 100vh;
-  min-height: 100dvh; /* fallback for modern browsers */
+  background: #ffffff;
   -webkit-overflow-scrolling: touch;
 }
 
-/* ✅ Perfect mobile-fit container */
+body {
+  color: #222;
+  min-height: 100vh;
+}
+
 .container {
   width: 100%;
   max-width: 420px;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh; /* ✅ full visible height */
   background: #fff;
-  box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-bottom: env(safe-area-inset-bottom);
-  border-radius: 0;
-  position: relative;
+  align-items: center;
+  position: fixed; /* ✅ keeps container fixed on screen */
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  overflow: hidden; /* ✅ prevents page scroll */
+  z-index: 1;
+}
+
+/* ===========================================================
+🧭 INNER CONTAINER (Scrolls independently)
+=========================================================== */
+.inner-container {
+  width: 100%;
+  flex: 1;
+  text-align: center;
+  overflow-y: auto; /* ✅ scroll only here */
+  -webkit-overflow-scrolling: touch;
+  padding: 0 22px 100px;
+}
+
+@supports (padding: max(0px)) {
+  .inner-container {
+    padding-bottom: max(100px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ===========================================================
+🧭 PAGE HEADING
+=========================================================== */
+.page-header {
+  text-align: center;
+  margin-top: 25px;
+  margin-bottom: 24px;
   animation: fadeIn 0.4s ease;
 }
 
+.page-header h1 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  letter-spacing: 0.3px;
+  text-transform: capitalize;
+}
 
-    .inner-content {
-      width: 100%;
-      padding: 34px 26px 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 26px;
-    }
+/* ===========================================================
+💳 CARD PREVIEW
+=========================================================== */
+.card-preview {
+  width: 100%;
+  height: 215px;
+  border-radius: 18px;
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(145deg, {{ $cardColor }}20, #ffffff);
+  border-top: 4px solid {{ $cardColor }};
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  margin-bottom: 25px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
 
-    /* ==== HEADING ==== */
-    .page-header {
-      text-align: center;
-      animation: fadeIn 0.6s ease;
-    }
+.card-preview:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
 
-    .page-header h1 {
-      font-family: 'Nunito', sans-serif;
-      font-size: 22px;
-      font-weight: 700;
-      color: #1e1e1e;
-      margin-bottom: 6px;
-    }
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    .page-header p {
-      font-size: 13px;
-      color: #777;
-    }
+.card-header img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
 
-    /* ==== CARD PREVIEW ==== */
-    .card-preview {
-      width: 100%;
-      height: 200px;
-      border-radius: 16px;
-      padding: 24px 26px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      background: linear-gradient(145deg, {{ $cardColor }}15, #ffffff);
-      border-top: 4px solid {{ $cardColor }};
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-      transition: 0.3s ease;
-    }
+.card-header span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+}
 
-    .card-preview:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.10);
-    }
+.card-number {
+  font-size: 20px;
+  letter-spacing: 2px;
+  font-weight: 600;
+  color: #000;
+  text-align: left;
+  
+}
 
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+}
 
-    .card-header img {
-      width: 46px;
-      height: 46px;
-      object-fit: contain;
-    }
+/* ===========================================================
+🧾 FORM
+=========================================================== */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  text-align: left;
+}
 
-    .card-header span {
-      font-size: 15px;
-      font-weight: 500;
-      color: #111;
-    }
+label {
+  font-size: 13.8px;
+  color: #555;
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+  margin-left: 4px;
+}
 
-    .card-number {
-      font-size: 20px;
-      letter-spacing: 2px;
-      font-weight: 600;
-      color: #000;
-      margin-top: 10px;
-    }
+input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #e4e4e4;
+  background: #fff;
+  font-size: 15px;
+  color: #222;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
 
-    .card-footer {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      font-weight: 500;
-      color: #333;
-    }
+input:focus {
+  border-color: #f4731d;
+  box-shadow: 0 0 0 3px rgba(244, 115, 29, 0.1);
+  outline: none;
+}
 
-    /* ==== FORM ==== */
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
+.inline-inputs {
+  display: flex;
+  gap: 10px;
+}
 
-    label {
-      font-size: 13.5px;
-      color: #555;
-      font-weight: 500;
-    }
+.inline-inputs input {
+  flex: 1;
+}
 
-    input {
-      width: 100%;
-      padding: 11px 14px;
-      border-radius: 8px;
-      border: 1px solid #dcdcdc;
-      background: #fafafa;
-      font-size: 16px; /* ✅ Prevent zoom */
-      color: #222;
-      transition: all 0.25s ease;
-    }
+/* ===========================================================
+🔘 BUTTONS (Orange theme)
+=========================================================== */
+.button-group {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
 
-    input:focus {
-      border-color: #1976d2;
-      box-shadow: 0 0 0 3px rgba(25,118,210,0.1);
-      background: #fff;
-      outline: none;
-    }
+.btn {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
 
-    .inline-inputs {
-      display: flex;
-      gap: 10px;
-    }
-    .inline-inputs input { flex: 1; }
+.btn:active {
+  transform: translateY(1px);
+}
 
-    /* ==== BUTTONS ==== */
-    .button-group {
-      display: flex;
-      justify-content: flex-start;
-      gap: 10px;
-      margin-top: 10px;
-    }
+.btn-save {
+  background: linear-gradient(135deg, {{ $cardColor }}08, {{ $cardColor }}12); /* ✅ ultra-light tint */
+  color:{{ $cardColor }};
+  border: 1.5px solid {{ $cardColor }}40;
+  
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
 
-    .btn {
-      border: none;
-      border-radius: 6px;
-      padding: 10px 22px;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: 0.25s ease;
-    }
+.btn-save:hover {
+  background: linear-gradient(135deg, {{ $cardColor }}20, {{ $cardColor }}33);
+  transform: translateY(-2px);
+}
 
-    .btn-save {
-      background: #1976d2;
-      color: #fff;
-    }
+.btn-cancel {
+  background: #fff;
+  color: {{ $cardColor }};
+  border: 1.5px solid {{ $cardColor }}40;
+}
 
-    .btn-save:hover { background: #1259a7; }
+.btn-cancel:hover {
+  background: {{ $cardColor }}10;
+}
 
-    .btn-cancel {
-      background: #fff;
-      color: #1976d2;
-      border: 1.5px solid #1976d2;
-    }
 
-    .btn-cancel:hover { background: #e3f2fd; }
-
- /* ========================= SUCCESS ALERT ========================= */
+/* ===========================================================
+✅ TOAST / ALERT
+=========================================================== */
 .alert {
   display: none;
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  background: linear-gradient(135deg, #00c853, #2ecc71);
   color: #fff;
-  padding: 8px 20px;
+  padding: 10px 22px;
   border-radius: 10px;
   text-align: center;
   font-size: 14.5px;
   font-weight: 600;
   letter-spacing: 0.3px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
   z-index: 9999;
   animation: slideDown 0.4s ease forwards;
   max-width: 340px;
   width: 90%;
 }
 
-/* ✅ Success icon animation */
-.alert::before {
-  margin-right: 8px;
-  font-size: 16px;
-}
-
-/* ✅ Fade-in + slide-down animation */
 @keyframes slideDown {
-  from {
-    transform: translate(-50%, -20px);
-    opacity: 0;
-  }
-  to {
-    transform: translate(-50%, 0);
-    opacity: 1;
-  }
+  from { transform: translate(-50%, -20px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
 }
 
-/* ✅ Fade-out animation */
-@keyframes slideUp {
-  from {
-    opacity: 1;
-    transform: translate(-50%, 0);
+/* ===========================================================
+📱 RESPONSIVE
+=========================================================== */
+@media (max-width: 480px) {
+
+    html, body {
+    overflow: hidden;
+    height: 100%;
   }
-  to {
-    opacity: 0;
-    transform: translate(-50%, -20px);
+   .container { 
+    max-width: 100%; 
+    left: 0; 
+    transform: none; 
+    height: 100%; 
+    overflow: hidden; 
   }
+
+  .inner-container { 
+    padding: 0 22px 60px; 
+    overflow: hidden; 
+    height: 100%; 
+  }
+  .page-header h1 { font-size: 16px;  }
+  .btn { font-size: 14px; padding: 11px 20px; }
+  input { font-size: 14px; height: 48px; }
 }
 
-  </style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
 </head>
 
 <body>
   <div class="container">
-    <div class="inner-content">
+    <div class="inner-container">
+
+      @include('sidebar.sidebar')
+      @include('headerparent')
 
       <!-- ✅ Alert -->
       <div id="alertBox" class="alert">✅ Bank card added successfully!</div>
@@ -266,7 +314,6 @@ body {
       <!-- ==== HEADER ==== -->
       <div class="page-header">
         <h1>Add Your Bank Card</h1>
-        <p>Provide your card details to link your account securely</p>
       </div>
 
       <!-- ==== CARD PREVIEW ==== -->
@@ -297,8 +344,7 @@ body {
 
         <div class="inline-inputs">
           <input type="tel" id="expiry" name="expiry_date" placeholder="MM/YY" maxlength="5" inputmode="numeric" pattern="[0-9/]*" required>
-          <input type="password" id="cvv" name="cvv" placeholder="cvv" maxlength="3" inputmode="numeric" pattern="[0-9]*" required>
-
+          <input type="password" id="cvv" name="cvv" placeholder="CVV" maxlength="3" inputmode="numeric" pattern="[0-9]*" required>
         </div>
 
         <div class="button-group">
@@ -311,6 +357,5 @@ body {
   </div>
 
   <script src="{{ asset('assets/js/addbankaccount.js') }}"></script>
-
 </body>
 </html>

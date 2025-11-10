@@ -19,10 +19,9 @@
 
       @include('sidebar.sidebar')
 
-      <!-- ✅ Logo -->
-      <div class="logo-section">
-        <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
-      </div>
+      @include('headerparent')
+
+      
 
       <h1>Transaction History</h1>
 

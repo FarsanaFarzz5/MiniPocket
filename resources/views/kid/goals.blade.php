@@ -293,7 +293,13 @@ html, body {
           <form action="{{ route('goals.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="text" name="title" placeholder="Goal title" required>
-            <input type="number" name="target_amount" placeholder="Target amount" min="1" required>
+            <input type="text" name="target_amount"
+       placeholder="Target amount"
+       inputmode="numeric"
+       pattern="[0-9]*"
+       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+       required>
+
             <button type="submit">Add Goal</button>
           </form>
         </div>
@@ -319,10 +325,7 @@ html, body {
     </div>
   </div>
 
-  <script>
-    function togglePopup() {
-      document.getElementById('goalPopup').classList.toggle('active');
-    }
-  </script>
+<script src="{{ asset('assets/js/goals.js') }}"></script>
+
 </body>
 </html>

@@ -11,7 +11,7 @@
 html, body {
   width: 100%;
   height: 100%;
-  background: #f4f6fb; /* ✅ light grey-blue */
+  background: #ffffff;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -19,44 +19,55 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* ===========================================================
-🌟 CONTAINER
-=========================================================== */
-.container {
-  width: 100%;
-  max-width: 420px;
-  min-height: 100vh;
+body {
   background: #fff;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px 18px 80px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  position: relative;
-}
-
-/* ===========================================================
-🌟 LOGO & HEADING
-=========================================================== */
-.logo-section {
   display: flex;
   justify-content: center;
-  margin-bottom: 14px;
+  align-items: flex-start;
+  min-height: -webkit-fill-available;
+  -webkit-overflow-scrolling: touch;
 }
 
-.logo-section img {
-  width: 90px;
-  height: auto;
-  filter: brightness(1.1) saturate(1.15);
-  transition: transform 0.3s ease;
+
+/* ===========================================================
+🌟 FIX SCROLL ISSUE ON MOBILE (ESPECIALLY iOS)
+=========================================================== */
+.container {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 420px;
+  height: 100vh;
+  padding: 0px 22px 21px !important;
+  background: #fff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  -webkit-overflow-scrolling: touch;
+  touch-action: none; /* Prevent conflict with gestures */
 }
 
-.logo-section img:hover {
-  transform: scale(1.05);
+.inner-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto; /* enable scrolling inside */
+  -webkit-overflow-scrolling: touch; /* ✅ smooth scroll for iOS */
+  overscroll-behavior: contain; /* prevent bouncing the whole page */
+  padding-bottom: 0 ;
 }
+
+@supports (padding: max(0px)) {
+  .inner-container {
+    padding-bottom: max(100px, env(safe-area-inset-bottom));
+  }
+}
+
+
+
 
 .page-header {
   width: 100%;
@@ -314,10 +325,23 @@ html, body {
 🌟 RESPONSIVE
 =========================================================== */
 @media (max-width: 430px) {
-  .container {
-    padding: 24px 18px 90px;
-    border-radius: 0;
+
+      html, body {
+    height: 100%;
+    overflow: hidden; /* ✅ prevent whole-page scroll */
   }
+
+  .container {
+    height: 100dvh; /* ✅ ensures full viewport height (mobile-safe) */
+    position: fixed;
+  }
+
+  .inner-container {
+    height: 100%;
+    overflow-y: auto;
+  }
+
+
 
   .page-header h1 {
     font-size: 15px;

@@ -1,73 +1,63 @@
 /* ===========================================================
-✅ BASE RESET
+🧱 MAIN CONTAINER (Fixed frame — Non-scrollable)
 =========================================================== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-}
-
-/* ===========================================================
-✅ BODY
-=========================================================== */
-body {
-  background: #fafafa;
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  width: 100%;
-  min-height: 100vh;
-  overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 }
 
-/* ===========================================================
-✅ CONTAINER — elegant white card
-=========================================================== */
+body {
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: -webkit-fill-available;
+  -webkit-overflow-scrolling: touch;
+}
+
 .container {
   width: 100%;
   max-width: 420px;
+  height: 100vh; /* ✅ Full visible height */
   background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
-  padding: 35px 28px 90px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 0px 22px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: visible;
-  position: relative;
-}
-
-@supports (padding: max(0px)) {
-  .container {
-    padding-bottom: max(90px, env(safe-area-inset-bottom));
-  }
-}
-
-.inner-container {
-  margin-top: 30px;
+  position: fixed; /* ✅ Keeps it fixed in view */
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  overflow: hidden; /* ✅ Prevents page scroll */
+  z-index: 1;
 }
 
 /* ===========================================================
-🎨 LOGO + HEADING
+🧭 INNER CONTAINER (Scrolls independently)
 =========================================================== */
-.logo-section {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 14px;
+.inner-container {
+  width: 100%;
+  flex: 1;
+  text-align: center;
+  overflow-y: auto; /* ✅ Scroll only inside this */
+  -webkit-overflow-scrolling: touch;
+  padding: 0 0 100px;
 }
 
-.logo-section img {
-  width: 90px;
-  height: auto;
-  filter: brightness(1.1) saturate(1.15);
-  transition: transform 0.3s ease;
+@supports (padding: max(0px)) {
+  .inner-container {
+    padding-bottom: max(100px, env(safe-area-inset-bottom));
+  }
 }
 
-.logo-section img:hover {
-  transform: scale(1.05);
-}
+
 
 /* ===========================================================
 🎨 PAGE HEADING
@@ -81,6 +71,7 @@ h1 {
   text-transform: capitalize;
   letter-spacing: 0.2px;
   margin-bottom: 25px;
+  margin-top: 45px;
 }
 
 /* ===========================================================
@@ -100,6 +91,42 @@ h1 {
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
+
+/* ===========================================================
+🔔 ALERT TOAST STYLES
+=========================================================== */
+.alert-toast {
+  width: 80%;
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  background: #333;
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: all 0.4s ease;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.alert-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.alert-success {
+  background: linear-gradient(135deg, #28a745, #5dd067);
+}
+
+.alert-warning {
+  background: linear-gradient(135deg, #f4731d, #ff9240);
+}
+
 
 /* ===========================================================
 🌟 INPUTS & SELECTS
@@ -195,7 +222,7 @@ h1 {
 .avatar-row {
   display: flex;
   justify-content: center;
-  gap: 36px;
+  gap: 34px;
   flex-wrap: wrap;
   margin-top: 10px;
 }
@@ -249,12 +276,45 @@ button:hover {
 /* ===========================================================
 📱 RESPONSIVE
 =========================================================== */
+/* ===========================================================
+📱 MOBILE FIX — Page Fixed Only on Mobile
+=========================================================== */
+/* ===========================================================
+📱 MOBILE FIX — Page Fully Fixed on Mobile
+=========================================================== */
 @media (max-width: 480px) {
+  html, body {
+    position: fixed; /* ✅ Prevents any body scroll */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden !important; /* ✅ Full lock */
+    touch-action: none; /* ✅ Prevents background scroll during touch */
+    -webkit-overflow-scrolling: none;
+    overscroll-behavior: none;
+  }
+
   .container {
-    max-width: 100%;
-    border-radius: 0;
-    box-shadow: none;
-    padding: 30px 20px 100px;
+    position: fixed !important;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 420px;
+    height: 100dvh; /* ✅ Full mobile viewport */
+    overflow: hidden; /* ✅ Prevent any container scroll */
+    background: #fff;
+    z-index: 10;
+  }
+
+  .inner-container {
+    height: 100%;
+    overflow-y: hidden !important; /* ✅ Only this scrolls */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   h1 {
@@ -271,7 +331,6 @@ button:hover {
   button {
     font-size: 14px;
     padding: 12px 0;
-    margin-top: 0px;
   }
 
   .avatar-option {

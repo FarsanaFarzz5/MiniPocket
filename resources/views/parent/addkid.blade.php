@@ -19,10 +19,7 @@
     <div class="inner-container">
       @include('sidebar.sidebar')
 
-      <!-- ✅ Keep logo.png -->
-      <div class="logo-section">
-        <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
-      </div>
+      @include('headerparent')
 
       <h1>Add Kid Account</h1>
 
@@ -70,6 +67,9 @@
         <button type="submit">Save</button>
       </form>
     </div>
+    <!-- ✅ Alert Toast -->
+<div id="alertToast" class="alert-toast"></div>
+
   </div>
 
   <script src="{{ asset('assets/js/addkid.js') }}"></script>

@@ -116,89 +116,116 @@ class KidController extends Controller
     /**
      * 💸 Spend Money (Send Money)
      */
-    public function sendMoney(Request $request)
-    {
-        $user = Auth::user();
-        if ($user->role != 2) abort(403, 'Unauthorized');
+/**
+ * 💸 Spend Money (Send Money)
+ */
+public function sendMoney(Request $request)
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
 
-        $request->validate([
-            'amount'      => 'required|numeric|min:1',
-            'description' => 'nullable|string|max:255',
-        ]);
+    $request->validate([
+        'amount'      => 'required|numeric|min:1',
+        'description' => 'nullable|string|max:255',
+    ]);
 
-        if (!$user->parent_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No parent assigned.',
-                'remaining_limit' => 0
-            ], 400);
-        }
-
-        // ✅ Calculate balance
-        $receivedMoney = Transaction::where('kid_id', $user->id)
-            ->where('type', 'credit')
-            ->sum('amount');
-
-        $spentMoney = Transaction::where('kid_id', $user->id)
-            ->where('type', 'debit')
-            ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_saving'])
-            ->sum('amount');
-
-        $balance = $receivedMoney - $spentMoney;
-
-        if ($request->amount > $balance) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Insufficient balance. Available ₹' . number_format($balance, 2),
-                'remaining_limit' => $user->daily_limit - $spentMoney
-            ], 400);
-        }
-
-        // ✅ Daily limit check
-        if ($user->daily_limit > 0) {
-            $spentToday = Transaction::where('kid_id', $user->id)
-                ->where('type', 'debit')
-                ->where('source', 'kid_spending')
-                ->whereDate('created_at', now()->toDateString())
-                ->sum('amount');
-
-            $remainingLimit = max($user->daily_limit - $spentToday, 0);
-
-            if (($spentToday + $request->amount) > $user->daily_limit) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Daily limit exceeded. You can still spend ₹' . number_format($remainingLimit, 2),
-                    'remaining_limit' => $remainingLimit
-                ], 400);
-            }
-        }
-
-        // ✅ Record transaction
-        Transaction::create([
-            'parent_id'   => $user->parent_id,
-            'kid_id'      => $user->id,
-            'amount'      => $request->amount,
-            'type'        => 'debit',
-            'status'      => 'completed',
-            'source'      => 'kid_spending',
-            'description' => $request->description,
-        ]);
-
-        // ✅ Update remaining limit
-        $spentTodayAfter = Transaction::where('kid_id', $user->id)
-            ->where('type', 'debit')
-            ->where('source', 'kid_spending')
-            ->whereDate('created_at', now()->toDateString())
-            ->sum('amount');
-
-        $remainingLimitAfter = max($user->daily_limit - $spentTodayAfter, 0);
-
+    if (!$user->parent_id) {
         return response()->json([
-            'success' => true,
-            'message' => 'Amount spent successfully!',
-            'remaining_limit' => $remainingLimitAfter
-        ]);
+            'success' => false,
+            'message' => 'No parent assigned.',
+            'remaining_limit' => 0
+        ], 400);
     }
+
+    // ✅ Calculate total balance
+    $receivedMoney = Transaction::where('kid_id', $user->id)
+        ->where('type', 'credit')
+        ->sum('amount');
+
+    $spentMoney = Transaction::where('kid_id', $user->id)
+        ->where('type', 'debit')
+        ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_saving'])
+        ->sum('amount');
+
+    $balance = $receivedMoney - $spentMoney; // e.g. ₹11,500
+
+    // ✅ Calculate today's spending (only kid_spending)
+    $spentToday = Transaction::where('kid_id', $user->id)
+        ->where('type', 'debit')
+        ->where('source', 'kid_spending')
+        ->whereDate('created_at', now()->toDateString())
+        ->sum('amount');
+
+    // ✅ Calculate remaining daily limit
+    $dailyLimit = $user->daily_limit ?? 0;
+    $remainingLimit = max($dailyLimit - $spentToday, 0); // e.g. 600 - 0 = 600
+
+    // 🔹 1️⃣ If kid has no balance at all
+    if ($balance <= 0) {
+        return response()->json([
+            'success' => false,
+            'message' => 'You have no balance left. Please ask your parent to add money.',
+            'remaining_limit' => $remainingLimit,
+        ], 400);
+    }
+
+    // 🔹 2️⃣ If amount > available balance
+    if ($request->amount > $balance) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Insufficient balance. Available ₹' . number_format($balance, 2),
+            'remaining_limit' => $remainingLimit,
+        ], 400);
+    }
+
+    // 🔹 3️⃣ If daily limit reached (spent full limit)
+    if ($remainingLimit <= 0) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Daily limit reached. You cannot spend more today.',
+            'remaining_limit' => 0,
+        ], 400);
+    }
+
+    // 🔹 4️⃣ If trying to spend above remaining limit
+    if ($request->amount > $remainingLimit) {
+        return response()->json([
+            'success' => false,
+            'message' => 'You can only spend ₹' . number_format($remainingLimit, 2) . ' more today.',
+            'remaining_limit' => $remainingLimit,
+        ], 400);
+    }
+
+    // ✅ If all OK → record transaction
+    Transaction::create([
+        'parent_id'   => $user->parent_id,
+        'kid_id'      => $user->id,
+        'amount'      => $request->amount,
+        'type'        => 'debit',
+        'status'      => 'completed',
+        'source'      => 'kid_spending',
+        'description' => $request->description,
+    ]);
+
+    // ✅ Update remaining limit after transaction
+    $spentTodayAfter = Transaction::where('kid_id', $user->id)
+        ->where('type', 'debit')
+        ->where('source', 'kid_spending')
+        ->whereDate('created_at', now()->toDateString())
+        ->sum('amount');
+
+    $remainingLimitAfter = max($dailyLimit - $spentTodayAfter, 0);
+
+    return response()->json([
+        'success' => true,
+        'message' => '✅ ₹' . number_format($request->amount, 2) . ' spent successfully!',
+        'remaining_limit' => $remainingLimitAfter,
+        'available_balance' => $balance - $request->amount,
+        'spent_today' => $spentTodayAfter,
+    ]);
+}
+
+
 
     /**
      * 📷 QR Payment (scan + pay)
@@ -325,52 +352,56 @@ public function kidGoals()
         return back()->with('success', 'Goal created successfully!');
     }
 
-    public function addSavings(Request $request, Goal $goal)
-    {
-        $user = Auth::user();
-        if ($user->role != 2) abort(403, 'Unauthorized');
+public function addSavings(Request $request, Goal $goal)
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
 
-        $validated = $request->validate([
-            'saved_amount' => 'required|numeric|min:1',
-        ]);
+    // ✅ Calculate remaining amount
+    $remaining = $goal->target_amount - $goal->saved_amount;
 
-        $received = Transaction::where('kid_id', $user->id)->where('type', 'credit')->sum('amount');
-        $spent = Transaction::where('kid_id', $user->id)->where('type', 'debit')->where('source', 'kid_spending')->sum('amount');
-        $goalSavings = GoalSaving::where('kid_id', $user->id)->sum('saved_amount');
+    // ✅ Validate with max rule
+    $request->validate([
+        'saved_amount' => 'required|numeric|min:1|max:' . $remaining,
+    ]);
 
-        $balance = $received - ($spent + $goalSavings);
+    $received = Transaction::where('kid_id', $user->id)->where('type', 'credit')->sum('amount');
+    $spent = Transaction::where('kid_id', $user->id)
+        ->where('type', 'debit')
+        ->where('source', 'kid_spending')
+        ->sum('amount');
+    $goalSavings = GoalSaving::where('kid_id', $user->id)->sum('saved_amount');
 
-        if ($validated['saved_amount'] > $balance) {
-            return back()->withErrors(['error' => 'Insufficient balance. Available ₹' . number_format($balance, 2)]);
-        }
+    $balance = $received - ($spent + $goalSavings);
 
-        if ($goal->saved_amount >= $goal->target_amount) {
-            return back()->withErrors(['error' => 'Goal already completed!']);
-        }
-
-        GoalSaving::create([
-            'goal_id'      => $goal->id,
-            'parent_id'    => $user->parent_id,
-            'kid_id'       => $user->id,
-            'saved_amount' => $validated['saved_amount'],
-            'type'         => 'debit',
-            'status'       => 'completed',
-        ]);
-
-        $goal->increment('saved_amount', $validated['saved_amount']);
-
-        Transaction::create([
-            'parent_id'   => $user->parent_id,
-            'kid_id'      => $user->id,
-            'amount'      => $validated['saved_amount'],
-            'type'        => 'debit',
-            'status'      => 'completed',
-            'source'      => 'goal_saving',
-            'description' => 'Added to goal: ' . $goal->title,
-        ]);
-
-        return back()->with('success', '₹' . $validated['saved_amount'] . ' added to your goal successfully!');
+    if ($request->saved_amount > $balance) {
+        return back()->withErrors(['error' => 'Insufficient balance. Available ₹' . number_format($balance, 2)]);
     }
+
+    GoalSaving::create([
+        'goal_id'      => $goal->id,
+        'parent_id'    => $user->parent_id,
+        'kid_id'       => $user->id,
+        'saved_amount' => $request->saved_amount,
+        'type'         => 'debit',
+        'status'       => 'completed',
+    ]);
+
+    $goal->increment('saved_amount', $request->saved_amount);
+
+    Transaction::create([
+        'parent_id'   => $user->parent_id,
+        'kid_id'      => $user->id,
+        'amount'      => $request->saved_amount,
+        'type'        => 'debit',
+        'status'      => 'completed',
+        'source'      => 'goal_saving',
+        'description' => 'Added to goal: ' . $goal->title,
+    ]);
+
+    return back()->with('success', '₹' . $request->saved_amount . ' added to your goal successfully!');
+}
+
 
     public function goalDetails(Goal $goal)
     {
@@ -408,81 +439,88 @@ public function showGifts()
     return view('kid.addgift', compact('user'));
 }
 
-    public function storeGift(Request $request)
-    {
-        $kid = Auth::user();
-        if ($kid->role != 2) abort(403, 'Unauthorized');
+public function storeGift(Request $request)
+{
+    $kid = Auth::user();
+    if ($kid->role != 2) abort(403, 'Unauthorized');
 
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'target_amount' => 'required|numeric|min:1',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'target_amount' => 'required|numeric|min:1',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
 
-        $imagePath = $request->hasFile('image')
-            ? $request->file('image')->store('gifts', 'public')
-            : null;
+    $imagePath = $request->hasFile('image')
+        ? $request->file('image')->store('gifts', 'public')
+        : null;
 
-        Gift::create([
-            'kid_id' => $kid->id,
-            'title' => $request->title,
-            'target_amount' => $request->target_amount,
-            'saved_amount' => 0,
-            'image' => $imagePath,
-        ]);
+    Gift::create([
+        'kid_id' => $kid->id,
+        'title' => $request->title,
+        'target_amount' => $request->target_amount,
+        'saved_amount' => 0,
+        'image' => $imagePath,
+    ]);
 
-        return back()->with('success', 'Gift added successfully!');
-    }
+    // ✅ Redirect to Gifts page after saving
+    return redirect()->route('kid.gifts')->with('success', 'Gift added successfully!');
+}
 
     public function addGiftSaving(Request $request)
-    {
-        $user = Auth::user();
-        if ($user->role != 2) abort(403, 'Unauthorized');
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
 
-        $request->validate([
-            'gift_id' => 'required|exists:gifts,id',
-            'amount' => 'required|numeric|min:1',
-        ]);
+    $gift = Gift::find($request->gift_id);
 
-        $gift = Gift::find($request->gift_id);
+    // ✅ Remaining amount allowed to save for this gift
+    $remaining = $gift->target_amount - $gift->saved_amount;
 
-        // ✅ Calculate balance properly
-        $received = Transaction::where('kid_id', $user->id)->where('type', 'credit')->sum('amount');
-        $spent = Transaction::where('kid_id', $user->id)
-            ->where('type', 'debit')
-            ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_saving'])
-            ->sum('amount');
+    // ✅ Validate input + prevent exceeding target
+    $request->validate([
+        'gift_id' => 'required|exists:gifts,id',
+        'amount'  => 'required|numeric|min:1|max:' . $remaining,
+    ]);
 
-        $balance = $received - $spent;
+    // ✅ Calculate kid balance properly
+    $received = Transaction::where('kid_id', $user->id)->where('type', 'credit')->sum('amount');
+    $spent = Transaction::where('kid_id', $user->id)
+        ->where('type', 'debit')
+        ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_saving'])
+        ->sum('amount');
 
-        if ($request->amount > $balance) {
-            return back()->with('error', 'Insufficient balance. Available ₹' . number_format($balance, 2));
-        }
+    $balance = $received - $spent;
 
-        // ✅ Record in gift_savings
-        GiftSaving::create([
-            'gift_id'      => $gift->id,
-            'kid_id'       => $user->id,
-            'parent_id'    => $user->parent_id,
-            'saved_amount' => $request->amount,
-            'type'         => 'debit',
-            'status'       => 'completed',
-        ]);
-
-        // ✅ Update gift progress
-        $gift->increment('saved_amount', $request->amount);
-
-        // ✅ Record in transactions
-        Transaction::create([
-            'parent_id'   => $user->parent_id,
-            'kid_id'      => $user->id,
-            'amount'      => $request->amount,
-            'type'        => 'debit',
-            'status'      => 'completed',
-            'source'      => 'gift_saving',
-            'description' => 'Added to gift: ' . $gift->title,
-        ]);
-
-        return back()->with('success', '₹' . $request->amount . ' added to your gift successfully!');
+    // ❌ Prevent if kid doesn't have enough balance
+    if ($request->amount > $balance) {
+        return back()->with('error', 'Insufficient balance. Available ₹' . number_format($balance, 2));
     }
+
+    // ✅ Save record in gift_savings
+    GiftSaving::create([
+        'gift_id'      => $gift->id,
+        'kid_id'       => $user->id,
+        'parent_id'    => $user->parent_id,
+        'saved_amount' => $request->amount,
+        'type'         => 'debit',
+        'status'       => 'completed',
+    ]);
+
+    // ✅ Update gift progress
+    $gift->increment('saved_amount', $request->amount);
+
+    // ✅ Record in transactions
+    Transaction::create([
+        'parent_id'   => $user->parent_id,
+        'kid_id'      => $user->id,
+        'amount'      => $request->amount,
+        'type'        => 'debit',
+        'status'      => 'completed',
+        'source'      => 'gift_saving',
+        'description' => 'Added to gift: ' . $gift->title,
+    ]);
+
+    return back()->with('success', '₹' . $request->amount . ' added to your gift successfully!');
+}
+
 }

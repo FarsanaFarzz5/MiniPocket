@@ -25,14 +25,7 @@
   <div class="container">
     <div class="inner-container">
         @include('sidebar.sidebar')
-
- <!-- 🧭 Topbar -->
-<div class="topbar">
-  <div class="logo-center">
-    <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
-  </div>
-</div>
-
+         @include('headerparent')
 
 
       <!-- 👨‍👩‍👧 Parent Info -->

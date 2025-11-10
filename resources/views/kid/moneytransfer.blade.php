@@ -67,6 +67,14 @@
   <!-- ✅ Toast -->
   <div id="alertToast" class="alert-toast"></div>
 
+  <script>
+  const DASHBOARD_URL = "{{ route('kid.dashboard') }}";
+  const SEND_URL = "{{ route('kid.send.money') }}";
+  const CSRF_TOKEN = "{{ csrf_token() }}";
+  const DAILY_LIMIT = Number("{{ $user->daily_limit ?? 0 }}") || 0;
+</script>
+
+
   <script src="{{ asset('assets/js/moneytransfer.js') }}"></script>
 </body>
 </html>

@@ -1,18 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
   const avatarOptions = document.querySelectorAll(".avatar-option");
-  const profileInput = document.getElementById("profile_img"); // make sure you have <input type="file" id="profile_img">
+  const profileInput = document.getElementById("profile_img"); // image upload input
 
-  // ✅ Avatar selection highlight
+  /* ✅ Avatar selection highlight */
   avatarOptions.forEach(option => {
-    option.addEventListener("click", function() {
+    option.addEventListener("click", function () {
       avatarOptions.forEach(opt => opt.classList.remove("selected"));
       this.classList.add("selected");
       this.querySelector("input").checked = true;
-      if (profileInput) profileInput.value = ""; // clear file input if avatar picked
+
+      // Clear file input if avatar is selected
+      if (profileInput) profileInput.value = "";
     });
   });
 
-  // ✅ Clear avatar if file chosen
+  /* ✅ Clear avatar if custom image chosen */
   if (profileInput) {
     profileInput.addEventListener("change", () => {
       if (profileInput.files.length > 0) {
@@ -24,15 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ✅ Smooth scroll on focus
+  /* ✅ Auto scroll input to center when keyboard appears */
   document.querySelectorAll("input, select").forEach(input => {
     input.addEventListener("focus", () => {
       setTimeout(() => input.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
     });
   });
 
-  // ✅ Validation
-  document.getElementById("kidForm").addEventListener("submit", function(e) {
+  /* ✅ Form validation */
+  document.getElementById("kidForm").addEventListener("submit", function (e) {
     e.preventDefault();
     document.querySelectorAll(".error-text").forEach(el => el.textContent = "");
 
@@ -49,48 +51,56 @@ document.addEventListener("DOMContentLoaded", () => {
     const phonePattern = /^[0-9]{10}$/;
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const selectedDate = new Date(dob);
+
     let valid = true;
 
-    // Name
     if (!name || !namePattern.test(name)) valid = false;
-    // DOB
     if (!dob || selectedDate >= today) valid = false;
-    // Email
     if (!email || !emailPattern.test(email)) valid = false;
-    // Phone
     if (!phone || !phonePattern.test(phone)) valid = false;
-    // Gender
     if (!gender) valid = false;
-    // ✅ Avatar or Profile Image required
+
+    // Avatar or image required
     if (!avatarSelected && !profileSelected) valid = false;
-    // ✅ File validation (if selected)
+
+    // Additional check for selected file (image)
     if (profileSelected) {
       const file = profileInput.files[0];
       const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/gif"];
-      if (!allowedTypes.includes(file.type) || file.size > 2 * 1024 * 1024) valid = false;
+      if (!allowedTypes.includes(file.type) || file.size > 2 * 1024 * 1024)
+        valid = false;
     }
 
-    // ✅ Show single toast message
+    // 🚫 Validation failed
     if (!valid) {
-      showToast('⚠️ Please correct the errors before submitting.', 'warning');
+      showToast("warning", " Please correct errors and try again.");
       return;
     }
 
-    // ✅ Success
-    showToast('✅ Kid added successfully!', 'success');
+    // ✅ Success toast
+    showToast("success", " Kid added successfully!");
+
     setTimeout(() => this.submit(), 1200);
   });
 });
 
-/* ✅ Toast */
-function showToast(message, type = "success") {
-  let toast = document.getElementById("alertToast");
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.id = "alertToast";
-    document.body.appendChild(toast);
-  }
-  toast.className = `alert-toast show alert-${type}`;
-  toast.innerText = message;
-  setTimeout(() => toast.classList.remove("show"), 2700);
+
+
+/* ===========================================================
+✅ TOAST FUNCTION (Unified & Smooth)
+=========================================================== */
+function showToast(type, message) {
+  const toast = document.getElementById("alertToast");
+  if (!toast) return;
+
+  toast.className = `alert-toast alert-${type}`;
+  toast.textContent = message;
+
+  requestAnimationFrame(() => {
+    toast.classList.add("show");
+  });
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
 }

@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
+
 <!-- ===== Footer Navigation ===== -->
 <div class="footer-container">
   <nav class="footer-nav">
@@ -97,98 +99,5 @@
   </nav>
 </div>
 
-<!-- ===== CSS ===== -->
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Poppins", sans-serif; background: #fff; overflow-x: hidden; }
+<script src="{{ asset('assets/js/sidebar.js') }}"></script>
 
-.footer-container {
-  position: fixed; bottom: 0; left: 49.3%; transform: translateX(-50%);
-  width: 100%; max-width: 420px; z-index: 500;
-}
-.footer-nav {
-  background: #ffffff; display: flex; justify-content: space-between; align-items: center;
-  padding: 14px 0 8px; border-top: 1px solid #ececec;
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05); border-radius: 18px 18px 0 0;
-  transition: all 0.3s ease;
-}
-.nav-item { flex: 1; text-align: center; text-decoration: none; position: relative; }
-.icon-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.icon-wrapper span { font-size: 11px; font-weight: 500; color: #888; transition: color 0.3s ease; }
-.nav-item svg { opacity: 0.85; transition: transform 0.25s ease; }
-
-/* ===== Kids Submenu ===== */
-.kids-submenu {
-  position: absolute;
-  bottom: 62px;
-  left: 50%;
-  transform: translateX(-50%);
-  opacity: 0;
-  pointer-events: none;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  width: 160px;
-  display: flex;
-  flex-direction: column;
-  z-index: 1000;
-  /* ⛔ removed transition */
-}
-
-.kids-submenu.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-
-.submenu-item {
-  display: flex; align-items: center; justify-content: flex-start; gap: 10px;
-  padding: 12px 16px; color: #888; font-size: 11px; font-weight: 500;
-  text-decoration: none; border-bottom: 1px solid #f2f2f2;
-  background: #fff;
-}
-.submenu-item:last-child { border-bottom: none; }
-
-.submenu-item svg {
-  width: 20px; height: 20px; opacity: 0.9;
-}
-
-.kids-submenu::before {
-  content: "";
-  position: absolute; bottom: -6px; left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-  width: 12px; height: 12px; background: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); border-radius: 2px;
-}
-
-@media (max-width: 480px) {
-  .footer-nav { padding: 12px 0 6px; }
-  .nav-item svg { width: 24px; height: 24px; }
-  .icon-wrapper span { font-size: 10.5px; }
-  .kids-submenu { width: 140px; }
-}
-</style>
-
-<!-- ===== JS ===== -->
-<script>
-const kidsToggle = document.getElementById("kidsMenuToggle");
-const kidsSubmenu = document.getElementById("kidsSubmenu");
-
-kidsToggle.addEventListener("click", (e) => {
-  e.preventDefault(); e.stopPropagation();
-  kidsSubmenu.classList.toggle("show");
-});
-document.addEventListener("click", (e) => {
-  if (!kidsToggle.contains(e.target)) {
-    kidsSubmenu.classList.remove("show");
-  }
-});
-
-  document.querySelectorAll(".kids-submenu a").forEach(link => {
-    link.addEventListener("click", (e) => {
-      e.stopPropagation(); // Prevent toggle handler from firing
-      kidsSubmenu.classList.remove("show"); // Hide submenu after click
-    });
-  });
-</script>

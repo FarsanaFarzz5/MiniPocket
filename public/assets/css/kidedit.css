@@ -97,7 +97,7 @@ html, body {
     border: 1.6px solid #dcdcdc;
     border-radius: 10px;
     background: #fff;
-    color: #333;
+    color: #000;
     transition: all 0.25s ease;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
   }
@@ -166,9 +166,22 @@ html, body {
   .kid-form input[readonly],
   .kid-form select[disabled] {
     background: #ffffff;
-    color: #333; /* ✅ Corrected gender field color */
+    color: #000 !important; /* Force black text */
     cursor: not-allowed;
   }
+/* ✅ FINAL FIX — Make Gender Field Always Black Text */
+.kid-form select {
+  color: #000 !important; /* Ensure selected value is black */
+  background-color: #fff !important; /* White background */
+  -webkit-text-fill-color: #000 !important; /* For Safari/Chrome autofill */
+  appearance: none;
+}
+
+.kid-form select option {
+  color: #000 !important; /* Dropdown options text black */
+  background-color: #fff !important;
+}
+
 
   select[disabled] {
     -webkit-appearance: none;
@@ -230,6 +243,11 @@ html, body {
   transform: translateY(-2px);
 }
 
+/* ✅ Fix gender field text color */
+.kid-form select {
+  color: #000 !important; /* Force black text */
+}
+
 /* ✅ Responsive fix */
 @media (max-width: 480px) {
   .logout-icon {
@@ -250,3 +268,10 @@ html, body {
     h1 { font-size: 14px; margin-bottom: 14px; }
   }
  
+  /* ✅ Force black text color in disabled gender select */
+.kid-form select[disabled] {
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important; /* Safari fix */
+  opacity: 1 !important; /* Remove greyed-out look */
+  background-color: #fff !important;
+}

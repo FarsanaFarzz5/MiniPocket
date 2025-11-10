@@ -23,7 +23,7 @@
 
       <!-- Orange Card -->
       <div class="orange-card">
-        <img src="{{ asset('images/kid sitting.png') }}" class="kid-image" alt="Kid Illustration" />
+        <img src="{{ asset('images/kidhero.png') }}" class="kid-image" alt="Kid Illustration" />
         <div class="content">
           <h3>Hi,</h3>
           <h3><span>{{ ucfirst($user->first_name) }}</span></h3>

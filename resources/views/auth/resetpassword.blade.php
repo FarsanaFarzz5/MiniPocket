@@ -18,7 +18,7 @@
 
       <!-- Logo -->
       <div class="logo-section">
-        <img src="{{ asset('images/moneylogo.jpg') }}" alt="Mini Pocket Logo">
+        <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
       </div>
 
       <!-- Title -->

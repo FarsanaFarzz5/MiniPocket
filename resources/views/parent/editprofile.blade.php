@@ -21,10 +21,7 @@
 
       @include('sidebar.sidebar')
 
-      <!-- ✅ Logo -->
-      <div class="logo-section">
-        <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
-      </div>
+     @include('headerparent')
 
       <!-- ✅ Heading -->
       <h1>Edit Profile</h1>

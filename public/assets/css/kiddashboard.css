@@ -85,15 +85,19 @@ html, body {
   border-radius: 50%;
 }
 
-/* 👦 Kid Image (Left) */
+/* 👦 Kid image — larger but stays in same position */
 .kid-image {
-  width: 36%;
-  max-width: 140px;
+  width: 60%;                 /* wider to make kid larger */
+  max-width: 240px;           /* allows more growth */
   height: auto;
   object-fit: contain;
   flex-shrink: 0;
-  margin-left: 4px;
+  margin-left: -8px;          /* keeps proper left alignment */
+  transform: scale(1.6);      /* 70% size increase */
+  
   z-index: 2;
+  position: relative;
+  top: 0;                     /* ensures no upward shift */
 }
 
 /* 📄 Text Content (Right) */
@@ -248,7 +252,7 @@ html, body {
 @media (max-width: 400px) {
   .orange-card {
     padding: 16px;
-    min-height: 170px;
+    min-height: 200px;
   }
   .kid-image {
     width: 42%;
@@ -272,14 +276,15 @@ html, body {
 @media (min-width: 401px) and (max-width: 600px) {
   .orange-card {
     padding: 18px 20px;
-    min-height: 180px;
+    min-height: 200px;
   }
   .kid-image {
     width: 38%;
     max-width: 130px;
+    
   }
   .content {
-    padding-left: 16px;
+    padding-left: 14px;
   }
   .content h3 span {
     font-size: 1.5rem;

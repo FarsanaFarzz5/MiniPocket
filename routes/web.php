@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\Kid\KidController;
 use App\Http\Controllers\Kid\KidInvitationController;
+use App\Http\Controllers\Homepage\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,12 +18,16 @@ use App\Http\Controllers\Kid\KidInvitationController;
 |
 */
 
+// 🏡 Start Page Route
+Route::get('/', [HomeController::class, 'index'])->name('start.page');
+
 // ====================================================
 // 🏠 Landing Page
 // ====================================================
-Route::get('/', function () {
-    return view('welcome'); // Mini Pocket login/signup landing page
-});
+Route::get('/start', function () {
+    return view('welcome');
+})->name('welcome');
+
 
 
 // ====================================================
@@ -164,3 +169,4 @@ Route::post('/parent/bank/set-primary/{bankId}', [ParentController::class, 'setP
 Route::post('/parent/bank/unset-primary/{bankId}', [ParentController::class, 'unsetPrimaryBank'])->name('bank.unsetPrimary');
 
 });
+

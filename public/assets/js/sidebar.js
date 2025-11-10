@@ -1,25 +1,20 @@
-const menuToggle = document.getElementById("menuToggle");
-const sidebarMenu = document.getElementById("sidebarMenu");
-const sidebarOverlay = document.getElementById("sidebarOverlay");
 
-  // Sidebar toggle
-  menuToggle.addEventListener("click", () => {
-    menuToggle.classList.toggle("active");
-    sidebarMenu.classList.toggle("open");
-    sidebarOverlay.classList.toggle("show");
-  });
+const kidsToggle = document.getElementById("kidsMenuToggle");
+const kidsSubmenu = document.getElementById("kidsSubmenu");
 
-  // Overlay click closes sidebar
-  sidebarOverlay.addEventListener("click", () => {
-    sidebarMenu.classList.remove("open");
-    menuToggle.classList.remove("active");
-    sidebarOverlay.classList.remove("show");
-  });
+kidsToggle.addEventListener("click", (e) => {
+  e.preventDefault(); e.stopPropagation();
+  kidsSubmenu.classList.toggle("show");
+});
+document.addEventListener("click", (e) => {
+  if (!kidsToggle.contains(e.target)) {
+    kidsSubmenu.classList.remove("show");
+  }
+});
 
-  // Dropdown toggle
-  document.querySelectorAll(".dropdown-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const parent = btn.parentElement;
-      parent.classList.toggle("open");
+  document.querySelectorAll(".kids-submenu a").forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.stopPropagation(); // Prevent toggle handler from firing
+      kidsSubmenu.classList.remove("show"); // Hide submenu after click
     });
   });

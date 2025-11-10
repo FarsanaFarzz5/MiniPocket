@@ -19,12 +19,9 @@
     <div class="inner-container">
 
       @include('sidebar.sidebar')
+        @include('headerparent')
 
-      <!-- ✅ Logo Section -->
-      <div class="logo-section">
-        <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
-      </div>
-
+     
       <!-- ✅ Heading -->
       <h1>{{ $user->first_name }}’s Kids</h1>
 
@@ -73,27 +70,7 @@
     </div>
   </div>
 
-  <!-- ✅ JavaScript -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const cards = document.querySelectorAll(".kid-card");
-
-      cards.forEach((card) => {
-        card.addEventListener("click", () => {
-          const index = card.dataset.index;
-          const clickedDetails = document.getElementById("details-" + index);
-          const isVisible = clickedDetails.style.display === "block";
-
-          document.querySelectorAll(".details").forEach((d) => d.style.display = "none");
-          cards.forEach((c) => c.classList.remove("active"));
-
-          if (!isVisible) {
-            clickedDetails.style.display = "block";
-            card.classList.add("active");
-          }
-        });
-      });
-    });
-  </script>
+  
+<script src="{{ asset('assets/js/kiddetails.js') }}"></script>
 </body>
 </html>

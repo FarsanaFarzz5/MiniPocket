@@ -24,12 +24,12 @@
     <div class="inner-container">
         <!-- Banner Image -->
         <div class="banner">
-            <img src="{{ asset('images/kid.jpg') }}" alt="Banner Image">
+            <img src="{{ asset('images/mini 04.png') }}" alt="Banner Image">
         </div>
 
         <!-- Logo -->
         <div class="logo">
-            <img src="{{ asset('images/moneylogo.jpg') }}" alt="Mini Pocket Logo">
+            <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
         </div>
 
         <!-- Welcome text -->
@@ -51,14 +51,7 @@
     </div>
 </div>
 
-<script>
-    // Register service worker for PWA
-    if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/service-worker.js")
-        .then(() => console.log("Service Worker Registered"))
-        .catch(err => console.log("SW registration failed:", err));
-    }
-</script>
+<script src="{{ asset('assets/js/welcome.js') }}"></script>
 
 </body>
 </html>

@@ -1,0 +1,27 @@
+
+    /* ===========================================================
+🧭 TOPBAR — Sidebar + Logo in one line
+=========================================================== */
+.topbar {
+  width: 100%;
+  display: flex;
+  justify-content: center !important; /* ✅ centers logo horizontally */
+  align-items: center;
+  background: #fff;
+  margin-bottom: 12px;
+  position: relative;
+  margin-top: 20px;
+}
+
+.logo-center img {
+  width: 95px; /* ✅ same scale as shown in the screenshot */
+  height: auto;
+  object-fit: contain;
+  filter: brightness(1.1) saturate(1.1);
+  transition: transform 0.3s ease;
+}
+
+.logo-center img:hover {
+  transform: scale(1.05);
+}
+

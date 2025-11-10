@@ -28,61 +28,41 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* ===========================================================
-🧱 MAIN CONTAINER
-=========================================================== */
+
 .container {
   width: 100%;
   max-width: 420px;
-  min-height: 100dvh;
+  height: 100vh; /* ✅ full visible height */
   background: #fff;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  padding: 20px 22px 40px;
+  padding: 0px 22px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  position: fixed; /* ✅ keeps container fixed on screen */
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  overflow: hidden; /* ✅ prevents page scroll */
   z-index: 1;
 }
 
+/* ===========================================================
+🧭 INNER CONTAINER (Scrolls independently)
+=========================================================== */
 .inner-container {
   width: 100%;
+  flex: 1;
   text-align: center;
-  height: auto;
-  overflow: visible;
+  overflow-y: auto; /* ✅ scroll only here */
+  -webkit-overflow-scrolling: touch;
+  padding: 0 0 100px;
 }
 
 @supports (padding: max(0px)) {
-  .container {
+  .inner-container {
     padding-bottom: max(100px, env(safe-area-inset-bottom));
   }
-}
-
-/* ===========================================================
-🧭 TOPBAR — Sidebar + Logo in one line
-=========================================================== */
-.topbar {
-  width: 100%;
-  display: flex;
-  justify-content: center !important; /* ✅ centers logo horizontally */
-  align-items: center;
-  background: #fff;
-  margin-bottom: 12px;
-  position: relative;
-}
-
-.logo-center img {
-  width: 95px; /* ✅ same scale as shown in the screenshot */
-  height: auto;
-  object-fit: contain;
-  filter: brightness(1.1) saturate(1.1);
-  transition: transform 0.3s ease;
-}
-
-.logo-center img:hover {
-  transform: scale(1.05);
 }
 
 
@@ -299,6 +279,22 @@ button,
 📱 RESPONSIVE DESIGN (Mobile)
 =========================================================== */
 @media (max-width: 480px) {
+
+    html, body {
+    height: 100%;
+    overflow: hidden; /* ✅ prevent whole-page scroll */
+  }
+
+  .container {
+    height: 100dvh; /* ✅ ensures full viewport height (mobile-safe) */
+    position: fixed;
+  }
+
+  .inner-container {
+    height: 100%;
+    overflow-y: auto;
+  }
+
 .parent-card {
   max-width: 95%;
   padding: 24px 20px; /* ⬆ increased inner space */

@@ -16,426 +16,6 @@
   <link rel="stylesheet" href="{{ asset('assets/css/gifts.css') }}">
 </head>
 
-
-<style>
-  /* ========== GLOBAL RESET ========== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  background: #f2f2f2;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  overflow: hidden;
-}
-
-/* ================= CONTAINER ================= */
-.container {
-  width: 100%;
-  max-width: 420px;
-  height: 100dvh;
-  background: #fff;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.inner-container {
-  flex: 1;
-  width: 100%;
-  overflow-y: auto;
-  padding: 16px 20px 110px; /* bottom space for FAB */
-  position: relative;
-  z-index: 1;
-}
-
-/* ================= HERO ================= */
-.hero {
-  position: relative;
-  background: linear-gradient(145deg, #ffb347 0%, #ff8a00 80%);
-  border-radius: 22px;
-  margin: 0.5rem 0 1.5rem;
-  padding: 1.8rem 1rem;
-  text-align: center;
-  color: #fff;
-  box-shadow: 0 10px 25px rgba(255,140,0,0.25);
-  overflow: hidden;
-}
-
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), transparent 70%);
-}
-
-.hero::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -80%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(120deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 60%, transparent 100%);
-  transform: skewX(-25deg);
-  animation: shineMove 5s infinite;
-}
-
-@keyframes shineMove {
-  0% { left: -80%; }
-  50% { left: 120%; }
-  100% { left: 120%; }
-}
-
-.hero h2 {
-  position: relative;
-  font-weight: 700;
-  font-size: 1.35rem;
-  z-index: 3;
-  margin: 0;
-  letter-spacing: 0.4px;
-  right: 12px;
-}
-
-.gift-box {
-  position: absolute;
-  top: 6px;
-  right: 25px;
-  width: 70px;
-  animation: floatGift 3s ease-in-out infinite;
-  z-index: 3;
-}
-
-@keyframes floatGift {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-    /* ===== Falling Coins (Inside Hero) ===== */
-.coin {
-  position: absolute;
-  top: -20px;
-  width: 15px;
-  height: 15px;
-  background: radial-gradient(circle at 30% 30%, #ffd700, #ffb347 70%);
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-  animation: fall 4s linear infinite;
-  z-index: 2;
-  opacity: 0.9;
-}
-
-/* Position each coin differently */
-.coin:nth-child(3) { left: 25%; animation-delay: 0s; }
-.coin:nth-child(4) { left: 55%; animation-delay: 1s; }
-.coin:nth-child(5) { left: 80%; animation-delay: 2s; }
-
-@keyframes fall {
-  0% {
-    transform: translateY(-10px) rotate(0deg) scale(1);
-    opacity: 0;
-  }
-  10% { opacity: 1; }
-  50% {
-    transform: translateY(80px) rotate(180deg) scale(1.05);
-  }
-  90% { opacity: 1; }
-  100% {
-    transform: translateY(130px) rotate(360deg) scale(0.9);
-    opacity: 0;
-  }
-}
-
-    
-
-    /* ===== Hero (Orange Banner) ===== */
-    .hero {
-      position: relative;
-      background: linear-gradient(145deg, #ffb347 0%, #ff8a00 80%);
-      border-radius: 22px;
-      margin: 0.5rem 0 1.5rem;
-      padding: 1.8rem 1rem;
-      text-align: center;
-      color: #fff;
-      box-shadow: 0 10px 25px rgba(255,140,0,0.25);
-      overflow: hidden;
-    }
-
-    .hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), transparent 70%);
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -80%;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(120deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 60%, transparent 100%);
-      transform: skewX(-25deg);
-      animation: shineMove 5s infinite;
-    }
-
-    @keyframes shineMove {
-      0% { left: -80%; }
-      50% { left: 120%; }
-      100% { left: 120%; }
-    }
-
-    .hero h2 {
-      position: relative;
-      font-weight: 700;
-      font-size: 1.35rem;
-      z-index: 3;
-      margin: 0;
-      letter-spacing: 0.4px;
-      right:12px;
-    }
-
-    .gift-box {
-      position: absolute;
-      top: 6px;
-      right: 25px;
-      width: 70px;
-      animation: floatGift 3s ease-in-out infinite;
-      z-index: 3;
-    }
-
-    @keyframes floatGift {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    /* ===== Summary Cards ===== */
-    .summary-wrapper {
-      display: flex;
-      justify-content: space-between;
-      align-items: stretch;
-      margin-bottom: 1.8rem;
-      gap: 14px;
-    }
-
-    .summary-card,
-    .target-card {
-      flex: 1;
-      border-radius: 18px;
-      padding: 1.2rem 0.8rem;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      transition: all 0.3s ease;
-    }
-
-    .summary-card h4,
-    .target-card h4 {
-      font-weight: 600;
-      font-size: 0.85rem;
-      margin-bottom: 6px;
-      letter-spacing: 0.3px;
-    }
-
-    .summary-card h2,
-    .target-card .amount {
-      font-size: 1.45rem;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    .summary-card {
-      background: #f8fff8;
-      border: 1px solid #d6f5dc;
-      box-shadow: 0 6px 14px rgba(35,165,65,0.08);
-    }
-
-    .summary-card h4 { color: #4d784d; }
-    .summary-card h2 { color: #23a541; }
-
-    .target-card {
-      background: #fff9f3;
-      border: 1px solid #ffe5c2;
-      box-shadow: 0 6px 14px rgba(255,165,0,0.08);
-    }
-
-    .target-card h4 { color: #ff8a00; }
-    .target-card .amount { color: #ff8a00; }
-
-    /* ===== Gift Cards ===== */
-    .gift-section {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-/* ===== Gift Card PIXEL PERFECT (same as screenshot) ===== */
-.gift-card {
-  background: #ffffff;
-  border: 1px solid rgba(255, 165, 0, 0.25);
-  border-radius: 22px;
-  padding: 18px 18px 20px;
-  box-shadow: 0px 6px 18px rgba(255, 138, 0, 0.15);
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.gift-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0px 8px 22px rgba(255, 138, 0, 0.22);
-}
-
-/* ✅ Input + Button SAME HEIGHT + PERFECT GAP */
-.gift-form {
-  display: flex;
-  align-items: center;
-  gap: 8px;            /* controls spacing between input & Add button */
-}
-
-.gift-input {
-  height: 36px !important;       /* reduced height */
-  font-size: 0.82rem;
-  border-radius: 12px;
-  border: 1.8px solid #d0d0d0;
-  padding: 8px 12px;
-  outline: none;
-  width: 118px;
-}
-
-.gift-input:focus {
-  border-color: #ff8a00;
-  box-shadow: 0 0 4px rgba(255, 138, 0, 0.35);
-}
-
-/* ✅ Add button same height as input */
-.gift-add-btn {
-  height: 36px;
-  padding: 0px 22px;
-  background: #23a541;
-  border: none;
-  color: white;
-  font-size: 0.85rem;
-  font-weight: 600;
-  border-radius: 12px;
-}
-
-
-
-.gift-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.gift-header h5 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #ff7a00;
-  margin: 0;
-}
-
-.goal-status {
-  font-size: 0.72rem;
-  padding: 4px 14px;
-  border-radius: 30px;
-  font-weight: 600;
-  color: #fff;
-}
-
-.goal-status.completed {
-  background: #23a541;
-}
-
-.goal-status.progress {
-  background: #ff8a00;
-}
-
-.progress-line {
-  width: 100%;
-  height: 7px;                            /* thinner */
-  background: #ebebeb;
-  border-radius: 30px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.progress-line span {
-  background: #ff8a00;
-  height: 100%;
-  border-radius: inherit;
-  display: block;
-}
-
-    .target-info {
-      font-size: 0.85rem;
-      color: #333;
-      font-weight: 500;
-      margin: 0.6rem 0 0.8rem;
-      text-align: left;
-    }
-
-    .pay-now-btn {
-      display: block;
-      width: 100%;
-      background: linear-gradient(135deg, #23a541, #33c56c);
-      color: #fff;
-      font-weight: 600;
-      font-size: 0.95rem;
-      padding: 10px 0;
-      border: none;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(35,165,65,0.25);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin-top: 10px;
-    }
-
-    .pay-now-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 7px 20px rgba(35,165,65,0.35);
-    }
-
-    .fab {
-      position: fixed;
-      bottom: 75px;
-      right: calc(50% - 180px);
-      background: linear-gradient(145deg, #ffb347, #ff8a00);
-      color: #fff;
-      font-size: 1.6rem;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 6px 18px rgba(255,138,0,0.4);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      z-index: 100;
-    }
-
-    .fab:hover {
-      transform: scale(1.1);
-      box-shadow: 0 10px 25px rgba(255,138,0,0.5);
-    }
-
-    
-  </style>
-</head>
-
 <body>
   <div class="container">
     <div class="inner-container">
@@ -495,7 +75,15 @@ html, body {
             </div>
 
             <div class="progress-line"><span style="width: {{ $progress }}%;"></span></div>
-            <p class="target-info mb-0">Target: ₹{{ number_format($gift->target_amount, 2) }}</p>
+           @php
+  $needed = max($gift->target_amount - $gift->saved_amount, 0);
+@endphp
+
+<div class="target-info d-flex justify-content-between mb-0">
+  <span>Saved: ₹{{ number_format($gift->saved_amount, 2) }}</span>
+  <span>Target: ₹{{ number_format($needed, 2) }}</span>
+</div>
+
 
             @if($gift->saved_amount >= $gift->target_amount)
               <button class="pay-now-btn">Pay Now</button>
@@ -504,10 +92,24 @@ html, body {
   @csrf
   <input type="hidden" name="gift_id" value="{{ $gift->id }}">
 
-  <input type="number" name="amount" class="gift-input"
-         placeholder="Save amount" min="1"
-         max="{{ $gift->target_amount - $gift->saved_amount }}"
-         required>
+@php
+   $remaining = $gift->target_amount - $gift->saved_amount;
+@endphp
+
+<input type="text" name="amount" class="gift-input"
+       placeholder="Save amount"
+       inputmode="numeric"
+       pattern="[0-9]*"
+       max="{{ $remaining }}"
+       oninput="
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value !== '' && parseInt(this.value) > {{ $remaining }}) {
+                this.value = {{ $remaining }};
+            }
+       "
+       required>
+
+
 
   <button type="submit" class="gift-add-btn">Add</button>
 </form>
@@ -525,15 +127,47 @@ html, body {
     <div class="fab" onclick="window.location.href='{{ route('kid.gifts.add') }}'">
       <i class="bi bi-plus-lg"></i>
     </div>
+
+    @if(session('success'))
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+      showToast("success", "{{ session('success') }}");
+  });
+</script>
+@endif
+
+    <!-- ✅ Toast Alert -->
+<div id="alertToast" class="alert-toast"></div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+/* ✅ Toast function */
+function showToast(type, message) {
+  const toast = document.getElementById("alertToast");
+  toast.className = `alert-toast alert-${type}`;
+  toast.textContent = message;
+
+  requestAnimationFrame(() => {
+    toast.classList.add("show");
+  });
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2800);
+}
+
+
     document.querySelectorAll('.pay-now-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         window.location.href = "{{ route('kid.scanqr') }}";
       });
     });
+
+    document.querySelectorAll("input[type=number]").forEach(input => {
+    input.addEventListener("wheel", e => e.preventDefault());
+});
   </script>
 </body>
 </html>

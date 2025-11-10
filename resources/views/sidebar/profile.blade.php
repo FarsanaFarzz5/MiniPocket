@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="{{ asset('assets/css/profile.css') }}">
+
 <!-- ===== KID FOOTER NAVIGATION ===== -->
 <div class="footer-container">
   <nav class="footer-nav">
@@ -68,82 +70,4 @@
   </nav>
 </div>
 
-<!-- ===== CSS (same as yours) ===== -->
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Poppins", sans-serif; background: #fff; overflow-x: hidden; }
 
-/* ===== Footer ===== */
-.footer-container {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 420px;
-  z-index: 500;
-}
-
-/* Footer Nav */
-.footer-nav {
-  background: #ffffff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0 6px;
-  border-top: 1px solid #e0f3e6;
-  box-shadow: 0 -3px 10px rgba(35, 165, 65, 0.08);
-  border-radius: 12px 12px 0 0;
-  transition: all 0.3s ease;
-}
-
-/* Nav Items */
-.nav-item {
-  flex: 1;
-  text-align: center;
-  text-decoration: none;
-  position: relative;
-}
-
-.icon-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px ;
-}
-
-.icon-wrapper span {
-  font-size: 11px;
-  font-weight: 500;
-  color: #7b8a7b;
-  transition: color 0.3s ease;
-}
-
-/* SVG Icon Effects */
-.nav-item svg {
-  opacity: 0.9;
-  transition: transform 0.25s ease, filter 0.25s ease;
-  filter: drop-shadow(0 0 1px rgba(35, 165, 65, 0.2));
-}
-
-/* Active + Hover */
-.nav-item.active .icon-wrapper span,
-.nav-item:hover .icon-wrapper span {
-  color: #23a541;
-}
-
-.nav-item.active svg,
-.nav-item:hover svg {
-  transform: scale(1.12);
-  filter: drop-shadow(0 0 3px rgba(35, 165, 65, 0.3));
-}
-
-
-
-/* Responsive */
-@media (max-width: 480px) {
-  .footer-nav { padding: 10px 0 5px; }
-  .nav-item svg { width: 24px; height: 24px; }
-  .icon-wrapper span { font-size: 10.5px; }
-}
-</style>
