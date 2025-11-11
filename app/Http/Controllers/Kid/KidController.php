@@ -31,10 +31,10 @@ class KidController extends Controller
             ->sum('amount');
 
         // ✅ Total spent (debits by kid)
-        $spentMoney = Transaction::where('kid_id', $user->id)
-            ->where('type', 'debit')
-            ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_saving'])
-            ->sum('amount');
+     $spentMoney = Transaction::where('kid_id', $user->id)
+    ->where('type', 'debit')
+    ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_payment']) // ✅ added
+    ->sum('amount');
 
         // ✅ Current balance
         $balance = $receivedMoney - $spentMoney;
@@ -52,15 +52,17 @@ class KidController extends Controller
 
         // ✅ All related transactions
         $transactions = Transaction::where('kid_id', $user->id)
-            ->where(function ($query) {
-                $query->where('type', 'credit')
-                      ->orWhere(function ($q) {
-                          $q->where('type', 'debit')
-                            ->where('source', 'kid_spending');
-                      });
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
+    ->where(function ($query) {
+        $query->where('type', 'credit')
+              ->orWhere(function ($q) {
+                  $q->where('type', 'debit')
+                    ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_payment']);
+              });
+    })
+    ->orderBy('created_at', 'desc')
+    ->take(2)
+    ->get();
+
 
         return view('kid.kiddashboard', compact(
             'user',
@@ -68,7 +70,8 @@ class KidController extends Controller
             'spentMoney',
             'balance',
             'remainingLimit',
-            'transactions'
+            'transactions',
+            
         ));
     }
 
@@ -276,32 +279,43 @@ public function sendMoney(Request $request)
     /**
      * 📜 Kid Transactions
      */
-    public function kidTransactions()
+  public function kidTransactions()
     {
         $user = Auth::user();
         if ($user->role != 2) abort(403, 'Unauthorized');
 
-        $transactions = Transaction::where('kid_id', $user->id)
-            ->where(function ($query) {
-                $query->where('type', 'credit')
-                      ->orWhere(function ($q) {
-                          $q->where('type', 'debit')
-                            ->where('source', 'kid_spending');
-                      });
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
+$transactions = Transaction::where('kid_id', $user->id)
+    ->where(function ($query) {
+        $query->where('type', 'credit')
+              ->orWhere(function ($q) {
+                  $q->where('type', 'debit')
+                    ->whereIn('source', [
+                        'kid_spending',
+                        'goal_saving',
+                        'gift_payment',
+                    ]);
+              });
+    })
+    ->orderBy('created_at', 'desc')
+    
+    ->get();
 
-        $receivedMoney = Transaction::where('kid_id', $user->id)
-            ->where('type', 'credit')
-            ->sum('amount');
+$receivedMoney = Transaction::where('kid_id', $user->id)
+    ->where('type', 'credit')
+    ->sum('amount');
 
-        $spentMoney = Transaction::where('kid_id', $user->id)
-            ->where('type', 'debit')
-            ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_saving'])
-            ->sum('amount');
+// ❌ don't include gift_payment here
+$spentMoney = Transaction::where('kid_id', $user->id)
+    ->where('type', 'debit')
+    ->whereIn('source', [
+        'kid_spending',
+        'goal_saving',
+        'gift_saving',
+    ])
+    ->sum('amount');
 
-        $balance = $receivedMoney - $spentMoney;
+$balance = $receivedMoney - $spentMoney;
+
 
         return view('kid.kidtransaction', compact('user', 'transactions', 'balance'));
     }
@@ -522,5 +536,50 @@ public function storeGift(Request $request)
 
     return back()->with('success', '₹' . $request->amount . ' added to your gift successfully!');
 }
+
+public function sendGiftMoney(Request $request)
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
+
+    $request->validate([
+        'amount' => 'required|numeric|min:1',
+        'description' => 'nullable|string|max:255',
+    ]);
+
+    if (!$user->parent_id) {
+        return response()->json([
+            'success' => false,
+            'message' => 'No parent assigned. Cannot proceed.',
+        ], 400);
+    }
+
+    // ✅ The amount was already deducted during gift_saving
+    // So we just record a "gift_payment" reference (no balance recalculation)
+
+    Transaction::create([
+        'parent_id'   => $user->parent_id,
+        'kid_id'      => $user->id,
+        'amount'      => $request->amount,
+        'type'        => 'debit',
+        'status'      => 'completed',
+        'source'      => 'gift_payment',
+        'description' => 'Paid for gift: ' . ($request->description ?? 'Gift'),
+    ]);
+
+    // ✅ Optionally hide this gift (so it doesn’t appear again)
+    $gift = Gift::where('title', $request->description)
+                ->where('kid_id', $user->id)
+                ->first();
+    if ($gift) {
+        session(['paid_gift_id' => $gift->id]);
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => '🎁 Gift payment recorded successfully!',
+    ]);
+}
+
 
 }

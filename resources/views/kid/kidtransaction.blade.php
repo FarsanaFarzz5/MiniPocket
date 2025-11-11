@@ -41,7 +41,19 @@
                 @if($txn->type === 'credit') ↑ @else ↓ @endif
               </div>
               <div class="info">
-                <h4>{{ $txn->type === 'credit' ? 'Received from Parent' : 'Spent for Needs' }}</h4>
+                <h4>
+  @if($txn->type === 'credit')
+    Received from Parent
+  @else
+    @switch($txn->source)
+      @case('kid_spending') Spent for Needs @break
+      @case('goal_saving') Added to Goal @break
+      @case('gift_payment') Gift Purchased  @break
+      @default Spent @break
+    @endswitch
+  @endif
+</h4>
+
                 <span>{{ $txn->created_at->format('d M Y, h:i A') }}</span>
               </div>
               <div class="amount {{ $txn->type === 'credit' ? 'credit' : 'debit' }}">

@@ -87,6 +87,7 @@ Route::get('/kid/gifts', [KidController::class, 'showGifts'])->name('kid.gifts')
 Route::get('/kid/gifts/add', [KidController::class, 'addGiftPage'])->name('kid.gifts.addpage');
 Route::post('/kid/gifts', [KidController::class, 'storeGift'])->name('kid.gifts.store');
 Route::post('/kid/gifts/add', [KidController::class, 'addGiftSaving'])->name('kid.gifts.add');
+Route::post('/kid/sendgiftmoney', [KidController::class, 'sendGiftMoney'])->name('kid.sendgiftmoney');
 
 
     

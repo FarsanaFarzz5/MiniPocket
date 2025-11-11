@@ -56,6 +56,7 @@
       </div>
 
       <!-- ✅ Transaction Section (won’t affect any card sizes) -->
+<!-- ✅ Transaction Section (won’t affect any card sizes) -->
 <div style="
   width:100%;
   margin-top:26px;
@@ -64,27 +65,74 @@
   box-sizing:border-box;
 ">
   <h3 style="font-size:15px;font-weight:600;color:#333;margin-bottom:10px;">Recent Transactions</h3>
+
   @if($transactions->isEmpty())
     <p style="text-align:center;color:#aaa;font-size:13px;">No transactions yet.</p>
   @else
+
     <div style="background:#fff;border-radius:14px;box-shadow:0 4px 10px rgba(0,0,0,0.05);padding:14px;width:100%;box-sizing:border-box;">
-      @foreach($transactions->take(2) as $txn)
+
+      @foreach($transactions as $txn)
+
+        @php
+            // If description contains ":" (example: "Paid for gift: Headphones")
+            $parts = explode(':', $txn->description);
+            $mainText = ucfirst(trim($parts[0]));           // Paid for gift
+            $itemName = ucfirst(trim($parts[1] ?? ''));     // Headphones
+        @endphp
+
         <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid #eee;">
           <div>
+
+            <!-- ✅ First line: Always show clean description -->
             <span style="display:block;font-size:14px;font-weight:600;color:#333;">
-              {{ ucfirst($txn->description ?? 'Transaction') }}
+                @if($txn->source === 'gift_payment')
+                    {{ $mainText }}    <!-- Paid for gift -->
+                @else
+                    {{ ucfirst($txn->description ?? 'Transaction') }}
+                @endif
             </span>
+
+            <!-- ✅ Second line: Only item name for gift -->
             <span style="display:block;font-size:12px;color:#777;">
-              {{ $txn->type == 'credit' ? 'Received from Parent' : 'Payment Made' }}
+                @if($txn->type === 'credit')
+                    Received from Parent
+                @else
+                    @switch($txn->source)
+
+                        @case('kid_spending')
+                            Spent for Needs
+                            @break
+
+                        @case('goal_saving')
+                            Added to Goal
+                            @break
+
+                        @case('gift_payment')
+                            {{ $itemName }}   <!-- Headphones only -->
+                            @break
+
+                        @default
+                            Spent
+                            @break
+
+                    @endswitch
+                @endif
             </span>
           </div>
+
+          <!-- ✅ Amount + Date -->
           <div style="text-align:right;">
             <span style="display:block;font-size:14px;font-weight:600;color:{{ $txn->type == 'credit' ? '#23a541' : '#e53935' }}">
               {{ $txn->type == 'credit' ? '+' : '-' }}₹{{ number_format($txn->amount, 2) }}
             </span>
-            <span style="display:block;font-size:12px;color:#999;">{{ $txn->created_at->format('d-m-Y') }}</span>
+            <span style="display:block;font-size:12px;color:#999;">
+              {{ $txn->created_at->format('d-m-Y') }}
+            </span>
           </div>
+
         </div>
+
       @endforeach
 
       <div style="text-align:center;margin-top:12px;">
@@ -95,9 +143,11 @@
           All Transactions
         </button>
       </div>
+
     </div>
   @endif
 </div>
+
 
     </div>
   </div>

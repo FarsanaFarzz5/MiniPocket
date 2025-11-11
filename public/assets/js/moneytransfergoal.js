@@ -3,35 +3,20 @@ const hiddenAmount = document.getElementById("hiddenAmount");
 const form = document.querySelector("form");
 const toast = document.getElementById("alertToast");
 
-// ✅ Toast
+// ✅ Toast message
 function showToast(msg, type = "success") {
   toast.innerText = msg;
   toast.className = "alert-toast show alert-" + type;
   setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
-// ✅ Redirect
+// ✅ Redirect with delay
 function redirect(message) {
   showToast(message, "error");
   setTimeout(() => window.location.href = DASHBOARD_URL, 1500);
 }
 
-// ✅ Pre-fill gift data
-const savedGiftAmount = localStorage.getItem("giftAmount");
-const savedGiftReason = localStorage.getItem("giftReason");
-
-if (savedGiftAmount) {
-  amountInput.value = savedGiftAmount;
-  hiddenAmount.value = savedGiftAmount;
-  amountInput.style.width = amountInput.value.length * 24 + 40 + "px";
-}
-
-if (savedGiftReason) {
-  const reasonBox = form.querySelector('[name="description"]');
-  if (reasonBox) reasonBox.value = savedGiftReason;
-}
-
-// ✅ Submit form
+// ✅ Form submission
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const enteredAmount = parseFloat(amountInput.value);
@@ -43,11 +28,8 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  // ✅ Use gift payment endpoint if gift data exists
-  const targetUrl = savedGiftAmount ? "/kid/sendgiftmoney" : SEND_URL;
-
   try {
-    const response = await fetch(targetUrl, {
+    const response = await fetch(SEND_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,8 +47,6 @@ form.addEventListener("submit", async (e) => {
 
     showToast(`✅ ₹${enteredAmount} spent successfully!`, "success");
     setTimeout(() => {
-      localStorage.removeItem("giftAmount");
-      localStorage.removeItem("giftReason");
       showToast("Redirecting to dashboard...", "success");
       setTimeout(() => window.location.href = DASHBOARD_URL, 1500);
     }, 1800);
