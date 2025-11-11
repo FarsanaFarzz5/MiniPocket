@@ -47,9 +47,9 @@
           <input type="tel" name="phone_no" id="phone_no" maxlength="10" value="{{ old('phone_no', $user->phone_no) }}" placeholder="Phone Number">
         </div>
 
-        <div class="floating-group">
+        {{-- <div class="floating-group">
           <input type="date" name="dob" id="dob" value="{{ old('dob', $user->dob) }}" placeholder="Date of Birth">
-        </div>
+        </div> --}}
 
         <button type="submit">Update Profile</button>
       </form>

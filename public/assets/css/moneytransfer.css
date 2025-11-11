@@ -190,6 +190,7 @@ form {
 
 /* ========================= TOAST ========================= */
 .alert-toast {
+  width: 85% !important;
   position: fixed;
   bottom: 25px;
   left: 50%;

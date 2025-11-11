@@ -13,9 +13,13 @@ class Goal extends Model
         'title',
         'target_amount',
         'saved_amount',
+        'status',
         'image',
     ];
 
+    protected $attributes = [
+    'status' => 0, // default incomplete
+];
     public function savings()
     {
         return $this->hasMany(GoalSaving::class);

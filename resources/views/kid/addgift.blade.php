@@ -12,6 +12,39 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="{{ asset('assets/css/addgift.css') }}">
+
+  <style>
+    /* ✅ Toast Alert Message */
+    .alert-toast {
+      position: fixed;
+      bottom: 85px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 18px;
+      background: #333;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 10px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease-in-out;
+      z-index: 9999;
+    }
+    .alert-toast.show {
+      opacity: 1;
+      visibility: visible;
+      bottom: 100px;
+    }
+    .alert-success {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+    }
+    .alert-error {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+    }
+  </style>
 </head>
 
 <body>
@@ -58,13 +91,33 @@
     </div>
   </div>
 
+  <!-- ✅ Alert Toast -->
+  <div id="alertToast" class="alert-toast"></div>
+
   <script>
-    // ✅ Only scroll input into view when keyboard opens on mobile, no page freeze
+    // ✅ Only scroll input into view when keyboard opens on mobile
     document.querySelectorAll("input").forEach(input => {
       input.addEventListener("focus", () => {
         setTimeout(() => input.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
       });
     });
+
+    // ✅ Toast message function
+    const toast = document.getElementById("alertToast");
+    function showToast(msg, type = "success") {
+      toast.innerText = msg;
+      toast.className = `alert-toast show alert-${type}`;
+      setTimeout(() => toast.classList.remove("show"), 2500);
+    }
+
+    // ✅ If success message passed from backend
+    @if(session('success'))
+      showToast("{{ session('success') }}", "success");
+    @endif
+
+    @if(session('error'))
+      showToast("{{ session('error') }}", "error");
+    @endif
   </script>
 
 </body>

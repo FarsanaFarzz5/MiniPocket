@@ -22,7 +22,6 @@
 
       @include('sidebar.profile')
       @include('header')
-
       <!-- Hero -->
       <div class="hero">
         <img src="{{ asset('images/gift-box.png') }}" alt="Gift Box" class="gift-box">
@@ -38,7 +37,8 @@
       <div class="summary-wrapper">
         <div class="summary-card">
           <h4>Total Saved</h4>
-          <h2>₹{{ number_format($gifts->sum('saved_amount') ?? 0) }}</h2>
+          <h2>₹{{ number_format($gifts->where('status', 0)->sum('saved_amount')) }}</h2>
+
         </div>
 
         <div class="target-card">
@@ -56,8 +56,8 @@
       <section class="gift-section">
         @forelse($gifts as $gift)
 
- @if(session('paid_gift_id') == $gift->id)
-    @continue   {{-- ✅ hides that gift only once --}}
+@if($gift->status == 1)
+   @continue   {{-- ✅ hide gift card permanently once paid --}}
 @endif
 
 
@@ -137,13 +137,13 @@
       <i class="bi bi-plus-lg"></i>
     </div>
 
-    @if(session('success'))
-      <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            showToast("success", "{{ session('success') }}");
-        });
-      </script>
-    @endif
+@if(session('success'))
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    showToast("{{ session('success') }}", "success");
+});
+</script>
+@endif
 
     <div id="alertToast" class="alert-toast"></div>
 
@@ -156,21 +156,27 @@ const toast = document.getElementById("alertToast");
 // ✅ Toast message
 function showToast(msg, type = "success") {
   toast.innerText = msg;
-  toast.className = "alert-toast show alert-" + type;
+  toast.className = `alert-toast show alert-${type}`;
   setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
-// ✅ Handle "Pay Now" button click
+// ✅ If redirected from Add Gift page, show toast
+@if(session('success'))
+  document.addEventListener("DOMContentLoaded", () => {
+      showToast("{{ session('success') }}", "success");
+  });
+@endif
+
+// ✅ Handle "Pay Now"
 document.querySelectorAll(".pay-now-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const amount = btn.dataset.amount;
     const title = btn.dataset.title;
 
-    // Save in localStorage for moneytransfer.js
     localStorage.setItem("giftAmount", amount);
     localStorage.setItem("giftReason", title);
 
-    showToast(`🎁 Redirecting to scanner for ${title}...`, "success");
+    showToast(`Redirecting to scanner for ${title}...`, "success");
 
     setTimeout(() => {
       window.location.href = '/kid/scan-qr';
@@ -178,6 +184,7 @@ document.querySelectorAll(".pay-now-btn").forEach(btn => {
   });
 });
 </script>
+
 
 </body>
 </html>

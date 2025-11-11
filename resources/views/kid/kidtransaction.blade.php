@@ -35,32 +35,40 @@
       <!-- ✅ Transactions List -->
       <div class="transactions">
         @if($transactions->count() > 0)
-          @foreach($transactions as $txn)
-            <div class="transaction {{ $txn->type === 'credit' ? 'credit' : 'debit' }}">
-              <div class="icon-box">
-                @if($txn->type === 'credit') ↑ @else ↓ @endif
-              </div>
-              <div class="info">
-                <h4>
-  @if($txn->type === 'credit')
-    Received from Parent
-  @else
-    @switch($txn->source)
-      @case('kid_spending') Spent for Needs @break
-      @case('goal_saving') Added to Goal @break
-      @case('gift_payment') Gift Purchased  @break
-      @default Spent @break
-    @endswitch
-  @endif
-</h4>
+        @foreach($transactions as $txn)
 
-                <span>{{ $txn->created_at->format('d M Y, h:i A') }}</span>
-              </div>
-              <div class="amount {{ $txn->type === 'credit' ? 'credit' : 'debit' }}">
-                {{ $txn->type === 'credit' ? '+' : '-' }}₹{{ number_format($txn->amount, 2) }}
-              </div>
-            </div>
-          @endforeach
+  {{-- ✅ Skip savings transactions, show only goal payment --}}
+  @if($txn->source === 'goal_saving')
+      @continue
+  @endif
+
+  <div class="transaction {{ $txn->type === 'credit' ? 'credit' : 'debit' }}">
+      <div class="icon-box">
+        @if($txn->type === 'credit') ↑ @else ↓ @endif
+      </div>
+
+      <div class="info">
+        <h4>
+          @if($txn->type === 'credit')
+            Received from Parent
+          @else
+            @switch($txn->source)
+              @case('goal_payment') Goal Achieved @break
+              @case('gift_payment') Gift Purchased @break
+              @case('kid_spending') Spent for Needs @break
+              @default Spent @break
+            @endswitch
+          @endif
+        </h4>
+        <span>{{ $txn->created_at->format('d M Y, h:i A') }}</span>
+      </div>
+
+      <div class="amount {{ $txn->type === 'credit' ? 'credit' : 'debit' }}">
+        {{ $txn->type === 'credit' ? '+' : '-' }}₹{{ number_format($txn->amount, 2) }}
+      </div>
+  </div>
+@endforeach
+
         @else
           <div class="no-transactions">No transactions found.</div>
         @endif

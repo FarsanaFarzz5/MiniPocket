@@ -14,6 +14,7 @@ class Gift extends Model
         'title',
         'target_amount',
         'saved_amount',
+        'status',
         'image',
     ];
 

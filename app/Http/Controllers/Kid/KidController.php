@@ -33,7 +33,7 @@ class KidController extends Controller
         // ✅ Total spent (debits by kid)
      $spentMoney = Transaction::where('kid_id', $user->id)
     ->where('type', 'debit')
-    ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_payment']) // ✅ added
+    ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_saving']) // ✅ added
     ->sum('amount');
 
         // ✅ Current balance
@@ -291,7 +291,7 @@ $transactions = Transaction::where('kid_id', $user->id)
                   $q->where('type', 'debit')
                     ->whereIn('source', [
                         'kid_spending',
-                        'goal_saving',
+                        'goal_payment',
                         'gift_payment',
                     ]);
               });
@@ -335,9 +335,14 @@ public function kidGoals()
     $user = Auth::user();
     if ($user->role != 2) abort(403, 'Unauthorized');
 
-    $goals = Goal::with('savings')->where('kid_id', $user->id)->get();
+    $goals = Goal::with('savings')
+        ->where('kid_id', $user->id)
+        ->where(function ($q) {
+            $q->where('status', 0)->orWhereNull('status');  // ✅ show active + NULL
+        })
+        ->get();
 
-    return view('kid.goals', compact('goals', 'user'));  // ✅ FIXED
+    return view('kid.goals', compact('goals', 'user'));
 }
 
 
@@ -410,7 +415,7 @@ public function addSavings(Request $request, Goal $goal)
         'type'        => 'debit',
         'status'      => 'completed',
         'source'      => 'goal_saving',
-        'description' => 'Added to goal: ' . $goal->title,
+        'description' => 'paid for goal:' . $goal->title,
     ]);
 
     return back()->with('success', '₹' . $request->saved_amount . ' added to your goal successfully!');
@@ -480,12 +485,13 @@ public function storeGift(Request $request)
     return redirect()->route('kid.gifts')->with('success', 'Gift added successfully!');
 }
 
-    public function addGiftSaving(Request $request)
+
+public function addGiftSaving(Request $request)
 {
     $user = Auth::user();
     if ($user->role != 2) abort(403, 'Unauthorized');
 
-    $gift = Gift::find($request->gift_id);
+    $gift = Gift::findOrFail($request->gift_id);
 
     // ✅ Remaining amount allowed to save for this gift
     $remaining = $gift->target_amount - $gift->saved_amount;
@@ -497,7 +503,11 @@ public function storeGift(Request $request)
     ]);
 
     // ✅ Calculate kid balance properly
-    $received = Transaction::where('kid_id', $user->id)->where('type', 'credit')->sum('amount');
+    $received = Transaction::where('kid_id', $user->id)
+        ->where('type', 'credit')
+        ->sum('amount');
+
+    // ✅ Deduct only gift_saving, goal_saving, kid_spending (NOT gift_payment)
     $spent = Transaction::where('kid_id', $user->id)
         ->where('type', 'debit')
         ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_saving'])
@@ -505,12 +515,12 @@ public function storeGift(Request $request)
 
     $balance = $received - $spent;
 
-    // ❌ Prevent if kid doesn't have enough balance
+    // ❌ Prevent saving if kid doesn’t have enough balance
     if ($request->amount > $balance) {
-        return back()->with('error', 'Insufficient balance. Available ₹' . number_format($balance, 2));
+        return back()->withErrors(['error' => 'Insufficient balance. Available ₹' . number_format($balance, 2)]);
     }
 
-    // ✅ Save record in gift_savings
+    // ✅ Save to gift_savings table
     GiftSaving::create([
         'gift_id'      => $gift->id,
         'kid_id'       => $user->id,
@@ -523,15 +533,15 @@ public function storeGift(Request $request)
     // ✅ Update gift progress
     $gift->increment('saved_amount', $request->amount);
 
-    // ✅ Record in transactions
+    // ✅ Record in transactions (this reduces balance only once)
     Transaction::create([
         'parent_id'   => $user->parent_id,
         'kid_id'      => $user->id,
         'amount'      => $request->amount,
         'type'        => 'debit',
         'status'      => 'completed',
-        'source'      => 'gift_saving',
-        'description' => 'Added to gift: ' . $gift->title,
+        'source'      => 'gift_saving',  // ✅ important
+        'description' => 'Saving for gift: ' . $gift->title,
     ]);
 
     return back()->with('success', '₹' . $request->amount . ' added to your gift successfully!');
@@ -547,16 +557,7 @@ public function sendGiftMoney(Request $request)
         'description' => 'nullable|string|max:255',
     ]);
 
-    if (!$user->parent_id) {
-        return response()->json([
-            'success' => false,
-            'message' => 'No parent assigned. Cannot proceed.',
-        ], 400);
-    }
-
-    // ✅ The amount was already deducted during gift_saving
-    // So we just record a "gift_payment" reference (no balance recalculation)
-
+    // ✅ Record gift payment (NO BALANCE DEDUCTION - already deducted earlier)
     Transaction::create([
         'parent_id'   => $user->parent_id,
         'kid_id'      => $user->id,
@@ -567,17 +568,63 @@ public function sendGiftMoney(Request $request)
         'description' => 'Paid for gift: ' . ($request->description ?? 'Gift'),
     ]);
 
-    // ✅ Optionally hide this gift (so it doesn’t appear again)
-    $gift = Gift::where('title', $request->description)
-                ->where('kid_id', $user->id)
+    // ✅ Reset saved amount & remove gift from list
+    $gift = Gift::where('kid_id', $user->id)
+                ->where('title', $request->description)
                 ->first();
+
     if ($gift) {
+        // Reset saved amount and target (so it becomes 0 and disappears from summary)
+     $gift->status = 1;   // ✅ mark as paid
+$gift->save();
+
+        // ✅ This hides the gift card from UI
         session(['paid_gift_id' => $gift->id]);
     }
 
     return response()->json([
         'success' => true,
         'message' => '🎁 Gift payment recorded successfully!',
+    ]);
+}
+
+/**
+ * ✅ GOAL PAYMENT (similar to gift payment)
+ */
+public function sendGoalPayment(Request $request)
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
+
+    $request->validate([
+        'amount' => 'required|numeric|min:1',
+        'description' => 'nullable|string|max:255',
+        'goal_id' => 'required|exists:goals,id',
+    ]);
+
+    $goal = Goal::findOrFail($request->goal_id);
+
+    // ✅ Record payment transaction (no deduction again)
+    Transaction::create([
+        'parent_id'   => $user->parent_id,
+        'kid_id'      => $user->id,
+        'amount'      => $request->amount,
+        'type'        => 'debit',
+        'status'      => 'completed',
+        'source'      => 'goal_payment',
+        'description' => 'Paid for goal:' . ($request->description ?? $goal->title),
+    ]);
+
+    // ✅ Reset goal progress
+    $goal->update([
+        'saved_amount' => 0,      // ✅ RESET
+        'target_amount' => 0,     // ✅ RESET if needed
+        'status' => 1,            // ✅ mark completed
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => '🎯 Goal payment recorded successfully!',
     ]);
 }
 

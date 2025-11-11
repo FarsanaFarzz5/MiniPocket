@@ -196,7 +196,7 @@
     .pay-btn {
       display: block;
       width: 100%;
-      background: linear-gradient(90deg, #16a34a, #059669);
+       background: linear-gradient(135deg, #23a541, #33c56c);
       color: #fff;
       font-weight: 600;
       text-align: center;
@@ -209,10 +209,7 @@
       transition: transform 0.2s, box-shadow 0.3s;
     }
 
-    .pay-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(16,185,129,0.4);
-    }
+ 
 
     /* 🧾 SAVING HISTORY */
     .history {
@@ -257,6 +254,52 @@
       padding-top: 10px;
       padding-bottom: 10px;
     }
+
+    /* ✅ Toast / Alert Message */
+.alert-toast {
+  width: 75% !important;
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 9999;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.35s ease-in-out;
+}
+
+/* ✅ Toast Visible */
+.alert-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-10px);
+  pointer-events: auto;
+}
+
+/* Success */
+.alert-success {
+  background: linear-gradient(135deg, #23a541, #33c56c);
+  color: #fff;
+}
+
+/* Warning */
+.alert-warning {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  color: #fff;
+}
+
+/* Error */
+.alert-error {
+  background: linear-gradient(90deg, #dc2626, #ef4444);
+  color: #fff;
+}
+
 
     @media(max-width:420px) {
       html, body { align-items: flex-start; }
@@ -335,9 +378,17 @@
 
           <button type="submit">Add</button>
         </form>
-      @else
-        <a href="{{ route('kid.scanqr') }}" class="pay-btn">Pay Now</a>
-      @endif
+@else
+<button class="pay-btn"
+        id="payGoalBtn"
+        data-amount="{{ $goal->saved_amount }}"
+        data-title="{{ $goal->title }}"
+        data-goal-id="{{ $goal->id }}">
+    Pay Now 
+</button>
+@endif
+
+
 
       <!-- ✅ Saving History -->
       <div class="history">
@@ -354,6 +405,40 @@
         </ul>
       </div>
     </div>
+    <div id="alertToast" class="alert-toast"></div>
+
   </div>
+ 
+<script>
+const toast = document.getElementById("alertToast");
+
+// ✅ Toast message (same as gift page)
+function showToast(msg, type = "success") {
+  toast.innerText = msg;
+  toast.className = "alert-toast show alert-" + type;
+  setTimeout(() => toast.classList.remove("show"), 2500);
+}
+
+document.getElementById("payGoalBtn")?.addEventListener("click", function () {
+  const amount = this.dataset.amount;
+  const title = this.dataset.title;
+  const goalId = this.dataset.goalId;
+
+  // ✅ Save Goal details to localStorage
+  localStorage.setItem("goalAmount", amount);
+  localStorage.setItem("goalReason", title);
+  localStorage.setItem("goalId", goalId);
+
+  showToast(` Redirecting to scanner for ${title}...`, "success");
+
+  // ✅ Redirect same as gift
+  setTimeout(() => {
+    window.location.href = "/kid/scan-qr";  // ✅ FIXED redirection
+  }, 1200);
+});
+</script>
+
+
+
 </body>
 </html>

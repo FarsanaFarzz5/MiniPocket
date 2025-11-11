@@ -80,6 +80,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kid/goals/store', [KidController::class, 'storeGoal'])->name('goals.store');
     Route::post('/kid/goals/{goal}/add-savings', [KidController::class, 'addSavings'])->name('goals.addSavings');
     Route::get('/kid/goals/{goal}/details', [KidController::class, 'goalDetails'])->name('goals.details');
+    Route::post('/kid/sendgoalpayment', [KidController::class, 'sendGoalPayment'])
+    ->name('kid.sendgoalpayment');
+
 
     // 🎁 Gifts
 // 🎁 Gifts

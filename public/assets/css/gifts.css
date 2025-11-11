@@ -413,38 +413,46 @@ html, body {
       box-shadow: 0 10px 25px rgba(255,138,0,0.5);
     }
 
-
-    /* ===========================================================
-🔔 ALERT TOAST (Shared UI Style)
-=========================================================== */
+/* ✅ Toast Alert Message */
 .alert-toast {
-  width: 80%;
   position: fixed;
-  bottom: 24px;
+  bottom: 85px;
   left: 50%;
-  transform: translateX(-50%) translateY(100%);
+  transform: translateX(-50%);
+  padding: 10px 18px;
   background: #333;
   color: #fff;
-  padding: 14px 22px;
-  border-radius: 12px;
   font-size: 14px;
-  font-weight: 600;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+  font-weight: 500;
+  border-radius: 10px;
   opacity: 0;
-  transition: all 0.35s ease;
-  z-index: 5000;
-  pointer-events: none;
+  visibility: hidden;
+  transition: all 0.4s ease-in-out;
+  z-index: 9999;
 }
 
+/* ✅ Visible State */
 .alert-toast.show {
-  transform: translateX(-50%) translateY(0);
   opacity: 1;
+  visibility: visible;
+  bottom: 100px;
 }
 
+/* ✅ Success Type (Green) */
 .alert-success {
-  background: linear-gradient(135deg, #28a745, #5dd067);
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
 }
 
-.alert-warning {
-  background: linear-gradient(135deg, #ff7a00, #ffa440);
+/* ✅ Error Type (Red) */
+.alert-error {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
 }
+
+/* ✅ Warning (Yellow) */
+.alert-warning {
+  background: linear-gradient(135deg, #facc15, #eab308);
+  color: #000;
+}
+
