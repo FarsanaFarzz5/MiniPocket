@@ -56,7 +56,7 @@ class KidController extends Controller
         $query->where('type', 'credit')
               ->orWhere(function ($q) {
                   $q->where('type', 'debit')
-                    ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_payment']);
+                    ->whereIn('source', ['kid_spending', 'goal_payment', 'gift_payment']);
               });
     })
     ->orderBy('created_at', 'desc')
@@ -335,14 +335,19 @@ public function kidGoals()
     $user = Auth::user();
     if ($user->role != 2) abort(403, 'Unauthorized');
 
+    // 🟡 Active goals (On progress or Completed)
     $goals = Goal::with('savings')
         ->where('kid_id', $user->id)
-        ->where(function ($q) {
-            $q->where('status', 0)->orWhereNull('status');  // ✅ show active + NULL
-        })
+        ->whereIn('status', [0, 1])
+        ->orderByRaw("FIELD(status, 0, 1)")
         ->get();
 
-    return view('kid.goals', compact('goals', 'user'));
+    // ⚪ Paid goals — only for silver star highlight
+    $paidGoals = Goal::where('kid_id', $user->id)
+        ->where('status', 2)
+        ->get();
+
+    return view('kid.goals', compact('goals', 'paidGoals', 'user'));
 }
 
 
@@ -376,10 +381,8 @@ public function addSavings(Request $request, Goal $goal)
     $user = Auth::user();
     if ($user->role != 2) abort(403, 'Unauthorized');
 
-    // ✅ Calculate remaining amount
     $remaining = $goal->target_amount - $goal->saved_amount;
 
-    // ✅ Validate with max rule
     $request->validate([
         'saved_amount' => 'required|numeric|min:1|max:' . $remaining,
     ]);
@@ -397,6 +400,7 @@ public function addSavings(Request $request, Goal $goal)
         return back()->withErrors(['error' => 'Insufficient balance. Available ₹' . number_format($balance, 2)]);
     }
 
+    // ✅ Save record
     GoalSaving::create([
         'goal_id'      => $goal->id,
         'parent_id'    => $user->parent_id,
@@ -408,6 +412,12 @@ public function addSavings(Request $request, Goal $goal)
 
     $goal->increment('saved_amount', $request->saved_amount);
 
+    // ✅ Auto mark goal completed when reached
+    if ($goal->saved_amount >= $goal->target_amount) {
+        $goal->status = 1; // Completed
+        $goal->save();
+    }
+
     Transaction::create([
         'parent_id'   => $user->parent_id,
         'kid_id'      => $user->id,
@@ -415,11 +425,12 @@ public function addSavings(Request $request, Goal $goal)
         'type'        => 'debit',
         'status'      => 'completed',
         'source'      => 'goal_saving',
-        'description' => 'paid for goal:' . $goal->title,
+        'description' => 'Paid for goal: ' . $goal->title,
     ]);
 
     return back()->with('success', '₹' . $request->saved_amount . ' added to your goal successfully!');
 }
+
 
 
     public function goalDetails(Goal $goal)
@@ -604,7 +615,7 @@ public function sendGoalPayment(Request $request)
 
     $goal = Goal::findOrFail($request->goal_id);
 
-    // ✅ Record payment transaction (no deduction again)
+    // ✅ Record payment transaction (no balance deduction again)
     Transaction::create([
         'parent_id'   => $user->parent_id,
         'kid_id'      => $user->id,
@@ -612,21 +623,21 @@ public function sendGoalPayment(Request $request)
         'type'        => 'debit',
         'status'      => 'completed',
         'source'      => 'goal_payment',
-        'description' => 'Paid for goal:' . ($request->description ?? $goal->title),
+        'description' => 'Paid for goal: ' . ($request->description ?? $goal->title),
     ]);
 
-    // ✅ Reset goal progress
+    // ✅ Mark goal as Paid (3rd silver star) and reset progress
     $goal->update([
-        'saved_amount' => 0,      // ✅ RESET
-        'target_amount' => 0,     // ✅ RESET if needed
-        'status' => 1,            // ✅ mark completed
+        'status' => 2,            // 🩶 Paid
+        'saved_amount' => 0,      // ✅ reset after payment
     ]);
 
     return response()->json([
         'success' => true,
-        'message' => '🎯 Goal payment recorded successfully!',
+        'message' => '🎯 Goal marked as paid successfully!',
     ]);
 }
+
 
 
 }

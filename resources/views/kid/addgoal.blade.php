@@ -513,21 +513,11 @@ html, body {
       <div class="headers"><h1>My Goals</h1></div>
 
       <!-- ✅ Stats -->
-<div class="stats">
-  <div class="stat-card">
-    <h3>Total</h3>
-    <p>{{ count($goals) }}</p>  <!-- Only active goals -->
-  </div>
-  <div class="stat-card">
-    <h3>Saved ₹</h3>
-    <p>{{ number_format($goals->sum('saved_amount')) }}</p>
-  </div>
-  <div class="stat-card">
-    <h3>Target ₹</h3>
-    <p>{{ number_format($goals->sum('target_amount')) }}</p>
-  </div>
-</div>
-
+      <div class="stats">
+        <div class="stat-card"><h3>Total</h3><p>{{ count($goals) }}</p></div>
+        <div class="stat-card"><h3>Saved ₹</h3><p>{{ number_format($goals->sum('saved_amount')) }}</p></div>
+        <div class="stat-card"><h3>Target ₹</h3><p>{{ number_format($goals->sum('target_amount')) }}</p></div>
+      </div>
 
 
 
@@ -552,10 +542,12 @@ html, body {
         </div>
       </div>
 
+
 <!-- 🌟 Goal Highlights -->
 <div class="goal-highlights">
   <div class="highlight-wrapper">
-    <!-- 🟢 Add Goal -->
+
+    <!-- 🟢 First Circle: Add Goal (Opens Popup) -->
     <div class="highlight add-highlight" onclick="openGoalPopup()">
       <div class="circle add-circle">
         <i class="bi bi-plus-lg"></i>
@@ -563,35 +555,41 @@ html, body {
       <p>Add Goal</p>
     </div>
 
-    <!-- 🟡 Active Goals (On Progress + Completed) -->
-    @foreach ($goals as $goal)
-      <div class="highlight" onclick="window.location.href='{{ route('goals.details', $goal->id) }}'">
-        <div class="circle {{ $goal->status_class }}">
-          <i class="bi bi-star-fill"></i>
-        </div>
-        <p>{{ $goal->title }}</p>
-        @if ($goal->status == 0)
-          <span class="status" style="color:#F5A623;">On Progress</span>
-        @elseif ($goal->status == 1)
-          <span class="status" style="color:#23a541;">Completed</span>
-        @endif
-      </div>
-    @endforeach
 
-    <!-- ⚪ Paid Goals (Silver Star Only) -->
-    @foreach ($paidGoals as $goal)
-      <div class="highlight">
-        <div class="circle complete">
-          <i class="bi bi-star-fill"></i>
-        </div>
-        <p>{{ $goal->title }}</p>
-        <span class="status" style="color:#999;">Paid</span>
+
+        <!-- 🟡 Example Circle: Processing -->
+    <div class="highlight">
+      <div class="circle processing">
+        <i class="bi bi-star-fill"></i>
       </div>
-    @endforeach
+      <p>Lipstick</p>
+      <span class="status" style="color:#F5A623;">On Progress</span>
+    </div>
+
+    <!-- 🟡 Example Circle: Fulfilled -->
+<div class="highlight">
+  <div class="circle fulfilled">
+    <i class="bi bi-star-fill"></i>
   </div>
+  <p>Book</p>
+  <span class="status" style="color:#23a541;">Completed</span>
 </div>
 
+    
 
+    <!-- 🥈 Example Circle: Completed -->
+    <div class="highlight">
+      <div class="circle complete">
+        <i class="bi bi-star-fill"></i>
+      </div>
+      <p>Cycle</p>
+      <span class="status">Paid</span>
+    </div>
+
+    
+
+  </div>
+</div>
 
 
 

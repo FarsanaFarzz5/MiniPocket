@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,8 +19,47 @@ class Goal extends Model
     ];
 
     protected $attributes = [
-    'status' => 0, // default incomplete
-];
+        'status' => 0, // 0 = On Progress
+    ];
+
+    // 🟡 Auto mark as Completed when fully saved
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($goal) {
+            if ($goal->saved_amount >= $goal->target_amount && $goal->status == 0) {
+                $goal->status = 1; // ✅ Completed
+            }
+        });
+    }
+
+    // ✅ Label for UI
+    public function getStatusLabelAttribute()
+    {
+        return match ($this->status) {
+            0 => 'On Progress',
+            1 => 'Completed',
+            2 => 'Paid',
+            default => 'Unknown',
+        };
+    }
+
+    // ✅ Star CSS class helper
+    public function getStatusClassAttribute()
+    {
+        return match ($this->status) {
+            0 => 'processing', // 🟡 On Progress
+            1 => 'fulfilled',  // 🟡 Completed
+            2 => 'complete',   // ⚪ Paid
+            default => 'processing',
+        };
+    }
+
+    // ✅ Simple boolean helpers
+    public function isCompleted() { return $this->status == 1; }
+    public function isPaid() { return $this->status == 2; }
+
     public function savings()
     {
         return $this->hasMany(GoalSaving::class);

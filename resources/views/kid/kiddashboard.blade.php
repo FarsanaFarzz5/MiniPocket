@@ -80,7 +80,7 @@
         {{-- ✅ FIRST LINE --}}
         <div style="display:flex;justify-content:space-between;">
           <span style="font-size:14px;font-weight:600;color:#333;">
-    @if($txn->source === 'goal_saving')
+    @if($txn->source === 'goal_payment')
         Paid for goal
     @elseif($txn->source === 'gift_payment')
         Paid for gift
