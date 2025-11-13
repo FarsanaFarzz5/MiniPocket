@@ -139,13 +139,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/parent/update-profile', [ParentController::class, 'updateProfile'])
         ->name('parent.update.profile');
 
-    // 👦 Add Kid page (form)
-    Route::get('/parent/add-kid', [ParentController::class, 'addKid'])
-        ->name('parent.addkid');
-
-    // 📋 Kid Details page
-    Route::get('/parent/kid-details', [ParentController::class, 'kidDetails'])
-        ->name('parent.kiddetails');
+    
 
     // ➕ Store new kid
     Route::post('/kids/store', [ParentController::class, 'storeKid'])
@@ -158,6 +152,10 @@ Route::middleware('auth')->group(function () {
     // 💰 Set kid daily limit
     Route::post('/kids/{id}/set-limit', [ParentController::class, 'setKidLimit'])
         ->name('kids.set.limit');
+
+        Route::get('/parent/kid-management', [ParentController::class, 'kidManagement'])
+    ->name('parent.kid.management');
+
 
         Route::get('/parent/transactions', [ParentController::class, 'transactionHistory'])
     ->name('parent.transactions');
@@ -172,6 +170,14 @@ Route::post('/parent/clear-bank-session', [ParentController::class, 'clearBankSe
 Route::post('/parent/bank/set-primary/{bankId}', [ParentController::class, 'setPrimaryBank'])->name('bank.setPrimary');
 Route::post('/parent/bank/unset-primary/{bankId}', [ParentController::class, 'unsetPrimaryBank'])->name('bank.unsetPrimary');
 
+
+    
+
+    // 🧒 Store kid
+    Route::post('/kids/store', [ParentController::class, 'storeKid'])->name('kids.store');
+
+    // 💰 Set kid limit
+    Route::post('/kids/{id}/set-limit', [ParentController::class, 'setKidLimit'])->name('kids.set.limit');
 
 });
 

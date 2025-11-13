@@ -275,6 +275,107 @@ button,
   transform: translateY(-1px);
 }
 
+
+/* -------------------------------
+   ⭐ KIDS GOALS SECTION
+--------------------------------*/
+.kids-goals-section {
+    width: 100%;
+    padding: 0 8px;
+}
+
+.kids-goals-section h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: left;
+    padding-left: 3px;
+    margin-top: 10px;
+}
+
+/* Scroll Row */
+.goals-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 10px 0;
+    scroll-snap-type: x mandatory;
+}
+.goals-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* Each Goal Card */
+.goal-card {
+    flex: 0 0 auto;
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    scroll-snap-align: start;
+}
+
+/* Badge Base */
+.goal-circle {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ============================
+   GOLD BADGE — Progress/Completed
+============================ */
+.gold-badge {
+    background: linear-gradient(180deg, #FFE8B0 0%, #F4A52D 100%);
+    border: 3px solid #F4C879;
+}
+
+.gold-badge i {
+    color: #ffffff;
+    font-size: 26px;
+}
+
+/* ============================
+   SILVER BADGE — Paid
+============================ */
+.silver-badge {
+    background: linear-gradient(180deg, #E5E5E5 0%, #BFC1C3 100%);
+    border: 3px solid #D5D5D5;
+}
+
+.silver-badge i {
+    color: #ffffff;
+    font-size: 26px;
+}
+
+/* Text Below Icons */
+.goal-kid {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+
+.goal-name {
+    margin-top: 3px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #f39c12;
+    width: 100%;
+    text-align: center;
+}
+
+.no-goals {
+    text-align: center;
+    color: #aaa;
+    margin-top: 10px;
+}
+
 /* ===========================================================
 📱 RESPONSIVE DESIGN (Mobile)
 =========================================================== */

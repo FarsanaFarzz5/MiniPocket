@@ -23,8 +23,9 @@
 
 <body>
   <div class="container">
+     @include('sidebar.sidebar')
     <div class="inner-container">
-        @include('sidebar.sidebar')
+       
          @include('headerparent')
 
 
@@ -52,6 +53,53 @@
         <div class="send-money-box">
           <a href="{{ route('parent.sendmoney.page') }}" class="btn" style="text-decoration: none;">Send Money</a>
         </div>
+
+
+                
+        <!-- ⭐ Kids Goals Section -->
+<!-- ⭐ Kids Goals Section -->
+<div class="kids-goals-section">
+    <h3>Kids Goals</h3>
+
+    <div class="goals-scroll">
+
+        @forelse($kidsGoals as $goal)
+
+            @php
+                $goalTitle = $goal->goal_name 
+                    ?? $goal->title 
+                    ?? 'Unnamed';
+            @endphp
+
+            <div class="goal-card">
+
+                <!-- 🌟 Status Badge -->
+                <div class="goal-circle 
+                    @if($goal->status == 2)
+                        silver-badge   <!-- PAID -->
+                    @else
+                        gold-badge     <!-- ON PROGRESS / COMPLETED -->
+                    @endif
+                ">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+
+                <!-- 👧 Kid Name -->
+                <div class="goal-kid">{{ ucfirst($goal->kid->first_name) }}</div>
+
+                <!-- 🎯 Goal Name -->
+                <div class="goal-name">{{ ucfirst($goalTitle) }}</div>
+
+            </div>
+
+        @empty
+            <p class="no-goals">No goals found.</p>
+        @endforelse
+
+    </div>
+</div>
+
+
 
         <!-- 💳 Transaction Section -->
         <div class="transaction-section">
@@ -82,6 +130,13 @@
             </div>
           @endif
         </div>
+
+
+
+
+
+
+
       </div>
 
     </div>

@@ -24,7 +24,7 @@ public function dashboard()
 {
     $user = Auth::user();
 
-    // ✅ Load only parent_to_kid debit transactions
+    // ✅ Load only parent→kid debit transactions
     $transactions = Transaction::with('kid')
         ->where('parent_id', $user->id)
         ->where('type', 'debit')
@@ -32,13 +32,13 @@ public function dashboard()
         ->orderBy('created_at', 'desc')
         ->get();
 
-    // ✅ Fetch children of this parent
+    // ✅ Get all children of this parent
     $children = User::where('parent_id', $user->id)->get();
 
     // ✅ Total amount sent to kids
     $totalSent = $transactions->sum('amount');
 
-    // ✅ Fetch all bank accounts linked to the parent
+    // ✅ Fetch all bank accounts linked to parent
     $bankAccounts = BankAccount::where('user_id', $user->id)->get();
 
     // ✅ Use selected bank from session or fallback to first
@@ -49,10 +49,19 @@ public function dashboard()
     // ✅ Generate wallet ID (4-digit padded user ID)
     $walletId = str_pad($user->id, 4, '0', STR_PAD_LEFT);
 
-    // ✅ Count total kids linked to this parent
+    // ✅ Count total kids linked
     $kidsLinked = $children->count();
 
-    // ✅ Return to parent dashboard view
+    // ---------------------------------------------------------
+    // ⭐ NEW: FETCH ALL GOALS OF ALL KIDS
+    // ---------------------------------------------------------
+    $kidsGoals = \App\Models\Goal::with('kid')
+        ->whereIn('kid_id', $children->pluck('id'))
+        ->orderBy('created_at', 'desc')
+        ->get();
+    // ---------------------------------------------------------
+
+    // ✅ Return data to dashboard
     return view('parent.parentdashboard', compact(
         'user',
         'transactions',
@@ -61,7 +70,8 @@ public function dashboard()
         'bankAccounts',
         'selectedBank',
         'walletId',
-        'kidsLinked'
+        'kidsLinked',
+        'kidsGoals'   // ⭐ ADD THIS
     ));
 }
 
@@ -92,29 +102,19 @@ public function dashboard()
         return view('parent.paykid', compact('user', 'kid'));
     }
 
-    /**
-     * 👦 Show the "Add Kid" form page
-     */
-    public function addKid()
-    {
-        return view('parent.addkid');
-    }
-
-    /**
-     * 📋 Show Kid Details (list of all kids)
-     */
-public function kidDetails()
+public function kidManagement()
 {
     $user = Auth::user();
+
+    // ✅ Fetch all children
     $children = User::where('parent_id', $user->id)->get();
 
-    // ✅ Calculate each kid’s balance
+    // ✅ Calculate balances
     foreach ($children as $child) {
         $received = \App\Models\Transaction::where('kid_id', $child->id)
             ->where('type', 'credit')
             ->sum('amount');
 
-        // ✅ Include both kid spending and goal saving in total spent
         $spent = \App\Models\Transaction::where('kid_id', $child->id)
             ->where('type', 'debit')
             ->whereIn('source', ['kid_spending', 'goal_saving'])
@@ -123,8 +123,9 @@ public function kidDetails()
         $child->balance = $received - $spent;
     }
 
-    return view('parent.kiddetails', compact('user', 'children'));
+    return view('parent.kid', compact('user', 'children'));
 }
+
 
 
   /**
@@ -205,9 +206,9 @@ public function storeKid(Request $request)
     }
 
     // ✅ 5️⃣ Redirect to Kid Details page with success message
-    return redirect()
-        ->route('parent.kiddetails')
-        ->with('success', 'Kid added successfully!');
+   return redirect()
+    ->route('parent.kid.management')
+    ->with('success', 'Kid added successfully!');
 }
 
     /**

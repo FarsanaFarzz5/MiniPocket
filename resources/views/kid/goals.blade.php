@@ -5,13 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>🎯 My Goals – Mini Pocket</title>
 
-  <!-- ✅ Fonts & Icons -->
+  <!-- ✅ Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- ✅ Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- ✅ Font Awesome (AWARD ICON FIXED) -->
+<!-- ✅ Font Awesome Latest Working CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+  <!-- ✅ Your custom CSS -->
   <link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/header.css') }}">
 
+  <!-- ================================
+        🌟 YOUR PAGE CSS STARTS HERE
+  ================================= -->
   <style>
+
 /* ===== Base Reset ===== */
 * {
   margin: 0;
@@ -290,7 +302,7 @@ html, body {
 }
 
 
-/* 🌟 Goal Highlights (Instagram-style) */
+/* 🌟 Goal Highlights (Horizontal Scroll Bar) */
 .goal-highlights {
   margin-top: 10px;
   overflow-x: auto;
@@ -298,192 +310,123 @@ html, body {
   padding: 8px 2px 18px;
 }
 
-.highlight-wrapper {
-  display: flex;
-  gap: 18px;
+.goal-highlights::-webkit-scrollbar {
+  height: 4px;
 }
 
+.goal-highlights::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+/* Wrapper */
+.highlight-wrapper {
+  display: flex;
+  gap: 17px;
+}
+
+/* Individual Highlight Item */
 .highlight {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 70px;
+  min-width: 80px;
   text-align: center;
+  cursor: pointer;
 }
 
-.circle {
+/* ➕ Add Goal Circle */
+.add-circle {
   width: 68px;
   height: 68px;
   border-radius: 50%;
+  border: 1px dashed #23a541;
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 28px;
+  color: #23a541;
+}
+
+.goal-gold {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #FFE8B0 0%, #F4A52D 100%);
+  border: 3px solid #F4C879;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.goal-gold::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at center,
+             rgba(255,255,255,0.45),
+             transparent 60%);
+  z-index: 1;
+}
+
+.goal-gold i {
+  position: relative;
+  z-index: 5;
+  color: #ffffff !important;
   font-size: 26px;
-  background: #f1f5f9;
-  color: #777;
-  border: 2.5px solid transparent;
-  transition: all 0.3s ease;
-  
 }
 
-.add-circle {
-  background: none;
-  border: 1.0px dashed #23a541; /* Soft dashed green outline */
-  color: #23a541;               /* Green icon */
-  box-shadow: none;
-  transition: all 0.3s ease;
 
+/* Silver */
+.goal-silver {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #E3E6E8 0%, #C5C8CA 100%);
+  border: 3px solid #D5D5D5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
+.goal-silver::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at center,
+             rgba(255,255,255,0.45),
+             transparent 60%);
+  z-index: 1;
+}
+
+.goal-silver i {
+  position: relative;
+  z-index: 5;
+  color: #ffffff !important;
+  font-size: 26px;
+}
+
+
+/* Text Under Circle */
 .highlight p {
   font-size: 12px;
   font-weight: 600;
   margin-top: 6px;
-  color: #222;
 }
 
+/* Status Text */
 .highlight .status {
   font-size: 10px;
-  color: #888;
-  margin-top: 2px;
+  margin-top: 3px;
+  font-weight: 600;
 }
 
-.processing {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  background: none !important;  /* ✅ remove grey */
-  border: none !important;      /* ✅ remove grey ring */
-}
-
-
-/* OUTER RING — Light Yellow */
-.processing::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: #FFE28A;
-  border: 3px solid #FFE28A;
-  box-sizing: border-box;  /* ✅ prevents shifting */
-  z-index: 1;
-}
-
-/* INNER — darker yellow */
-.processing::after {
-  content: "";
-  position: absolute;
-  width: 78%;
-  height: 78%;
-  border-radius: 50%;
-  background: #F5A623;
-  box-sizing: border-box;  /* ✅ prevents shifting */
-  z-index: 2;
-}
-
-/* STAR — same color as outer ring */
-.processing i {
-  position: relative;
-  z-index: 3;
-  font-size: 30px;
-  color: #FFE28A;
-}
-
-/* 🥈 COMPLETE — 3-Layer Silver Coin */
-.complete {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  background: none !important;  /* remove default grey background */
-  border: none !important;      /* remove base border */
-}
-
-/* OUTER RING — Light Silver */
-.complete::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: #E3E6E8;           /* light silver */
-  border: 3px solid #E3E6E8;     /* same as fill for soft edge */
-  box-sizing: border-box;
-  z-index: 1;
-}
-
-/* INNER — Darker Silver */
-.complete::after {
-  content: "";
-  position: absolute;
-  width: 78%;
-  height: 78%;
-  border-radius: 50%;
-  background: #C5C8CA;           /* slightly darker silver */
-  box-sizing: border-box;
-  z-index: 2;
-}
-
-/* STAR — same color as outer ring */
-.complete i {
-  position: relative;
-  z-index: 3;
-  font-size: 30px;
-  color: #E3E6E8;               /* matches outer ring (light silver) */
-}
-
-/* 🟡 FULFILLED — Same as Processing (Light Yellow Coin) */
-.fulfilled {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: none !important;
-  border: none !important;
-}
-
-/* OUTER RING — Light Yellow */
-.fulfilled::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: #FFE28A;
-  border: 3px solid #FFE28A;
-  box-sizing: border-box;
-  z-index: 1;
-}
-
-/* INNER — Slightly Darker Yellow */
-.fulfilled::after {
-  content: "";
-  position: absolute;
-  width: 78%;
-  height: 78%;
-  border-radius: 50%;
-  background: #F5A623;
-  box-sizing: border-box;
-  z-index: 2;
-}
-
-/* STAR — Same Color as Outer Ring */
-.fulfilled i {
-  position: relative;
-  z-index: 3;
-  font-size: 30px;
-  color: #FFE28A;
-}
 
 
 /* Smooth scroll for highlights */
@@ -493,6 +436,45 @@ html, body {
 .goal-highlights::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.15);
   border-radius: 4px;
+}
+
+
+/* ---------------------------------
+   ⭐ Updated Goal Highlight Icons
+----------------------------------*/
+
+/* Gold Circle (On Progress + Completed) */
+.goal-gold {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #FFE8B0 0%, #F4A52D 100%);
+  border: 3px solid #F4C879;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.goal-gold i {
+  font-size: 30px;
+  color: #ffffff;
+}
+
+/* Silver Circle (Paid) */
+.goal-silver {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #E3E6E8 0%, #C5C8CA 100%);
+  border: 3px solid #D5D5D5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.goal-silver i {
+  font-size: 30px;
+  color: #ffffff;
 }
 
 
@@ -552,24 +534,29 @@ html, body {
         </div>
       </div>
 
-<!-- 🌟 Goal Highlights -->
+<!-- 🌟 Goal Highlights Section -->
 <div class="goal-highlights">
   <div class="highlight-wrapper">
-    <!-- 🟢 Add Goal -->
+
+    <!-- Add Goal -->
     <div class="highlight add-highlight" onclick="openGoalPopup()">
-      <div class="circle add-circle">
+      <div class="add-circle">
         <i class="bi bi-plus-lg"></i>
       </div>
       <p>Add Goal</p>
     </div>
 
-    <!-- 🟡 Active Goals (On Progress + Completed) -->
+    <!-- Active Goals (Gold Icons) -->
     @foreach ($goals as $goal)
-      <div class="highlight" onclick="window.location.href='{{ route('goals.details', $goal->id) }}'">
-        <div class="circle {{ $goal->status_class }}">
-          <i class="bi bi-star-fill"></i>
+      <div class="highlight"
+           onclick="window.location.href='{{ route('goals.details', $goal->id) }}'">
+
+        <div class="goal-gold">
+          <i class="fa-solid fa-award"></i>
         </div>
+
         <p>{{ $goal->title }}</p>
+
         @if ($goal->status == 0)
           <span class="status" style="color:#F5A623;">On Progress</span>
         @elseif ($goal->status == 1)
@@ -578,18 +565,23 @@ html, body {
       </div>
     @endforeach
 
-    <!-- ⚪ Paid Goals (Silver Star Only) -->
+    <!-- Paid Goals (Silver Icons) -->
     @foreach ($paidGoals as $goal)
       <div class="highlight">
-        <div class="circle complete">
-          <i class="bi bi-star-fill"></i>
+
+        <div class="goal-silver">
+          <i class="fa-solid fa-award"></i>
         </div>
+
         <p>{{ $goal->title }}</p>
-        <span class="status" style="color:#999;">Paid</span>
+        <span class="status" style="color:#777;">Paid</span>
       </div>
     @endforeach
+
   </div>
 </div>
+
+
 
 
 

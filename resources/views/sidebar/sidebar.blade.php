@@ -23,8 +23,8 @@
     </a>
 
     <!-- 👧 Kids (➡ Direct to Add Kid) -->
-    <a href="{{ route('parent.addkid') }}" 
-       class="nav-item {{ request()->routeIs('parent.addkid') || request()->routeIs('parent.kiddetails') ? 'active' : '' }}">
+<a href="{{ route('parent.kid.management') }}" 
+   class="nav-item {{ request()->routeIs('parent.kid.management') ? 'active' : '' }}">
       <div class="icon-wrapper">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
              stroke="url(#grad)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
