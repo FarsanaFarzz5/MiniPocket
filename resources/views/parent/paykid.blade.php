@@ -13,6 +13,7 @@
 <body>
   <div class="container">
     <div class="inner-container">
+      
       <!-- Back -->
       <div class="header">
         <a href="{{ route('parent.sendmoney.page') }}" class="back-arrow">

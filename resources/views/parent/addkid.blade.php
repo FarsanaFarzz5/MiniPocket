@@ -15,13 +15,26 @@
 </head>
 
 <body>
+  
   <div class="container">
     <div class="inner-container">
-      @include('sidebar.sidebar')
 
+      @include('sidebar.sidebar')
       @include('headerparent')
 
-      <h1>Add Kid Account</h1>
+      <!-- ✅ Toggle Switch -->
+      <div class="toggle-wrapper">
+        <a href="{{ route('parent.addkid') }}" 
+           class="toggle-btn {{ request()->routeIs('parent.addkid') ? 'active' : '' }}">
+          Add Kid
+        </a>
+        <a href="{{ route('parent.kiddetails') }}" 
+           class="toggle-btn {{ request()->routeIs('parent.kiddetails') ? 'active' : '' }}">
+          Kid Details
+        </a>
+      </div>
+
+      <h1>kid Account</h1>
 
       <form id="kidForm" class="kid-form" method="POST" action="{{ route('kids.store') }}" enctype="multipart/form-data" novalidate>
         @csrf
@@ -67,9 +80,9 @@
         <button type="submit">Save</button>
       </form>
     </div>
-    <!-- ✅ Alert Toast -->
-<div id="alertToast" class="alert-toast"></div>
 
+    <!-- ✅ Alert Toast -->
+    <div id="alertToast" class="alert-toast"></div>
   </div>
 
   <script src="{{ asset('assets/js/addkid.js') }}"></script>

@@ -172,5 +172,6 @@ Route::post('/parent/clear-bank-session', [ParentController::class, 'clearBankSe
 Route::post('/parent/bank/set-primary/{bankId}', [ParentController::class, 'setPrimaryBank'])->name('bank.setPrimary');
 Route::post('/parent/bank/unset-primary/{bankId}', [ParentController::class, 'unsetPrimaryBank'])->name('bank.unsetPrimary');
 
+
 });
 

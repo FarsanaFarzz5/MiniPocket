@@ -5,7 +5,8 @@
   <nav class="footer-nav">
 
     <!-- 🏠 Home -->
-    <a href="{{ route('dashboard.parent') }}" class="nav-item active">
+    <a href="{{ route('dashboard.parent') }}" 
+       class="nav-item {{ request()->routeIs('dashboard.parent') ? 'active' : '' }}">
       <div class="icon-wrapper">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
              stroke="url(#grad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -21,8 +22,9 @@
       </div>
     </a>
 
-    <!-- 👧 Kids -->
-    <div class="nav-item kids-item" id="kidsMenuToggle">
+    <!-- 👧 Kids (➡ Direct to Add Kid) -->
+    <a href="{{ route('parent.addkid') }}" 
+       class="nav-item {{ request()->routeIs('parent.addkid') || request()->routeIs('parent.kiddetails') ? 'active' : '' }}">
       <div class="icon-wrapper">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
              stroke="url(#grad)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -34,34 +36,11 @@
         </svg>
         <span>Kids</span>
       </div>
-
-      <!-- ✅ Submenu -->
-      <div class="kids-submenu" id="kidsSubmenu">
-        <a href="{{ route('parent.addkid') }}" class="submenu-item">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-               stroke="url(#grad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="7" r="3"/>
-            <path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/>
-            <line x1="12" y1="10" x2="12" y2="14"/>
-            <line x1="10" y1="12" x2="14" y2="12"/>
-          </svg>
-          <span>Add Kid</span>
-        </a>
-
-        <a href="{{ route('parent.kiddetails') }}" class="submenu-item">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-               stroke="url(#grad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="16" rx="2" ry="2"/>
-            <line x1="9" y1="9" x2="15" y2="9"/>
-            <line x1="9" y1="13" x2="15" y2="13"/>
-          </svg>
-          <span>Kid Details</span>
-        </a>
-      </div>
-    </div>
+    </a>
 
     <!-- 🏦 Bank -->
-    <a href="{{ route('parent.bankaccounts') }}" class="nav-item">
+    <a href="{{ route('parent.bankaccounts') }}" 
+       class="nav-item {{ request()->routeIs('parent.bankaccounts') || request()->routeIs('parent.addbankaccount') ? 'active' : '' }}">
       <div class="icon-wrapper">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
              stroke="url(#grad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -73,7 +52,8 @@
     </a>
 
     <!-- 💸 Transactions -->
-    <a href="{{ route('parent.transactions') }}" class="nav-item">
+    <a href="{{ route('parent.transactions') }}" 
+       class="nav-item {{ request()->routeIs('parent.transactions') ? 'active' : '' }}">
       <div class="icon-wrapper">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
              stroke="url(#grad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -85,7 +65,8 @@
     </a>
 
     <!-- 👤 Profile -->
-    <a href="{{ route('parent.editprofile') }}" class="nav-item">
+    <a href="{{ route('parent.editprofile') }}" 
+       class="nav-item {{ request()->routeIs('parent.editprofile') ? 'active' : '' }}">
       <div class="icon-wrapper">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
              stroke="url(#grad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -100,4 +81,3 @@
 </div>
 
 <script src="{{ asset('assets/js/sidebar.js') }}"></script>
-

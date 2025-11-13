@@ -29,29 +29,23 @@ body {
 }
 
 /* ===========================================================
-🧱 MAIN CONTAINER
-=========================================================== */
-/* ===========================================================
-🧱 MAIN CONTAINER (fixed, non-scrollable)
-=========================================================== */
-/* ===========================================================
 🧱 MAIN CONTAINER (Fixed frame — Non-scrollable)
 =========================================================== */
 .container {
   width: 100%;
   max-width: 420px;
-  height: 100vh; /* ✅ full visible height */
+  height: 100dvh; /* ✅ Mobile-safe full height */
   background: #fff;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  padding: 0px 22px 0;
+  padding: 0 22px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: fixed; /* ✅ keeps container fixed on screen */
+  position: fixed; /* ✅ Keeps it centered and fixed */
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  overflow: hidden; /* ✅ prevents page scroll */
+  overflow: hidden; /* ✅ Prevents body scroll */
   z-index: 1;
 }
 
@@ -62,7 +56,7 @@ body {
   width: 100%;
   flex: 1;
   text-align: center;
-  overflow-y: auto; /* ✅ scroll only here */
+  overflow-y: auto; /* ✅ Only inner content scrolls */
   -webkit-overflow-scrolling: touch;
   padding: 0 0 100px;
 }
@@ -74,9 +68,8 @@ body {
 }
 
 /* ===========================================================
- HEADING
+🎨 HEADING
 =========================================================== */
-
 h1 {
   text-align: center;
   font-size: 16px;
@@ -84,14 +77,12 @@ h1 {
   color: #2c3e50;
   text-transform: capitalize;
   margin-bottom: 22px;
+  margin-top: 15px;
   letter-spacing: 0.3px;
 }
 
 /* ===========================================================
-🌟 KID CARD (with Hover)
-=========================================================== */
-/* ===========================================================
-🌟 KID CARD (Hover only when expanded)
+🌟 KID CARD
 =========================================================== */
 .kid-card {
   width: 100%;
@@ -107,7 +98,7 @@ h1 {
   cursor: pointer;
 }
 
-/* ✅ Normal hover disabled */
+/* ✅ Hover behavior */
 .kid-card:hover {
   transform: none;
   box-shadow: none;
@@ -115,22 +106,19 @@ h1 {
   border-color: #e7e7e7;
 }
 
-/* ✅ When active (expanded), hover is enabled */
-.kid-card.active:hover {
-  background: #fff;
-  border-color: #f4731d;
-  box-shadow: 0 4px 10px rgba(244,115,29,0.08);
-  transform: translateY(-1px);
-}
-
-/* ✅ Active base style */
 .kid-card.active {
   background: #fff;
   border-color: #f4731d;
-  box-shadow: 0 4px 10px rgba(244,115,29,0.08);
+  box-shadow: 0 4px 10px rgba(244, 115, 29, 0.08);
 }
 
-/* Left Section */
+.kid-card.active:hover {
+  background: #fff;
+  border-color: #f4731d;
+  transform: translateY(-1px);
+}
+
+/* Left section */
 .kid-left {
   display: flex;
   align-items: center;
@@ -162,7 +150,7 @@ h1 {
   color: #8c8c8c;
 }
 
-/* Right Section */
+/* Right section */
 .amount-box {
   text-align: right;
 }
@@ -247,7 +235,7 @@ h1 {
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  margin-top: 12px;
+  margin-top: 20px;
   box-shadow: 0 6px 15px rgba(244,115,29,0.25);
   transition: all 0.3s ease;
 }
@@ -256,6 +244,54 @@ h1 {
   background: linear-gradient(135deg, #e8680d, #f68832);
   transform: translateY(-2px);
 }
+
+/* ===========================================================
+🌟 TOGGLE SWITCH
+=========================================================== */
+.toggle-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+ 
+  padding: 12px 16px;
+  border-radius: 12px;
+  
+  margin: 0 auto 24px auto;
+  width: 90%;
+  max-width: 360px;
+}
+
+.toggle-btn {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  border-radius: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  color: #555;
+  background: #f4f4f4;
+  border: 1px solid #eee;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  background: #ffe5cc;
+  color: #ff7a00;
+}
+
+.toggle-btn.active {
+  background: linear-gradient(135deg, #ff8a00, #ff5f00);
+  color: #fff;
+  border: none;
+  box-shadow: 0 3px 10px rgba(255,138,0,0.3);
+}
+
+
+
+
 
 /* ===========================================================
 🌟 EMPTY STATE
@@ -268,22 +304,24 @@ h1 {
 }
 
 /* ===========================================================
-🌟 RESPONSIVE
+📱 RESPONSIVENESS (MOBILE)
 =========================================================== */
-@media (max-width: 430px) {
-     html, body {
+@media (max-width: 480px) {
+  html, body {
     height: 100%;
-    overflow: hidden; /* ✅ prevent whole-page scroll */
+    overflow: hidden; /* ✅ Prevent body scroll */
   }
 
   .container {
-    height: 100dvh; /* ✅ ensures full viewport height (mobile-safe) */
+    height: 100dvh; /* ✅ Full viewport height */
     position: fixed;
   }
 
   .inner-container {
     height: 100%;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   h1 {
@@ -303,5 +341,16 @@ h1 {
   .btn {
     font-size: 14px;
     padding: 12px 0;
+  }
+
+  .toggle-wrapper {
+    width: 95%;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .toggle-btn {
+    font-size: 14px;
+    padding: 9px 0;
   }
 }

@@ -21,6 +21,19 @@
       @include('sidebar.sidebar')
         @include('headerparent')
 
+        <!-- ✅ Toggle Switch -->
+<div class="toggle-wrapper">
+  <a href="{{ route('parent.addkid') }}" 
+     class="toggle-btn {{ request()->routeIs('parent.addkid') ? 'active' : '' }}">
+    Add Kid
+  </a>
+  <a href="{{ route('parent.kiddetails') }}" 
+     class="toggle-btn {{ request()->routeIs('parent.kiddetails') ? 'active' : '' }}">
+    Kid Details
+  </a>
+</div>
+
+
      
       <!-- ✅ Heading -->
       <h1>{{ $user->first_name }}’s Kids</h1>

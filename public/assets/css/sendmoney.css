@@ -35,8 +35,8 @@ body {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  overflow: hidden; /* ✅ Prevents page scroll */
-  z-index: 1;
+  overflow: visible !important; /* ✅ Prevents page scroll */
+  z-index: 2;
 }
 
 /* ===========================================================
@@ -50,6 +50,7 @@ body {
   -webkit-overflow-scrolling: touch;
   padding: 0 0 100px;
 }
+
 
 @supports (padding: max(0px)) {
   .inner-container {
@@ -206,8 +207,9 @@ h1 {
 =========================================================== */
 @media (max-width: 430px) {
   .container {
-    padding: 24px 18px 90px;
+    padding: 24px 18px 0px;
     border-radius: 0;
+    height: 87vh; /* ⬅️ Reduced height to reveal sidebar */
   }
 
   h1 {
