@@ -376,6 +376,30 @@ button,
     margin-top: 10px;
 }
 
+/* 🔥 Blurred Hidden Goal Circle */
+.hidden-blur {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #FFE8B0 0%, #F4A52D 100%); /* GOLD */
+    border: 3px solid #F4C879;
+    filter: blur(4px);     /* slight blur but gold visible */
+    opacity: 0.85;         /* maintain golden feel */
+}
+
+
+/* 🔥 Blurred Title Text */
+.blurred-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #F4A52D;     /* gold instead of grey */
+    filter: blur(2.5px);
+    opacity: 0.7;
+    user-select: none;
+}
+
+
+
 /* ===========================================================
 📱 RESPONSIVE DESIGN (Mobile)
 =========================================================== */

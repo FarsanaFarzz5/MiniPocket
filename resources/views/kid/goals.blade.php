@@ -162,7 +162,7 @@ html, body {
   justify-content: center;
   align-items: center;
   background: rgba(0, 0, 0, 0.4);
-  z-index: 50;
+  z-index: 9999;
 }
 
 .popup.active { display: flex; }
@@ -176,7 +176,20 @@ html, body {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   animation: slideUp 0.4s ease forwards;
   position: relative;
+  z-index: 10000;
 }
+
+body.popup-open .inner-container,
+body.popup-open .container {
+  pointer-events: none;
+  user-select: none;
+}
+
+body.popup-open #goalPopup,
+body.popup-open #goalPopup * {
+  pointer-events: auto !important;
+}
+
 
 @keyframes slideUp {
   from { transform: translateY(50px); opacity: 0; }
@@ -477,6 +490,71 @@ html, body {
   color: #ffffff;
 }
 
+/* Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background: #23a541;
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0 15px 0;
+}
+
+.toggle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #065f46;
+  margin: 5px;
+}
+
+.upload-label {
+  font-size: 12px;
+  color: #666;
+  margin: 6px 0;
+  display: block;
+}
+
+
 
 @media (max-width: 420px) {
   html, body { align-items: flex-start; }
@@ -513,26 +591,41 @@ html, body {
 
 
 
-      <!-- ✅ Popup Form -->
-      <div class="popup" id="goalPopup">
-        <div class="popup-content">
-          <button class="close-btn" onclick="closeGoalPopup()">✖</button>
+<!-- ✅ Popup Form -->
+<div class="popup" id="goalPopup">
+  <div class="popup-content">
+    <button class="close-btn" onclick="closeGoalPopup()">✖</button>
 
-          <h2>Create New Goal</h2>
+    <h2>Create New Goal</h2>
 
-          <form action="{{ route('goals.store') }}" method="POST">
-            @csrf
-            <input type="text" name="title" placeholder="Goal title" required>
-            <input type="text" name="target_amount"
-                   placeholder="Target amount"
-                   inputmode="numeric"
-                   pattern="[0-9]*"
-                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                   required>
-            <button type="submit">Add Goal</button>
-          </form>
-        </div>
+    <form action="{{ route('goals.store') }}" method="POST" enctype="multipart/form-data">
+      @csrf
+
+      <input type="text" name="title" placeholder="Goal title" required>
+
+      <input type="text" name="target_amount"
+             placeholder="Target amount (₹)"
+             inputmode="numeric"
+             pattern="[0-9]*"
+             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+             required>
+
+     
+
+      <!-- ⭐ Hide from Parent Toggle -->
+      <div class="toggle-row">
+        <label class="toggle-label">Hide from Parent</label>
+        <label class="switch">
+          <input type="checkbox" name="is_hidden" value="1">
+          <span class="slider round"></span>
+        </label>
       </div>
+
+      <button type="submit">Add Goal</button>
+    </form>
+  </div>
+</div>
+
 
 <!-- 🌟 Goal Highlights Section -->
 <div class="goal-highlights">
@@ -614,12 +707,15 @@ html, body {
 // ✅ Open Popup
 function openGoalPopup() {
   document.getElementById('goalPopup').classList.add('active');
+  document.body.classList.add('popup-open');  // 🔥 Disable background
 }
 
 // ✅ Close Popup
 function closeGoalPopup() {
   document.getElementById('goalPopup').classList.remove('active');
+  document.body.classList.remove('popup-open'); // 🔥 Re-enable background
 }
+
 
 // ✅ Toast function
 const toast = document.getElementById("alertToast");

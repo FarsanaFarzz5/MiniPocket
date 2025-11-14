@@ -63,38 +63,52 @@
 
     <div class="goals-scroll">
 
-        @forelse($kidsGoals as $goal)
+       @forelse($kidsGoals as $goal)
 
-            @php
-                $goalTitle = $goal->goal_name 
-                    ?? $goal->title 
-                    ?? 'Unnamed';
-            @endphp
+    @php
+        $goalTitle = $goal->title ?? 'Unnamed';
+        $isHidden = $goal->is_hidden ?? 0;
+    @endphp
 
-            <div class="goal-card">
+    <!-- 🔥 CASE 1: HIDDEN GOAL (only show blur + kid name) -->
+    @if($isHidden == 1 && $goal->status != 2)
 
-                <!-- 🌟 Status Badge -->
-                <div class="goal-circle 
-                    @if($goal->status == 2)
-                        silver-badge   <!-- PAID -->
-                    @else
-                        gold-badge     <!-- ON PROGRESS / COMPLETED -->
-                    @endif
-                ">
-                    <i class="fa-solid fa-award"></i>
-                </div>
+        <div class="goal-card">
+            <div class="goal-circle hidden-blur"></div>
 
-                <!-- 👧 Kid Name -->
-                <div class="goal-kid">{{ ucfirst($goal->kid->first_name) }}</div>
+            <!-- Show only kid name -->
+            <div class="goal-kid">{{ ucfirst($goal->kid->first_name) }}</div>
 
-                <!-- 🎯 Goal Name -->
-                <div class="goal-name">{{ ucfirst($goalTitle) }}</div>
+            <!-- Blur title (hidden) -->
+            <div class="goal-name blurred-text">{{ ucfirst($goalTitle) }}</div>
+        </div>
 
+    @else
+
+        <!-- ⭐ NORMAL VISIBLE GOAL -->
+        <div class="goal-card">
+
+            <div class="goal-circle
+                @if($goal->status == 2)
+                    silver-badge   <!-- Paid -->
+                @else
+                    gold-badge     <!-- Completed/Progress -->
+                @endif
+            ">
+                <i class="fa-solid fa-award"></i>
             </div>
 
-        @empty
-            <p class="no-goals">No goals found.</p>
-        @endforelse
+            <div class="goal-kid">{{ ucfirst($goal->kid->first_name) }}</div>
+
+            <div class="goal-name">{{ ucfirst($goalTitle) }}</div>
+
+        </div>
+
+    @endif
+
+@empty
+    <p class="no-goals">No goals found.</p>
+@endforelse
 
     </div>
 </div>

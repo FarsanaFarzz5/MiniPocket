@@ -9,18 +9,21 @@ class Goal extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'kid_id',
-        'title',
-        'target_amount',
-        'saved_amount',
-        'status',
-        'image',
-    ];
+protected $fillable = [
+    'kid_id',
+    'title',
+    'target_amount',
+    'saved_amount',
+    'status',
+    'image',
+    'is_hidden',   // NEW
+];
 
-    protected $attributes = [
-        'status' => 0, // 0 = On Progress
-    ];
+
+ protected $attributes = [
+    'status' => 0,    // On Progress
+    'is_hidden' => 0, // Visible by default
+];
 
     // 🟡 Auto mark as Completed when fully saved
     public static function boot()

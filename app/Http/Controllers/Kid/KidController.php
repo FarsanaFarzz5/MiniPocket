@@ -351,30 +351,33 @@ public function kidGoals()
 }
 
 
-    public function storeGoal(Request $request)
-    {
-        $user = Auth::user();
-        if ($user->role != 2) abort(403, 'Unauthorized');
+public function storeGoal(Request $request)
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
 
-        $request->validate([
-            'title' => 'required|string|max:100',
-            'target_amount' => 'required|numeric|min:1',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+    $request->validate([
+        'title' => 'required|string|max:100',
+        'target_amount' => 'required|numeric|min:1',
+        'is_hidden' => 'nullable|boolean',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+    ]);
 
-        $imagePath = $request->hasFile('image')
-            ? $request->file('image')->store('goal_images', 'public')
-            : null;
+    $imagePath = $request->hasFile('image')
+        ? $request->file('image')->store('goal_images', 'public')
+        : null;
 
-        Goal::create([
-            'kid_id' => $user->id,
-            'title' => $request->title,
-            'target_amount' => $request->target_amount,
-            'image' => $imagePath,
-        ]);
+    Goal::create([
+        'kid_id' => $user->id,
+        'title' => $request->title,
+        'target_amount' => $request->target_amount,
+        'image' => $imagePath,
+        'is_hidden' => $request->is_hidden ? 1 : 0,  // ⭐ ADDED
+    ]);
 
-        return back()->with('success', 'Goal created successfully!');
-    }
+    return back()->with('success', 'Goal created successfully!');
+}
+
 
 public function addSavings(Request $request, Goal $goal)
 {
@@ -615,7 +618,7 @@ public function sendGoalPayment(Request $request)
 
     $goal = Goal::findOrFail($request->goal_id);
 
-    // ✅ Record payment transaction (no balance deduction again)
+    // Transaction record
     Transaction::create([
         'parent_id'   => $user->parent_id,
         'kid_id'      => $user->id,
@@ -626,10 +629,11 @@ public function sendGoalPayment(Request $request)
         'description' => 'Paid for goal: ' . ($request->description ?? $goal->title),
     ]);
 
-    // ✅ Mark goal as Paid (3rd silver star) and reset progress
+    // ⭐ Mark as paid + unhide
     $goal->update([
-        'status' => 2,            // 🩶 Paid
-        'saved_amount' => 0,      // ✅ reset after payment
+        'status' => 2,        // Paid
+        'saved_amount' => 0,  
+        'is_hidden' => 0,     // <-- ⭐ Make visible to parent after paid
     ]);
 
     return response()->json([
@@ -637,6 +641,7 @@ public function sendGoalPayment(Request $request)
         'message' => '🎯 Goal marked as paid successfully!',
     ]);
 }
+
 
 
 
