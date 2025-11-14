@@ -33,7 +33,8 @@ const savedGoalId     = localStorage.getItem("goalId");
 const fillAmount = savedGiftAmount || savedGoalAmount;
 const fillReason = savedGiftReason || savedGoalReason;
 
-if (fillAmount) {
+// ❗ Prevent overwrite on QR page
+if (window.location.pathname !== "/kid/pay" && fillAmount) {
   amountInput.value = fillAmount;
   hiddenAmount.value = fillAmount;
   amountInput.style.width = amountInput.value.length * 24 + 40 + "px";
@@ -43,6 +44,14 @@ if (fillAmount) {
 if (fillReason) {
   const reasonBox = form.querySelector('[name="description"]');
   if (reasonBox) reasonBox.value = fillReason;
+}
+
+function clearPrefillData() {
+    localStorage.removeItem("giftAmount");
+    localStorage.removeItem("giftReason");
+    localStorage.removeItem("goalAmount");
+    localStorage.removeItem("goalReason");
+    localStorage.removeItem("goalId");
 }
 
 /* **********************************************************

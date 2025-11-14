@@ -685,40 +685,42 @@ input:checked + .slider:before {
       <p>Add Goal</p>
     </div>
 
-    <!-- Active Goals (Gold Icons) -->
+    <!-- ⭐ Active Goals (Now SILVER for status 0 & 1) -->
     @foreach ($goals as $goal)
       <div class="highlight"
            onclick="window.location.href='{{ route('goals.details', $goal->id) }}'">
-
-        <div class="goal-gold">
-          <i class="fa-solid fa-award"></i>
-        </div>
-
-        <p>{{ $goal->title }}</p>
-
-        @if ($goal->status == 0)
-          <span class="status" style="color:#F5A623;">On Progress</span>
-        @elseif ($goal->status == 1)
-          <span class="status" style="color:#23a541;">Completed</span>
-        @endif
-      </div>
-    @endforeach
-
-    <!-- Paid Goals (Silver Icons) -->
-    @foreach ($paidGoals as $goal)
-      <div class="highlight">
 
         <div class="goal-silver">
           <i class="fa-solid fa-award"></i>
         </div>
 
         <p>{{ $goal->title }}</p>
-        <span class="status" style="color:#777;">Paid</span>
+
+        @if ($goal->status == 0)
+          <span class="status" style="color:#777;">On Progress</span>
+        @elseif ($goal->status == 1)
+          <span class="status" style="color:#23a541;">Completed</span>
+        @endif
+      </div>
+    @endforeach
+
+    <!-- ⭐ Paid Goals (Now GOLD for status 2) -->
+    @foreach ($paidGoals as $goal)
+      <div class="highlight">
+
+        <div class="goal-gold">
+          <i class="fa-solid fa-award"></i>
+        </div>
+
+        <p>{{ $goal->title }}</p>
+        <span class="status" style="color:#F5A623;">Paid</span>
       </div>
     @endforeach
 
   </div>
 </div>
+
+
 
 
 

@@ -38,7 +38,7 @@
 <a href="{{ route('kid.scanqr') }}" style="text-decoration: none;">
   <div class="qr-section">
     <div class="qr-left">
-      <img src="{{ asset('images/scan.png') }}" alt="Scan QR" />
+      <img src="{{ asset('images/scanner.png') }}" alt="Scan QR" />
     </div>
     <div class="qr-right">
       <h4>Scan QR Code</h4>
@@ -46,6 +46,21 @@
     </div>
   </div>
 </a>
+
+<!-- Brown Send to Parent Section -->
+<a href="#" style="text-decoration: none;">
+  <div class="to-parent-section">
+    <div class="parent-left">
+      <img src="{{ asset('images/refund.png') }}" alt="Send to Parent" />
+    </div>
+
+    <div class="parent-right">
+      <h4>To Parent</h4>
+      <p>Send Money</p>
+    </div>
+  </div>
+</a>
+
 
       <!-- Footer Card -->
       <div class="footer-card">

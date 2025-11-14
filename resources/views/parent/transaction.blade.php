@@ -77,7 +77,7 @@
 
                 <div class="details">
                   <h4>{{ ucfirst($txn->kid->first_name ?? 'Kid') }}</h4>
-                  <p>{{ $txn->description ?? 'Activity' }}</p>
+                  <p>{{ $txn->description ?? 'spent for need' }}</p>
                 </div>
               </div>
 

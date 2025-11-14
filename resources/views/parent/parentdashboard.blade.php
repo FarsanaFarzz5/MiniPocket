@@ -54,9 +54,6 @@
           <a href="{{ route('parent.sendmoney.page') }}" class="btn" style="text-decoration: none;">Send Money</a>
         </div>
 
-
-                
-        <!-- ⭐ Kids Goals Section -->
 <!-- ⭐ Kids Goals Section -->
 <div class="kids-goals-section">
     <h3>Kids Goals</h3>
@@ -70,36 +67,33 @@
         $isHidden = $goal->is_hidden ?? 0;
     @endphp
 
-    <!-- 🔥 CASE 1: HIDDEN GOAL (only show blur + kid name) -->
+    <!-- 🔥 CASE 1: HIDDEN GOAL (still blurred GOLD circle) -->
     @if($isHidden == 1 && $goal->status != 2)
 
         <div class="goal-card">
             <div class="goal-circle hidden-blur"></div>
 
-            <!-- Show only kid name -->
             <div class="goal-kid">{{ ucfirst($goal->kid->first_name) }}</div>
 
-            <!-- Blur title (hidden) -->
             <div class="goal-name blurred-text">{{ ucfirst($goalTitle) }}</div>
         </div>
 
     @else
 
-        <!-- ⭐ NORMAL VISIBLE GOAL -->
+        <!-- ⭐ NORMAL GOAL -->
         <div class="goal-card">
 
             <div class="goal-circle
                 @if($goal->status == 2)
-                    silver-badge   <!-- Paid -->
+                    gold-badge   <!-- ⭐ PAID → GOLD -->
                 @else
-                    gold-badge     <!-- Completed/Progress -->
+                    silver-badge <!-- 🥈 COMPLETED/PROGRESS → SILVER -->
                 @endif
             ">
                 <i class="fa-solid fa-award"></i>
             </div>
 
             <div class="goal-kid">{{ ucfirst($goal->kid->first_name) }}</div>
-
             <div class="goal-name">{{ ucfirst($goalTitle) }}</div>
 
         </div>

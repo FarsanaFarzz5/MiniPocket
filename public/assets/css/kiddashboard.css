@@ -168,10 +168,13 @@ html, body {
 }
 
 .qr-left img {
-  width: 44px;
-  height: 44px;
+  width: 65px !important;     /* ⬆ Increase size */
+  height: 65px !important;
   object-fit: contain;
+
+  filter: brightness(0) invert(1);  /* 🤍 Make image white */
 }
+
 
 .qr-right {
   flex: 0 0 66%;
@@ -243,6 +246,70 @@ html, body {
   z-index: 3;
   max-width: 60%;
 }
+
+/* ========================================================= */
+/* ✅ BROWN "TO PARENT" CARD — EXACT COPY STYLE OF QR CARD   */
+/* ========================================================= */
+
+.to-parent-section {
+  width: 100%;
+  background: #B88A4F;
+  border-radius: 24px;
+  margin-top: 22px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.parent-left {
+  flex: 0 0 28%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.parent-left img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.parent-right {
+  flex: 0 0 66%;
+ background: #ffffff;
+  border-radius: 16px;
+  padding: 12px 16px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.2;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+}
+
+.parent-right h4 {
+  color: #916C2F;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.parent-right p {
+  color: #916C2F;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin: 0;
+  text-align: center;
+}
+
+.to-parent-section:hover {
+  transform: translateY(-2px);
+  transition: 0.3s ease;
+}
+
 
 /* ========================================================= */
 /* 📱 RESPONSIVE FIXES                                       */
