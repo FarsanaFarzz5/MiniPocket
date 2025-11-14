@@ -15,19 +15,6 @@
       </div>
     </a>
 
-        <!-- 🎁 Gifts (Updated Icon) -->
-    <a href="{{ route('kid.gifts') }}" class="nav-item">
-      <div class="icon-wrapper">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
-             stroke="#23a541" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
-          <path d="M12 7V22"/>
-          <path d="M2 12h20"/>
-          <path d="M12 7c0-2 2-4 4-4s2 2 0 4h-4zM12 7c0-2-2-4-4-4s-2 2 0 4h4z"/>
-        </svg>
-        <span>Gifts</span>
-      </div>
-    </a>
 
     <!-- 🎯 Goals (Updated Icon) -->
     <a href="{{ route('kid.goals') }}" class="nav-item">

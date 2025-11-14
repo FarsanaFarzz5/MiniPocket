@@ -22,6 +22,13 @@
 
       @include('sidebar.profile')
       @include('header')
+
+      <!-- Toggle Tabs -->
+<div class="toggle-tabs">
+  <a href="{{ route('kid.goals') }}" class="tab">Goals</a>
+  <a href="{{ route('kid.gifts') }}" class="tab active">Gifts</a>
+</div>
+
       <!-- Hero -->
       <div class="hero">
         <img src="{{ asset('images/gift-box.png') }}" alt="Gift Box" class="gift-box">

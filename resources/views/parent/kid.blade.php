@@ -34,9 +34,11 @@
 
 <body>
   <div class="container">
+
+     @include('sidebar.sidebar')
     <div class="inner-container">
       
-      @include('sidebar.sidebar')
+     
       @include('headerparent')
 
       <!-- ✅ Toggle Buttons -->

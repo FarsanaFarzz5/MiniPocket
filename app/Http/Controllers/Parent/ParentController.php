@@ -24,44 +24,54 @@ public function dashboard()
 {
     $user = Auth::user();
 
-    // ✅ Load only parent→kid debit transactions
+    // Get all kids of this parent
+    $children = User::where('parent_id', $user->id)->get();
+    $kidIds = $children->pluck('id');
+
+    // ⭐ COMBINED TRANSACTIONS (Parent to kid + Kid activity)
     $transactions = Transaction::with('kid')
-        ->where('parent_id', $user->id)
-        ->where('type', 'debit')
-        ->where('source', 'parent_to_kid')
+        ->where(function ($q) use ($user) {
+            // Parent → Kid transfers
+            $q->where('parent_id', $user->id)
+              ->where('source', 'parent_to_kid');
+        })
+        ->orWhere(function ($q) use ($kidIds) {
+            // Kid spending + goal purchased + gift purchased
+            $q->whereIn('kid_id', $kidIds)
+              ->whereIn('source', [
+                  'kid_spending',
+                  'goal_payment',
+                  'gift_payment'
+              ]);
+        })
         ->orderBy('created_at', 'desc')
         ->get();
 
-    // ✅ Get all children of this parent
-    $children = User::where('parent_id', $user->id)->get();
+    // Total amount sent by parent
+    $totalSent = Transaction::where('parent_id', $user->id)
+        ->where('source', 'parent_to_kid')
+        ->sum('amount');
 
-    // ✅ Total amount sent to kids
-    $totalSent = $transactions->sum('amount');
-
-    // ✅ Fetch all bank accounts linked to parent
+    // Bank accounts
     $bankAccounts = BankAccount::where('user_id', $user->id)->get();
 
-    // ✅ Use selected bank from session or fallback to first
+    // Selected bank
     $selectedBank = session('active_bank_account')
         ? BankAccount::find(session('active_bank_account'))
         : $bankAccounts->first();
 
-    // ✅ Generate wallet ID (4-digit padded user ID)
+    // Wallet ID
     $walletId = str_pad($user->id, 4, '0', STR_PAD_LEFT);
 
-    // ✅ Count total kids linked
+    // Total kids linked
     $kidsLinked = $children->count();
 
-    // ---------------------------------------------------------
-    // ⭐ NEW: FETCH ALL GOALS OF ALL KIDS
-    // ---------------------------------------------------------
+    // Kids goals
     $kidsGoals = \App\Models\Goal::with('kid')
-        ->whereIn('kid_id', $children->pluck('id'))
+        ->whereIn('kid_id', $kidIds)
         ->orderBy('created_at', 'desc')
         ->get();
-    // ---------------------------------------------------------
 
-    // ✅ Return data to dashboard
     return view('parent.parentdashboard', compact(
         'user',
         'transactions',
@@ -71,7 +81,7 @@ public function dashboard()
         'selectedBank',
         'walletId',
         'kidsLinked',
-        'kidsGoals'   // ⭐ ADD THIS
+        'kidsGoals'
     ));
 }
 
@@ -334,15 +344,34 @@ public function transactionHistory()
 {
     $user = Auth::user();
 
-    $transactions = Transaction::with('kid')
+    // All kids of this parent
+    $kidIds = User::where('parent_id', $user->id)->pluck('id');
+
+    // 1️⃣ Parent → Kid Transfers
+    $parentTransactions = Transaction::with('kid')
         ->where('parent_id', $user->id)
-        ->where('type', 'debit') // 💳 Parent sends money
+        ->whereIn('kid_id', $kidIds)
         ->where('source', 'parent_to_kid')
         ->orderBy('created_at', 'desc')
         ->get();
 
-    return view('parent.transaction', compact('user', 'transactions'));
+    // 2️⃣ Kid Spending + Goal Payment + Gift Payment
+    $kidTransactions = Transaction::with('kid')
+        ->whereIn('kid_id', $kidIds)
+        ->whereIn('source', [
+            'kid_spending',   // kid purchases
+            'goal_payment',   // goal marked paid
+            'gift_payment'    // gift marked paid
+        ])
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return view('parent.transaction', compact(
+        'parentTransactions',
+        'kidTransactions'
+    ));
 }
+
 
     /**
      * 🏦 View All Bank Accounts

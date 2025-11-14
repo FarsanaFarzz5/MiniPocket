@@ -554,6 +554,46 @@ input:checked + .slider:before {
   display: block;
 }
 
+/* ============================================================
+   💚 PERFECT GREEN THEME TOGGLE TABS
+   Matches your entire design system
+==============================================================*/
+
+.toggle-tabs {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 10px 0 25px;
+}
+
+.toggle-tabs .tab {
+  padding: 10px 45px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #f2f2f2;
+  color: #2c3e50;
+  border: 1.6px solid #dcdcdc;
+  text-decoration: none;
+  transition: 0.25s ease-in-out;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* 💚 Active tab (Green) */
+.toggle-tabs .tab.active {
+  background: #4caf50;
+  border-color: #4caf50;
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(76,175,80,0.30);
+}
+
+/* Hover effect */
+.toggle-tabs .tab:hover {
+  transform: translateY(-2px);
+}
+
+
 
 
 @media (max-width: 420px) {
@@ -569,6 +609,12 @@ input:checked + .slider:before {
 
       @include('sidebar.profile')
       @include('header')
+
+      <!-- Toggle Tabs -->
+<div class="toggle-tabs">
+  <a href="{{ route('kid.goals') }}" class="tab active">Goals</a>
+  <a href="{{ route('kid.gifts') }}" class="tab">Gifts</a>
+</div>
 
       <div class="headers"><h1>My Goals</h1></div>
 

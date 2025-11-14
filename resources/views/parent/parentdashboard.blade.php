@@ -115,35 +115,72 @@
 
 
 
-        <!-- 💳 Transaction Section -->
-        <div class="transaction-section">
-          <h3>Recent Transactions</h3>
+<!-- 💳 Transaction Section -->
+<div class="transaction-section">
+  <h3>Recent Transactions</h3>
 
-          @if($transactions->isEmpty())
-            <p class="no-data">No transactions yet.</p>
-          @else
-            <div class="transaction-list">
-              @foreach($transactions->take(3) as $index => $txn)
-                <div class="transaction-item">
-                  <div class="left">
-                    <span>{{ $index + 1 }}. {{ ucfirst($txn->kid->first_name ?? 'Unknown Kid') }}</span>
-                    <span>Stationery store in Palakkad, Kerala</span>
-                  </div>
-                  <div class="right">
-                    <span>₹{{ number_format($txn->amount, 2) }}</span>
-                    <span>{{ $txn->created_at->format('d-m-Y') }}</span>
-                  </div>
-                </div>
-              @endforeach
+  @if($transactions->isEmpty())
+    <p class="no-data">No transactions yet.</p>
+  @else
+    <div class="transaction-list">
 
-              <div class="all-transactions">
-                <button onclick="window.location.href='{{ route('parent.transactions') }}'">
-                  All Transactions
-                </button>
-              </div>
-            </div>
-          @endif
+      @foreach($transactions->take(2) as $index => $txn)
+        <div class="transaction-item">
+
+          <div class="left">
+            <span>
+              {{ $index + 1 }}. {{ ucfirst($txn->kid->first_name ?? 'Kid') }}
+            </span>
+
+            <!-- DESCRIPTION -->
+            <span>
+              @if($txn->source == 'parent_to_kid')
+                Sent money to kid
+              @elseif($txn->source == 'kid_spending')
+                Kid spent money
+              @elseif($txn->source == 'goal_payment')
+                Goal purchased
+              @elseif($txn->source == 'gift_payment')
+                Gift purchased
+              @endif
+            </span>
+          </div>
+
+          <div class="right">
+
+            <!-- AMOUNT -->
+            <span
+              style="
+                color:
+                  @if($txn->source == 'parent_to_kid') #23a541;
+                  @elseif($txn->source == 'kid_spending') #ff7a00;
+                  @elseif($txn->source == 'goal_payment') #ff7a00;
+                  @elseif($txn->source == 'gift_payment') #ff7a00;
+                  @endif
+              "
+            >
+              ₹{{ number_format($txn->amount, 2) }}
+            </span>
+
+            <!-- DATE -->
+            <span>
+              {{ $txn->created_at->format('d-m-Y') }}
+            </span>
+
+          </div>
+
         </div>
+      @endforeach
+
+      <div class="all-transactions">
+        <button onclick="window.location.href='{{ route('parent.transactions') }}'">
+          All Transactions
+        </button>
+      </div>
+    </div>
+  @endif
+
+</div>
 
 
 
