@@ -1,79 +1,100 @@
+/* **********************************************************
+   🔎 Detect Transfer Type (parent / normal / gift / goal)
+********************************************************** */
+
+const urlParams = new URLSearchParams(window.location.search);
+const transferType = urlParams.get("type"); // ← "parent" when kid → parent transfer
+
 const amountInput = document.getElementById("amountInput");
 const hiddenAmount = document.getElementById("hiddenAmount");
 const form = document.querySelector("form");
 const toast = document.getElementById("alertToast");
 
-// ✅ Toast
+/* **********************************************************
+   🔔 Toast
+********************************************************** */
 function showToast(msg, type = "success") {
   toast.innerText = msg;
   toast.className = "alert-toast show alert-" + type;
   setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
-// ✅ Redirect to dashboard on error
 function redirect(message) {
   showToast(message, "error");
-  setTimeout(() => window.location.href = DASHBOARD_URL, 1500);
+  setTimeout(() => (window.location.href = DASHBOARD_URL), 1500);
 }
 
 /* **********************************************************
-   ✅ PREFILL — Gift Payment / Goal Payment data (localStorage)
+   📌 PREFILL (Gift / Goal)
 ********************************************************** */
 
-// From Gift page
+// Gift
 const savedGiftAmount = localStorage.getItem("giftAmount");
 const savedGiftReason = localStorage.getItem("giftReason");
 
-// From Goal page
+// Goal
 const savedGoalAmount = localStorage.getItem("goalAmount");
 const savedGoalReason = localStorage.getItem("goalReason");
-const savedGoalId     = localStorage.getItem("goalId");
+const savedGoalId = localStorage.getItem("goalId");
 
-// ✅ Decide which amount is being paid
+// Decide fill values
 const fillAmount = savedGiftAmount || savedGoalAmount;
 const fillReason = savedGiftReason || savedGoalReason;
 
-// ❗ Prevent overwrite on QR page
+// Insert prefill amount (NOT on scan page)
 if (window.location.pathname !== "/kid/pay" && fillAmount) {
   amountInput.value = fillAmount;
   hiddenAmount.value = fillAmount;
   amountInput.style.width = amountInput.value.length * 24 + 40 + "px";
 }
 
-// ✅ Autofill description for Gift / Goal
+// Insert description
 if (fillReason) {
   const reasonBox = form.querySelector('[name="description"]');
   if (reasonBox) reasonBox.value = fillReason;
 }
 
 function clearPrefillData() {
-    localStorage.removeItem("giftAmount");
-    localStorage.removeItem("giftReason");
-    localStorage.removeItem("goalAmount");
-    localStorage.removeItem("goalReason");
-    localStorage.removeItem("goalId");
+  localStorage.removeItem("giftAmount");
+  localStorage.removeItem("giftReason");
+  localStorage.removeItem("goalAmount");
+  localStorage.removeItem("goalReason");
+  localStorage.removeItem("goalId");
 }
 
 /* **********************************************************
-   ✅ FORM SUBMIT — Scan QR ➝ Final Payment API call
+   🚀 FORM SUBMIT — Final Payment API
 ********************************************************** */
-
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const enteredAmount = parseFloat(amountInput.value);
   hiddenAmount.value = enteredAmount;
+
   const description = form.querySelector('[name="description"]').value;
 
   if (isNaN(enteredAmount) || enteredAmount <= 0) {
-    showToast(" Please enter a valid amount.", "warning");
+    showToast("Please enter a valid amount.", "warning");
     return;
   }
 
-  // ✅ Determine backend endpoint
-  let targetUrl = SEND_URL;          // Normal spending
-  if (savedGiftAmount) targetUrl = "/kid/sendgiftmoney";
-  if (savedGoalAmount) targetUrl = "/kid/sendgoalpayment";
+  /* ******************************************************
+     🔗 DECIDE BACKEND ENDPOINT
+  ****************************************************** */
+
+  let targetUrl = SEND_URL; // normal spending
+
+  if (transferType === "parent") {
+    targetUrl = "/kid/sendtoparent"; // ⬅ money to parent
+  }
+
+  if (savedGiftAmount) {
+    targetUrl = "/kid/sendgiftmoney";
+  }
+
+  if (savedGoalAmount) {
+    targetUrl = "/kid/sendgoalpayment";
+  }
 
   try {
     const response = await fetch(targetUrl, {
@@ -85,7 +106,7 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify({
         amount: enteredAmount,
         description: description,
-        goal_id: savedGoalId ?? null, // ✅ goal id included only for goal payment
+        goal_id: savedGoalId ?? null,
       }),
     });
 
@@ -96,36 +117,37 @@ form.addEventListener("submit", async (e) => {
       return;
     }
 
-    showToast(`✅ ₹${enteredAmount} spent successfully!`, "success");
+    showToast(`₹${enteredAmount} spent successfully!`, "success");
 
-setTimeout(() => {
-  /* 🎁 After GIFT PAYMENT */
-  if (savedGiftAmount) {
-    localStorage.removeItem("giftAmount");
-    localStorage.removeItem("giftReason");
+    /* ******************************************************
+       🎯 SUCCESS REDIRECTIONS
+    ****************************************************** */
+    setTimeout(() => {
+      /* 🎁 Gift payment */
+      if (savedGiftAmount) {
+        clearPrefillData();
+        showToast("Gift paid successfully!", "success");
+        return setTimeout(() => (window.location.href = "/kid/gifts"), 1200);
+      }
 
-    showToast("Gift paid successfully", "success");
-    return setTimeout(() => window.location.href = "/kid/gifts", 1200);
-  }
+      /* 🎯 Goal payment */
+      if (savedGoalAmount) {
+        clearPrefillData();
+        showToast("Goal payment successful!", "success");
+        return setTimeout(() => (window.location.href = "/kid/goals"), 1200);
+      }
 
-  /* 🎯 After GOAL PAYMENT */
-  if (savedGoalAmount) {
-    localStorage.removeItem("goalAmount");
-    localStorage.removeItem("goalReason");
-    localStorage.removeItem("goalId");
+      /* 👨‍👧 Kid → Parent transfer */
+      if (transferType === "parent") {
+        showToast("Money sent to parent successfully!", "success");
+        return setTimeout(() => (window.location.href = "/kid/dashboard"), 1200);
+      }
 
-    showToast("Goal paid successfully", "success");
-    return setTimeout(() => window.location.href = "/kid/goals", 1200);
-  }
-
-  /* ✅ NORMAL PAYMENT (NO gift / NO goal) */
-  return setTimeout(() => {
-    window.location.href = DASHBOARD_URL;  // ← Kiddashboard redirect
-  }, 1200);
-
-}, 1200);
-
-
+      /* 💸 Normal spending */
+      return setTimeout(() => {
+        window.location.href = DASHBOARD_URL;
+      }, 1200);
+    }, 1200);
   } catch (err) {
     console.error(err);
     redirect("Network error. Redirecting...");
@@ -133,7 +155,7 @@ setTimeout(() => {
 });
 
 /* **********************************************************
-   ✅ Input Validation — numeric only
+   🔢 Input Validation
 ********************************************************** */
 
 function validateAmountInput(input) {
@@ -142,7 +164,7 @@ function validateAmountInput(input) {
   if (num > 100000) input.value = "100000";
 }
 
-// Resize input automatically
+// Auto-resize
 amountInput.addEventListener("input", () => {
   amountInput.style.width = amountInput.value.length * 24 + 40 + "px";
 });

@@ -23,7 +23,6 @@
 
       <h1>Transaction History</h1>
 
-
       <!-- ================================ -->
       <!-- 1️⃣ PARENT → KID TRANSACTIONS -->
       <!-- ================================ -->
@@ -49,14 +48,12 @@
               <div class="right">
                 <h4>₹{{ number_format($txn->amount, 2) }}</h4>
                 <span>{{ $txn->created_at->format('d M Y') }}</span><br>
-                <span class="type type-parent">Sent to kid</span>
+                <span class="type type-parent">Debit</span>
               </div>
             </div>
           @endforeach
         </div>
       @endif
-
-
 
       <!-- ================================ -->
       <!-- 2️⃣ KID SPENDING / GOALS / GIFTS -->
@@ -77,7 +74,27 @@
 
                 <div class="details">
                   <h4>{{ ucfirst($txn->kid->first_name ?? 'Kid') }}</h4>
-                  <p>{{ $txn->description ?? 'spent for need' }}</p>
+
+                  {{-- Description: choose sensible text per source (avoid default "spent for need" for kid_to_parent) --}}
+                  <p>
+                    @if($txn->source == 'kid_spending')
+                        Spent for need
+                    @elseif($txn->source == 'goal_payment')
+                       {{ $txn->description ? ' ' . $txn->description : '' }}
+                    @elseif($txn->source == 'gift_payment')
+                        {{ $txn->description ? ' ' . $txn->description : '' }}
+                    @elseif($txn->source == 'goal_saving')
+                        Saved for goal{{ $txn->description ? '' . $txn->description : '' }}
+                    @elseif($txn->source == 'gift_saving')
+                        Saved for gift{{ $txn->description ? '' . $txn->description : '' }}
+                    @elseif($txn->source == 'kid_to_parent')
+                        Recieved by kid
+                    @elseif($txn->source == 'parent_to_kid')
+                        Received from parent
+                    @else
+                        {{ $txn->description ?? 'Activity' }}
+                    @endif
+                  </p>
                 </div>
               </div>
 
@@ -85,18 +102,23 @@
                 <h4>₹{{ number_format($txn->amount, 2) }}</h4>
                 <span>{{ $txn->created_at->format('d M Y') }}</span><br>
 
-<span class="type 
-    @if($txn->source=='kid_spending') type-kid
-    @elseif($txn->source=='goal_payment') type-goal
-    @elseif($txn->source=='gift_payment') type-gift
+                {{-- Type badge with classes for styling --}}
+                {{-- Type badge with forced logic --}}
+<span class="type
+    @if($txn->source == 'kid_to_parent')
+        type-credit       {{-- parent receives money --}}
+    @elseif($txn->type == 'credit')
+        type-credit
+    @else
+        type-debit
     @endif
 ">
-    @if($txn->source=='kid_spending')
-        Kid spent
-    @elseif($txn->source=='goal_payment')
-        Goal purchased
-    @elseif($txn->source=='gift_payment')
-        Gift purchased
+    @if($txn->source == 'kid_to_parent')
+        Credit
+    @elseif($txn->type == 'credit')
+        Credit
+    @else
+        Debit
     @endif
 </span>
 

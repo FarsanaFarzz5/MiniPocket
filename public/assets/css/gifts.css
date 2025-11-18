@@ -415,6 +415,7 @@ html, body {
 
 /* ✅ Toast Alert Message */
 .alert-toast {
+  width: 85%;
   position: fixed;
   bottom: 85px;
   left: 50%;

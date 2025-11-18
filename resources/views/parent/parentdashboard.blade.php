@@ -68,17 +68,22 @@
     @endphp
 
     <!-- 🔥 CASE 1: HIDDEN GOAL (still blurred GOLD circle) -->
-    @if($isHidden == 1 && $goal->status != 2)
+@if($isHidden == 1 && $goal->status != 2)
 
-        <div class="goal-card">
-            <div class="goal-circle hidden-blur"></div>
+<div class="goal-card">
 
-            <div class="goal-kid">{{ ucfirst($goal->kid->first_name) }}</div>
+    <div class="goal-circle silver-badge hidden-blur">
+        <i class="fa-solid fa-award hidden-icon"></i>
+    </div>
 
-            <div class="goal-name blurred-text">{{ ucfirst($goalTitle) }}</div>
-        </div>
+    <div class="goal-kid">{{ ucfirst($goal->kid->first_name) }}</div>
 
-    @else
+    <div class="goal-name blurred-text">{{ ucfirst($goalTitle) }}</div>
+</div>
+
+
+@else
+
 
         <!-- ⭐ NORMAL GOAL -->
         <div class="goal-card">
@@ -136,6 +141,8 @@
                 Goal purchased
               @elseif($txn->source == 'gift_payment')
                 Gift purchased
+              @elseif($txn->source == 'kid_to_parent')
+                Received by kid
               @endif
             </span>
           </div>

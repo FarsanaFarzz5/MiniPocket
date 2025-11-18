@@ -48,7 +48,8 @@
 </a>
 
 <!-- Brown Send to Parent Section -->
-<a href="#" style="text-decoration: none;">
+<!-- Brown Send to Parent Section -->
+<a href="{{ url('/kid/moneytransfer?type=parent') }}" style="text-decoration: none;">
   <div class="to-parent-section">
     <div class="parent-left">
       <img src="{{ asset('images/refund.png') }}" alt="Send to Parent" />
@@ -94,13 +95,15 @@
         
         {{-- ✅ FIRST LINE --}}
         <div style="display:flex;justify-content:space-between;">
-          <span style="font-size:14px;font-weight:600;color:#333;">
+<span style="font-size:14px;font-weight:600;color:#333;">
     @if($txn->source === 'goal_payment')
         Paid for goal
     @elseif($txn->source === 'gift_payment')
         Paid for gift
+    @elseif($txn->source === 'kid_to_parent')
+        Transaction
     @else
-         Transaction
+        Transaction
     @endif
 </span>
 
@@ -114,33 +117,21 @@
         {{-- ✅ SECOND LINE --}}
         <div style="display:flex;justify-content:space-between;margin-top:2px;">
           <span style="font-size:12px;color:#777;">
-              @if($txn->type === 'credit')
-                  Received from Parent
-              @else
-                @switch($txn->source)
+             
+    @if($txn->type === 'credit')
+    Received from Parent
+@else
+    @switch($txn->source)
+        @case('goal_payment') {{ $itemName }} @break
+        @case('gift_payment') {{ $itemName }} @break
+        @case('goal_saving')  {{ $itemName }} @break
+        @case('kid_spending') Spent for Needs @break
+        @case('kid_to_parent') Sent to Parent @break
+        @default Spent @break
+    @endswitch
+@endif
 
-                    @case('goal_payment')
-                        {{ $itemName }} {{-- ✅ Shows: Happy --}}
-                        @break
 
-                    @case('gift_payment')
-                        {{ $itemName }} {{-- ✅ Shows: Headphones --}}
-                        @break
-
-                    @case('goal_saving')
-                        {{ $itemName }}
-                        @break
-
-                    @case('kid_spending')
-                        Spent for Needs
-                        @break
-
-                    @default
-                        Spent
-                        @break
-
-                @endswitch
-              @endif
           </span>
 
           <span style="font-size:12px;color:#999;">

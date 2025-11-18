@@ -91,9 +91,8 @@ Route::get('/kid/gifts/add', [KidController::class, 'addGiftPage'])->name('kid.g
 Route::post('/kid/gifts', [KidController::class, 'storeGift'])->name('kid.gifts.store');
 Route::post('/kid/gifts/add', [KidController::class, 'addGiftSaving'])->name('kid.gifts.add');
 Route::post('/kid/sendgiftmoney', [KidController::class, 'sendGiftMoney'])->name('kid.sendgiftmoney');
-
-
-    
+Route::post('/kid/sendtoparent', [KidController::class, 'kidSendToParent'])
+    ->name('kid.sendtoparent');
 });
 
 
@@ -180,4 +179,3 @@ Route::post('/parent/bank/unset-primary/{bankId}', [ParentController::class, 'un
     Route::post('/kids/{id}/set-limit', [ParentController::class, 'setKidLimit'])->name('kids.set.limit');
 
 });
-

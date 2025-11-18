@@ -28,15 +28,20 @@ public function dashboard()
     $children = User::where('parent_id', $user->id)->get();
     $kidIds = $children->pluck('id');
 
-    // ⭐ COMBINED TRANSACTIONS (Parent to kid + Kid activity)
+    // ⭐ COMBINED TRANSACTIONS (Parent to kid + Kid activity + Kid sends to parent)
     $transactions = Transaction::with('kid')
         ->where(function ($q) use ($user) {
-            // Parent → Kid transfers
+            // 1️⃣ Parent → Kid transfers (debit for parent)
             $q->where('parent_id', $user->id)
               ->where('source', 'parent_to_kid');
         })
+        ->orWhere(function ($q) use ($user) {
+            // 2️⃣ Kid → Parent transfers (credit for parent)
+            $q->where('parent_id', $user->id)
+              ->where('source', 'kid_to_parent');
+        })
         ->orWhere(function ($q) use ($kidIds) {
-            // Kid spending + goal purchased + gift purchased
+            // 3️⃣ Kid activities (spending, goals, gifts)
             $q->whereIn('kid_id', $kidIds)
               ->whereIn('source', [
                   'kid_spending',
@@ -47,9 +52,14 @@ public function dashboard()
         ->orderBy('created_at', 'desc')
         ->get();
 
-    // Total amount sent by parent
+    // Total amount parent sent to all kids
     $totalSent = Transaction::where('parent_id', $user->id)
         ->where('source', 'parent_to_kid')
+        ->sum('amount');
+
+    // Total amount parent received from kids
+    $totalReceivedFromKids = Transaction::where('parent_id', $user->id)
+        ->where('source', 'kid_to_parent')
         ->sum('amount');
 
     // Bank accounts
@@ -77,6 +87,7 @@ public function dashboard()
         'transactions',
         'children',
         'totalSent',
+        'totalReceivedFromKids',
         'bankAccounts',
         'selectedBank',
         'walletId',
@@ -116,26 +127,46 @@ public function kidManagement()
 {
     $user = Auth::user();
 
-    // ✅ Fetch all children
+    // Fetch all kids
     $children = User::where('parent_id', $user->id)->get();
 
-    // ✅ Calculate balances
     foreach ($children as $child) {
-        $received = \App\Models\Transaction::where('kid_id', $child->id)
+
+        // ⭐ 1. Money parent sent to kid (credit)
+        $parentToKid = Transaction::where('kid_id', $child->id)
+            ->where('source', 'parent_to_kid')
+            ->sum('amount');
+
+        // ⭐ 2. Kid goal savings + gift savings + money received
+        $kidCredits = Transaction::where('kid_id', $child->id)
             ->where('type', 'credit')
+            ->whereIn('source', [
+                'goal_saving',
+                'gift_saving',
+                'kid_to_parent' // credit in kid panel? No → remove if unwanted
+            ])
             ->sum('amount');
 
-        $spent = \App\Models\Transaction::where('kid_id', $child->id)
+        // ⭐ Total credits
+        $totalCredits = $parentToKid + $kidCredits;
+
+        // ⭐ 3. Kid spends, goal payments, sending to parent
+        $kidDebits = Transaction::where('kid_id', $child->id)
             ->where('type', 'debit')
-            ->whereIn('source', ['kid_spending', 'goal_saving'])
+            ->whereIn('source', [
+                'kid_spending',
+                'goal_payment',
+                'gift_payment',
+                'kid_to_parent'
+            ])
             ->sum('amount');
 
-        $child->balance = $received - $spent;
+        // ⭐ Calculate final balance
+        $child->balance = $totalCredits - $kidDebits;
     }
 
     return view('parent.kid', compact('user', 'children'));
 }
-
 
 
   /**
@@ -356,15 +387,19 @@ public function transactionHistory()
         ->get();
 
     // 2️⃣ Kid Spending + Goal Payment + Gift Payment
-    $kidTransactions = Transaction::with('kid')
-        ->whereIn('kid_id', $kidIds)
-        ->whereIn('source', [
-            'kid_spending',   // kid purchases
-            'goal_payment',   // goal marked paid
-            'gift_payment'    // gift marked paid
-        ])
-        ->orderBy('created_at', 'desc')
-        ->get();
+$kidTransactions = Transaction::with('kid')
+    ->whereIn('kid_id', $kidIds)
+
+    ->whereIn('source', [
+    'kid_spending',
+    'goal_payment',
+    'gift_payment',
+    'kid_to_parent'   // ✔ ONLY THIS (no kid_to_parent)
+])
+
+    ->orderBy('created_at', 'desc')
+    ->get();
+
 
     return view('parent.transaction', compact(
         'parentTransactions',
@@ -499,7 +534,6 @@ public function unsetPrimaryBank($bankId)
 
     return response()->json(['success' => true]);
 }
-
 
 
 }

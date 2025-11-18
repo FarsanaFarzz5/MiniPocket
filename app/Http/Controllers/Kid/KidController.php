@@ -31,10 +31,16 @@ class KidController extends Controller
             ->sum('amount');
 
         // ✅ Total spent (debits by kid)
-     $spentMoney = Transaction::where('kid_id', $user->id)
+  $spentMoney = Transaction::where('kid_id', $user->id)
     ->where('type', 'debit')
-    ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_saving']) // ✅ added
+    ->whereIn('source', [
+        'kid_spending',
+        'goal_saving',
+        'gift_saving',
+        'kid_to_parent' // ➤ ADD HERE
+    ])
     ->sum('amount');
+
 
         // ✅ Current balance
         $balance = $receivedMoney - $spentMoney;
@@ -56,7 +62,7 @@ class KidController extends Controller
         $query->where('type', 'credit')
               ->orWhere(function ($q) {
                   $q->where('type', 'debit')
-                    ->whereIn('source', ['kid_spending', 'goal_payment', 'gift_payment']);
+                    ->whereIn('source', ['kid_spending', 'goal_payment', 'gift_payment','kid_to_parent']);
               });
     })
     ->orderBy('created_at', 'desc')
@@ -293,6 +299,7 @@ $transactions = Transaction::where('kid_id', $user->id)
                         'kid_spending',
                         'goal_payment',
                         'gift_payment',
+                        'kid_to_parent'
                     ]);
               });
     })
@@ -307,11 +314,13 @@ $receivedMoney = Transaction::where('kid_id', $user->id)
 // ❌ don't include gift_payment here
 $spentMoney = Transaction::where('kid_id', $user->id)
     ->where('type', 'debit')
-    ->whereIn('source', [
-        'kid_spending',
-        'goal_saving',
-        'gift_saving',
-    ])
+->whereIn('source', [
+    'kid_spending',
+    'goal_saving',
+    'gift_saving',
+    'kid_to_parent'  // ➤ ADD HERE
+])
+
     ->sum('amount');
 
 $balance = $receivedMoney - $spentMoney;
@@ -320,12 +329,16 @@ $balance = $receivedMoney - $spentMoney;
         return view('kid.kidtransaction', compact('user', 'transactions', 'balance'));
     }
 
-    public function moneyTransferPage()
-    {
-        $user = Auth::user();
-        if ($user->role != 2) abort(403, 'Unauthorized');
-        return view('kid.moneytransfer', compact('user'));
-    }
+public function moneyTransferPage(Request $request)
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
+
+    $type = $request->type ?? "normal";  // normal | parent | gift | goal
+
+    return view('kid.moneytransfer', compact('user', 'type'));
+}
+
 
     /**
      * 🎯 Goals
@@ -639,6 +652,62 @@ public function sendGoalPayment(Request $request)
     return response()->json([
         'success' => true,
         'message' => '🎯 Goal marked as paid successfully!',
+    ]);
+}
+
+public function kidSendToParent(Request $request)
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
+
+    $request->validate([
+        'amount'      => 'required|numeric|min:1',
+        'description' => 'nullable|string|max:255',
+    ]);
+
+    if (!$user->parent_id) {
+        return response()->json([
+            'success' => false,
+            'message' => 'No parent assigned.',
+        ], 400);
+    }
+
+    // ✔ Calculate balance
+    $received = Transaction::where('kid_id', $user->id)
+        ->where('type', 'credit')
+        ->sum('amount');
+
+    $spent = Transaction::where('kid_id', $user->id)
+        ->where('type', 'debit')
+        ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_saving', 'kid_to_parent'])
+        ->sum('amount');
+
+    $balance = $received - $spent;
+
+    if ($request->amount > $balance) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Insufficient balance.',
+        ], 400);
+    }
+
+    // ✔ Create transaction (kid → parent)
+// 1️⃣ Kid Debit Entry
+Transaction::create([
+    'parent_id'   => $user->parent_id,
+    'kid_id'      => $user->id,
+    'amount'      => $request->amount,
+    'type'        => 'debit',
+    'status'      => 'completed',
+    'source'      => 'kid_to_parent',
+    'description' => $request->description,
+]);
+
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Money sent to parent successfully!',
+        'available_balance' => $balance - $request->amount,
     ]);
 }
 

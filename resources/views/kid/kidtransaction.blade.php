@@ -26,6 +26,8 @@
       <!-- ✅ Page Title -->
       <h1>My Transactions</h1>
 
+      
+
       <!-- ✅ Balance Card -->
       <div class="balance-card">
         <h3>Available Balance</h3>
@@ -56,6 +58,7 @@
               @case('goal_payment') Goal Achieved @break
               @case('gift_payment') Gift Purchased @break
               @case('kid_spending') Spent for Needs @break
+              @case('kid_to_parent') Send to Parent @break
               @default Spent @break
             @endswitch
           @endif
