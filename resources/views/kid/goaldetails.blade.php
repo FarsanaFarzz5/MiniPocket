@@ -162,12 +162,14 @@
     }
 
 .add-form input.amount-input {
-  flex: 1;
+ width:40%;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1.5px solid #a7f3d0;
   font-size: 13px;
   transition: all 0.3s;
+  text-align: center;
+
 }
 
 
@@ -300,14 +302,104 @@
   color: #fff;
 }
 
+/* ===========================
+   🛒 BEST PRICE SECTION (Professional)
+=========================== */
+
+.best-price-box {
+  margin-top: 22px;
+}
+
+/* CARD */
+.best-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+  text-align: left;
+}
+
+/* BADGE */
+.best-card .tag {
+  background: #2563eb10;   /* soft blue tint */
+  color: #555;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  display: inline-block;
+  margin-left: -6px;
+}
+
+/* ROW LAYOUT */
+.product-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* LOGO */
+.store-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  margin-top: 2px;
+}
+
+/* TEXT COLUMN */
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.info span {
+  margin-bottom: 3px;   /* small clean spacing */
+  display: block;       /* ensures stacking correctly */
+}
+
+/* STORE NAME (soft, not bold) */
+.store-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 3px;
+}
+
+/* STOCK STATUS (softer green) */
+.stock {
+  font-size: 12px;
+  font-weight: 500;
+  color: #059669;
+  margin-bottom: 2px;
+}
+
+/* DELIVERY (lighter gray) */
+.delivery {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* PRICE (premium look) */
+.price {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
 
     @media(max-width:420px) {
       html, body { align-items: flex-start; }
       .container { border-radius: 0; height: 100svh; }
       .goal-item { flex-direction: column; align-items: flex-start; gap: 4px; }
       .goal-right { text-align: left; width: 100%; }
-      .add-form { flex-direction: column; }
-      .add-form button { width: 100%; }
     }
   </style>
 </head>
@@ -365,7 +457,7 @@
         <form action="{{ route('goals.addSavings', $goal->id) }}" method="POST" class="add-form">
           @csrf
 <input type="text" name="saved_amount" class="amount-input"
-       placeholder="Enter amount to add"
+       placeholder="Enter amount"
        inputmode="numeric"
        pattern="[0-9]*"
        max="{{ $remaining }}"
@@ -388,6 +480,32 @@
 </button>
 @endif
 
+<!-- 🛒 BEST PRICE SECTION -->
+<div class="best-price-box">
+    @foreach($bestPrices as $item)
+   <div class="best-card">
+
+    @if(isset($item['note']))
+        <div class="tag">{{ $item['note'] }}</div>
+    @endif
+
+    <div class="product-row">
+        <img src="{{ $item['logo'] }}" class="store-logo">
+
+        <div class="info">
+            <span class="store-name">{{ $item['store'] }}</span>
+            <span class="stock">{{ $item['stock'] }}</span>
+            <span class="delivery">{{ $item['delivery'] }}</span>
+        </div>
+
+        <span class="price">₹{{ number_format($item['price']) }}</span>
+    </div>
+
+</div>
+
+
+    @endforeach
+</div>
 
 
       <!-- ✅ Saving History -->

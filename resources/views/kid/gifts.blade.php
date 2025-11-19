@@ -16,6 +16,98 @@
   <link rel="stylesheet" href="{{ asset('assets/css/gifts.css') }}">
 </head>
 
+<style>
+/* ======================================
+   🛒 PERFECT MATCH – BEST PRICE SECTION
+====================================== */
+
+.best-price-box {
+  margin-top: 20px;
+  padding: 0 2px;
+}
+
+.best-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  border: 1px solid #f4f4f4;
+  box-shadow: 0px 2px 12px rgba(0,0,0,0.04);
+  transition: 0.2s ease-in-out;
+}
+
+.best-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 18px rgba(0,0,0,0.08);
+}
+
+.best-card .tag {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.product-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.store-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  padding: 5px;
+  background: #fff;
+}
+
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.info span {
+  margin-bottom: 5px;
+}
+
+
+.store-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.stock {
+  font-size: 12px;
+  font-weight: 600;
+  color: #10b981;
+}
+
+.delivery {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+}
+
+@media (max-width: 430px) {
+  .store-logo { width: 40px; height: 40px; }
+  .price { font-size: 15px; }
+}
+</style>
+
 <body>
   <div class="container">
     <div class="inner-container">
@@ -31,13 +123,9 @@
 
       <!-- Hero -->
       <div class="hero">
-        <img src="{{ asset('images/gift-box.png') }}" alt="Gift Box" class="gift-box">
+        <img src="{{ asset('images/gift-box.png') }}" class="gift-box">
         <h2>My Gift Savings</h2>
-
-        <!-- 🪙 Floating Coins -->
-        <div class="coin"></div>
-        <div class="coin"></div>
-        <div class="coin"></div>
+        <div class="coin"></div><div class="coin"></div><div class="coin"></div>
       </div>
 
       <!-- Summary -->
@@ -45,97 +133,116 @@
         <div class="summary-card">
           <h4>Total Saved</h4>
           <h2>₹{{ number_format($gifts->where('status', 0)->sum('saved_amount')) }}</h2>
-
         </div>
 
         <div class="target-card">
           @php
             $totalTarget = $gifts->sum('target_amount');
-            $totalSaved = $gifts->sum('saved_amount');
-            $remaining = max($totalTarget - $totalSaved, 0);
+            $totalSaved  = $gifts->sum('saved_amount');
+            $remaining   = max($totalTarget - $totalSaved, 0);
           @endphp
+
           <h4>Pending Target</h4>
           <div class="amount">₹{{ number_format($remaining) }}</div>
         </div>
       </div>
 
       <!-- Gift List -->
-      <section class="gift-section">
-        @forelse($gifts as $gift)
+<section class="gift-section">
+@forelse($gifts as $gift)
 
-@if($gift->status == 1)
-   @continue   {{-- ✅ hide gift card permanently once paid --}}
-@endif
+  @php
+    $progress = $gift->target_amount > 0 ? min(($gift->saved_amount / $gift->target_amount) * 100, 100) : 0;
+    $needed   = max($gift->target_amount - $gift->saved_amount, 0);
+  @endphp
 
+  <div class="gift-card">
+    <div class="gift-header">
+      <h5>{{ ucfirst($gift->title) }}</h5>
 
-          @php
-            $progress = $gift->target_amount > 0 ? min(($gift->saved_amount / $gift->target_amount) * 100, 100) : 0;
-            $needed = max($gift->target_amount - $gift->saved_amount, 0);
-          @endphp
+      @if($gift->saved_amount >= $gift->target_amount)
+        <div class="goal-status completed">Completed</div>
+      @else
+        <div class="goal-status progress">In Progress</div>
+      @endif
+    </div>
 
-          <div class="gift-card">
-            <div class="gift-header">
-              <h5>{{ ucfirst($gift->title) }}</h5>
+    <div class="progress-line">
+      <span style="width: {{ $progress }}%;"></span>
+    </div>
 
-              @if($gift->saved_amount >= $gift->target_amount)
-                <div class="goal-status completed">Completed</div>
-              @else
-                <div class="goal-status progress">In Progress</div>
-              @endif
-            </div>
+    <div class="target-info d-flex justify-content-between mb-0">
+      <span>Saved: ₹{{ number_format($gift->saved_amount, 2) }}</span>
+      <span>Target: ₹{{ number_format($needed, 2) }}</span>
+    </div>
 
-            <div class="progress-line">
-              <span style="width: {{ $progress }}%;"></span>
-            </div>
+    <!-- CONDITION PART FIXED -->
+    @if($gift->saved_amount >= $gift->target_amount)
 
-            <div class="target-info d-flex justify-content-between mb-0">
-              <span>Saved: ₹{{ number_format($gift->saved_amount, 2) }}</span>
-              <span>Target: ₹{{ number_format($needed, 2) }}</span>
-            </div>
-
-            @if($gift->saved_amount >= $gift->target_amount)
-             <button class="pay-now-btn"
+      <button class="pay-now-btn"
         data-id="{{ $gift->id }}"
         data-amount="{{ $gift->saved_amount }}"
         data-title="{{ $gift->title }}">
-  Pay Now
-</button>
+        Pay Now
+      </button>
 
-            @else
+    @else
 
-            <!-- ✅ Gift Saving Form -->
-            <form action="{{ route('kid.gifts.add') }}" method="POST" class="gift-form mt-3">
-              @csrf
+      <!-- Saving Form -->
+      <form action="{{ route('kid.gifts.add') }}" method="POST" class="gift-form mt-3">
+        @csrf
+        <input type="hidden" name="source" value="gift_saving">
+        <input type="hidden" name="gift_id" value="{{ $gift->id }}">
 
-              <!-- ✅ MUST ADD THIS TO AVOID DAILY LIMIT BLOCK -->
-              <input type="hidden" name="source" value="gift_saving">
+        <input type="text" name="amount" class="gift-input"
+          placeholder="Save amount"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          max="{{ $needed }}"
+          oninput="
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value !== '' && parseInt(this.value) > {{ $needed }}) {
+                this.value = {{ $needed }};
+            }"
+          required>
 
-              <input type="hidden" name="gift_id" value="{{ $gift->id }}">
+        <button type="submit" class="gift-add-btn">Add</button>
+      </form>
 
-              <input type="text" name="amount" class="gift-input"
-                     placeholder="Save amount"
-                     inputmode="numeric"
-                     pattern="[0-9]*"
-                     max="{{ $needed }}"
-                     oninput="
-                        this.value = this.value.replace(/[^0-9]/g, '');
-                        if (this.value !== '' && parseInt(this.value) > {{ $needed }}) {
-                            this.value = {{ $needed }};
-                        }
-                     "
-                     required>
+    @endif
 
-              <button type="submit" class="gift-add-btn">Add</button>
-            </form>
+    <!-- ⭐ ALWAYS SHOW BEST PRICE (FIXED) -->
+    <div class="best-price-box">
+      @foreach($gift->bestPrices as $item)
+      <div class="best-card">
 
-            @endif
+        @if(isset($item['note']))
+          <div class="tag">{{ $item['note'] }}</div>
+        @endif
+
+        <div class="product-row">
+          <img src="{{ $item['logo'] }}" class="store-logo">
+
+          <div class="info">
+            <span class="store-name">{{ $item['store'] }}</span>
+            <span class="stock">{{ $item['stock'] }}</span>
+            <span class="delivery">{{ $item['delivery'] }}</span>
           </div>
-        @empty
-          <div class="text-center text-muted fs-6 p-3">
-            <p>No gifts added yet. Start your savings adventure!</p>
-          </div>
-        @endforelse
-      </section>
+
+          <span class="price">₹{{ number_format($item['price']) }}</span>
+        </div>
+
+      </div>
+      @endforeach
+    </div>
+
+  </div>
+@empty
+  <div class="text-center text-muted fs-6 p-3">
+    <p>No gifts added yet. Start your savings adventure!</p>
+  </div>
+@endforelse
+</section>
 
     </div>
 
@@ -156,25 +263,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 const toast = document.getElementById("alertToast");
 
-// ✅ Toast message
 function showToast(msg, type = "success") {
   toast.innerText = msg;
   toast.className = `alert-toast show alert-${type}`;
   setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
-// ✅ If redirected from Add Gift page, show toast
-@if(session('success'))
-  document.addEventListener("DOMContentLoaded", () => {
-      showToast("{{ session('success') }}", "success");
-  });
-@endif
-
-// ✅ Handle "Pay Now"
+// Pay Now Action
 document.querySelectorAll(".pay-now-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const amount = btn.dataset.amount;
@@ -191,7 +289,6 @@ document.querySelectorAll(".pay-now-btn").forEach(btn => {
   });
 });
 </script>
-
 
 </body>
 </html>

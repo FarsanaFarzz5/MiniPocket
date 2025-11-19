@@ -239,7 +239,6 @@ body.popup-open #goalPopup * {
 .goal-card {
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   padding: 14px 16px;
   margin-bottom: 18px;
   border: 1px solid #e2e8f0;
@@ -392,7 +391,6 @@ body.popup-open #goalPopup * {
   font-size: 26px;
 }
 
-
 /* Silver */
 .goal-silver {
   position: relative;
@@ -422,7 +420,46 @@ body.popup-open #goalPopup * {
   position: relative;
   z-index: 5;
   color: #ffffff !important;
-  font-size: 26px;
+  font-size: px;
+}
+
+/* -----------------------------
+   🟤 Perfect Bronze (Matches Gold & Silver)
+-------------------------------- */
+/* ---------------------------------
+   🟤 Subtle Bronze (Soft + Premium)
+----------------------------------*/
+.goal-bronze {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #F2E1C6 0%, #C9A27A 100%);
+  border: 3px solid #E6D3B8;  /* soft border */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* same shine */
+.goal-bronze::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at center,
+      rgba(255, 255, 255, 0.40),
+      transparent 60%);
+  z-index: 1;
+}
+
+/* icon */
+.goal-bronze i {
+  position: relative;
+  z-index: 5;
+  color: #ffffff !important;
+  font-size: 30px;
 }
 
 
@@ -582,9 +619,9 @@ input:checked + .slider:before {
 
 /* 💚 Active tab (Green) */
 .toggle-tabs .tab.active {
-  background: #4caf50;
-  border-color: #4caf50;
-  color: #fff;
+  background: linear-gradient(135deg, #23a541, #33c56c);
+  border-color: #23a541;
+  color: white;
   box-shadow: 0 3px 8px rgba(76,175,80,0.30);
 }
 
@@ -593,13 +630,44 @@ input:checked + .slider:before {
   transform: translateY(-2px);
 }
 
+.football-highlight {
+  background: #F7FCF9 !important;   /* ultra soft white+green tint */
+  border: 1px solid #E3F2EA !important; /* very subtle green border */
+  
+}
 
+.football-highlight .num {
+  color: #0F8A4A !important; /* soft deep green */
+  font-weight: 600;
+}
+
+.football-highlight .title {
+  color: #0F8A4A !important; /* premium dark mint green */
+  font-weight: 600;
+}
+
+.football-highlight .goal-right p strong {
+  color: #0E7A41 !important; /* richer green for amount */
+  font-weight: 700;
+}
+
+.football-highlight .goal-right .target {
+  color: #6FAF8C !important; /* subtle mint grey */
+  font-weight: 500;
+}
+
+.football-highlight .goal-item {
+  padding: 4px 2px; /* more breathable layout */
+}
 
 
 @media (max-width: 420px) {
   html, body { align-items: flex-start; }
   .container { height: 100svh; }
 }
+
+
+
   </style>
 </head>
 
@@ -687,21 +755,26 @@ input:checked + .slider:before {
 
     <!-- ⭐ Active Goals (Now SILVER for status 0 & 1) -->
     @foreach ($goals as $goal)
+
       <div class="highlight"
-           onclick="window.location.href='{{ route('goals.details', $goal->id) }}'">
+     onclick="window.location.href='{{ route('goals.details', $goal->id) }}'">
 
+    @if ($goal->status == 0)
         <div class="goal-silver">
-          <i class="fa-solid fa-award"></i>
+            <i class="fa-solid fa-award"></i>
         </div>
-
         <p>{{ $goal->title }}</p>
+        <span class="status" style="color:#23a541;">On Progress</span>
 
-        @if ($goal->status == 0)
-          <span class="status" style="color:#777;">On Progress</span>
-        @elseif ($goal->status == 1)
-          <span class="status" style="color:#23a541;">Completed</span>
-        @endif
-      </div>
+    @elseif ($goal->status == 1)
+        <div class="goal-bronze">
+            <i class="fa-solid fa-award"></i>
+        </div>
+        <p>{{ $goal->title }}</p>
+        <span class="status" style="color:#23a541;">Completed</span>
+    @endif
+</div>
+
     @endforeach
 
     <!-- ⭐ Paid Goals (Now GOLD for status 2) -->
@@ -713,38 +786,43 @@ input:checked + .slider:before {
         </div>
 
         <p>{{ $goal->title }}</p>
-        <span class="status" style="color:#F5A623;">Paid</span>
+        <span class="status" style="color:#23a541;">Paid</span>
       </div>
     @endforeach
 
   </div>
 </div>
 
+<!-- ✅ Goal List -->
 
 
+@php
+    // status: 1 = Completed, 0 = On Progress
+    $sortedGoals = $goals->sortByDesc('status')->values();
+@endphp
 
+@forelse ($sortedGoals as $index => $goal)
+    <div class="goal-card 
+         @if (strtolower($goal->title) == 'football') football-highlight @endif"
+         onclick="window.location.href='{{ route('goals.details', $goal->id) }}'">
 
-
-
-
-
-      <!-- ✅ Goal List -->
-      @forelse ($goals as $index => $goal)
-      <div class="goal-card" onclick="window.location.href='{{ route('goals.details', $goal->id) }}'">
         <div class="goal-item">
-          <div class="goal-left">
-            <span class="num">{{ $index + 1 }}.</span>
-            <span class="title">{{ $goal->title }}</span>
-          </div>
-          <div class="goal-right">
-            <p><strong>₹{{ number_format($goal->saved_amount,2) }}</strong></p>
-            <p class="target">Target ₹{{ number_format($goal->target_amount,2) }}</p>
-          </div>
+            <div class="goal-left">
+                <span class="num">{{ $index + 1 }}.</span>
+                <span class="title">{{ $goal->title }}</span>
+            </div>
+
+            <div class="goal-right">
+                <p><strong>₹{{ number_format($goal->saved_amount,2) }}</strong></p>
+                <p class="target">Target ₹{{ number_format($goal->target_amount,2) }}</p>
+            </div>
         </div>
-      </div>
-      @empty
-        <p class="empty">No goals found.</p>
-      @endforelse
+
+    </div>
+@empty
+    <p class="empty">No goals found.</p>
+@endforelse
+
 
     </div>
     <div id="alertToast" class="alert-toast"></div>

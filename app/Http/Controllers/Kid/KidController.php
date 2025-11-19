@@ -450,30 +450,118 @@ public function addSavings(Request $request, Goal $goal)
 
 
     public function goalDetails(Goal $goal)
-    {
-        $user = Auth::user();
-        if ($user->role != 2) abort(403, 'Unauthorized');
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
 
-        if ($goal->kid_id !== $user->id) abort(403, 'Unauthorized goal access.');
+    if ($goal->kid_id !== $user->id) abort(403, 'Unauthorized goal access.');
 
-        $goal->load('savings');
-        $progress = $goal->target_amount > 0
-            ? round(($goal->saved_amount / $goal->target_amount) * 100, 2)
-            : 0;
+    $goal->load('savings');
 
-        return view('kid.goaldetails', compact('goal', 'progress'));
+    $progress = $goal->target_amount > 0
+        ? round(($goal->saved_amount / $goal->target_amount) * 100, 2)
+        : 0;
+
+    // ----------------------------
+    //  PRODUCT IMAGE & PRICE LOGIC
+    // ----------------------------
+
+    $title = strtolower($goal->title);
+    $productImage = null;
+    $basePrice = $goal->target_amount; // user-entered amount (lipstick=1000 etc)
+
+    if (str_contains($title, 'shoe')) {
+        $productImage = asset('images/shoe.png');
+        $prices = [
+            'amazon'   => $basePrice - 101,
+            'myntra'   => $basePrice - 90,
+            'flipkart' => $basePrice - 50,
+        ];
     }
+    elseif (str_contains($title, 'football')) {
+        $productImage = asset('images/football.png');
+        $prices = [
+            'amazon'   => $basePrice - 250,
+            'myntra'   => $basePrice - 180,
+            'flipkart' => $basePrice - 120,
+        ];
+    }
+    elseif (str_contains($title, 'book')) {
+        $productImage = asset('images/book.png');
+        $prices = [
+            'amazon'   => $basePrice - 40,
+            'myntra'   => $basePrice - 20,
+            'flipkart' => $basePrice - 10,
+        ];
+    }
+        elseif (str_contains($title, 'lipstick')) {
+        $productImage = asset('images/lipstick.png');
+        $prices = [
+            'amazon'   => $basePrice - 400,
+            'myntra'   => $basePrice - 200,
+            'flipkart' => $basePrice - 350,
+        ];
+    }
+    else {
+        // default image
+        $productImage = asset('images/products/default.png');
+        $prices = [
+            'amazon'   => $basePrice - 100,
+            'myntra'   => $basePrice - 50,
+            'flipkart' => $basePrice - 20,
+        ];
+    }
+
+    // Find best price
+    $bestStore = array_search(min($prices), $prices);
+
+    // Convert to proper format for view
+    $bestPrices = [
+        [
+            'store'   => 'Amazon.in',
+            'logo'    => $productImage,
+            'price'   => $prices['amazon'],
+            'stock'   => 'In stock online',
+            'delivery'=> 'Delivery ₹40',
+            'note'    => $bestStore == 'amazon' ? 'Best price' : null
+        ],
+        [
+            'store'   => 'Myntra',
+            'logo'    => $productImage,
+            'price'   => $prices['myntra'],
+            'stock'   => 'In stock online',
+            'delivery'=> 'Free delivery',
+            'note'    => $bestStore == 'myntra' ? 'Best price' : null
+        ],
+        [
+            'store'   => 'Flipkart',
+            'logo'    => $productImage,
+            'price'   => $prices['flipkart'],
+            'stock'   => 'In stock online',
+            'delivery'=> 'Delivery ₹60',
+            'note'    => $bestStore == 'flipkart' ? 'Best price' : null
+        ],
+    ];
+
+    return view('kid.goaldetails', compact('goal', 'progress', 'bestPrices'));
+}
 
     /**
      * 🎁 GIFT FUNCTIONS
      */
 public function showGifts()
 {
-    $user = Auth::user();  // ✅ change to $user for uniform usage
+    $user = Auth::user();
     if ($user->role != 2) abort(403, 'Unauthorized');
 
     $gifts = Gift::where('kid_id', $user->id)->get();
-    return view('kid.gifts', compact('gifts', 'user')); // ✅ send $user also
+
+    // 🔥 Attach Best Prices to every gift
+    foreach ($gifts as $gift) {
+        $gift->bestPrices = $this->generateBestPricesForGift($gift);
+    }
+
+    return view('kid.gifts', compact('gifts', 'user'));
 }
 
 
@@ -613,6 +701,85 @@ $gift->save();
         'success' => true,
         'message' => '🎁 Gift payment recorded successfully!',
     ]);
+}
+
+private function generateBestPricesForGift($gift)
+{
+    $title = strtolower($gift->title);
+    $basePrice = $gift->target_amount;
+
+    // Detect the product
+    if (str_contains($title, 'shoe')) {
+        $productImage = asset('images/gshoe.png');
+        $prices = [
+            'amazon'   => $basePrice - 100,
+            'myntra'   => $basePrice - 80,
+            'flipkart' => $basePrice - 60,
+        ];
+    }
+    elseif (str_contains($title, 'bag')) {
+        $productImage = asset('images/bag.png');
+        $prices = [
+            'amazon'   => $basePrice - 150,
+            'myntra'   => $basePrice - 120,
+            'flipkart' => $basePrice - 90,
+        ];
+    }
+    elseif (str_contains($title, 'football')) {
+        $productImage = asset('images/football.png');
+        $prices = [
+            'amazon'   => $basePrice - 200,
+            'myntra'   => $basePrice - 160,
+            'flipkart' => $basePrice - 110,
+        ];
+    }
+    elseif (str_contains($title, 'cap')) {
+        $productImage = asset('images/cap.png');
+        $prices = [
+            'amazon'   => $basePrice - 40,
+            'myntra'   => $basePrice - 20,
+            'flipkart' => $basePrice - 10,
+        ];
+    }
+    else {
+        // Default
+        $productImage = asset('images/products/default.png');
+        $prices = [
+            'amazon'   => $basePrice - 80,
+            'myntra'   => $basePrice - 50,
+            'flipkart' => $basePrice - 30,
+        ];
+    }
+
+    // Highlight lowest price
+    $bestStore = array_search(min($prices), $prices);
+
+    return [
+        [
+            'store'   => 'Amazon.in',
+            'logo'    => $productImage,
+            'price'   => $prices['amazon'],
+            'stock'   => 'In stock online',
+            'delivery'=> 'Delivery ₹40',
+            'note'    => $bestStore == 'amazon' ? 'Best price' : null
+        ],
+        [
+            'store'   => 'Myntra',
+            'logo'    => $productImage,
+            'price'   => $prices['myntra'],
+            'stock'   => 'In stock online',
+            'delivery'=> 'Free delivery',
+            'note'    => $bestStore == 'myntra' ? 'Best price' : null
+        ],
+        [
+            'store'   => 'Flipkart',
+            'logo'    => $productImage,
+            'price'   => $prices['flipkart'],
+            'stock'   => 'In stock online',
+            'delivery'=> 'Delivery ₹60',
+            'note'    => $bestStore == 'flipkart' ? 'Best price' : null
+        ],
+    ];
 }
 
 /**
