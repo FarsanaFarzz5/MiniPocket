@@ -59,6 +59,8 @@
               @case('gift_payment') Gift Purchased @break
               @case('kid_spending') Spent for Needs @break
               @case('kid_to_parent') Send to Parent @break
+              @case('goal_refund') Returned Goal Savings @break
+
               @default Spent @break
             @endswitch
           @endif

@@ -143,7 +143,8 @@ public function kidManagement()
             ->whereIn('source', [
                 'goal_saving',
                 'gift_saving',
-                'kid_to_parent' // credit in kid panel? No → remove if unwanted
+                'kid_to_parent', // credit in kid panel? No → remove if unwanted
+                
             ])
             ->sum('amount');
 
@@ -157,7 +158,8 @@ public function kidManagement()
                 'kid_spending',
                 'goal_payment',
                 'gift_payment',
-                'kid_to_parent'
+                'kid_to_parent',
+                'goal_refund'
             ])
             ->sum('amount');
 
@@ -389,13 +391,14 @@ public function transactionHistory()
     // 2️⃣ Kid Spending + Goal Payment + Gift Payment
 $kidTransactions = Transaction::with('kid')
     ->whereIn('kid_id', $kidIds)
-
     ->whereIn('source', [
-    'kid_spending',
-    'goal_payment',
-    'gift_payment',
-    'kid_to_parent'   // ✔ ONLY THIS (no kid_to_parent)
-])
+        'kid_spending',
+        'goal_payment',
+        'gift_payment',
+        'kid_to_parent',
+        'goal_refund'   // ⭐ FIXED
+    ])
+
 
     ->orderBy('created_at', 'desc')
     ->get();

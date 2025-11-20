@@ -299,13 +299,14 @@ $transactions = Transaction::where('kid_id', $user->id)
                         'kid_spending',
                         'goal_payment',
                         'gift_payment',
-                        'kid_to_parent'
+                        'kid_to_parent',
+                        'goal_refund'  // ⭐ ADD THIS
                     ]);
               });
     })
     ->orderBy('created_at', 'desc')
-    
     ->get();
+
 
 $receivedMoney = Transaction::where('kid_id', $user->id)
     ->where('type', 'credit')
@@ -830,6 +831,7 @@ public function kidSendToParent(Request $request)
     $request->validate([
         'amount'      => 'required|numeric|min:1',
         'description' => 'nullable|string|max:255',
+        'goal_id'     => 'nullable|integer',
     ]);
 
     if (!$user->parent_id) {
@@ -839,42 +841,64 @@ public function kidSendToParent(Request $request)
         ], 400);
     }
 
-    // ✔ Calculate balance
+    // 🧮 Calculate REAL balance 
+    // ❌ DO NOT deduct goal_refund (refund should NOT reduce balance)
     $received = Transaction::where('kid_id', $user->id)
         ->where('type', 'credit')
         ->sum('amount');
 
     $spent = Transaction::where('kid_id', $user->id)
         ->where('type', 'debit')
-        ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_saving', 'kid_to_parent'])
+        ->whereIn('source', [
+            'kid_spending',
+            'goal_saving',
+            'gift_saving',
+            'kid_to_parent' // only normal parent transfer reduces balance
+        ])
         ->sum('amount');
 
     $balance = $received - $spent;
 
-    if ($request->amount > $balance) {
+    // ❌ Only normal transfer should check balance
+    if (!$request->goal_id && $request->amount > $balance) {
         return response()->json([
             'success' => false,
             'message' => 'Insufficient balance.',
         ], 400);
     }
 
-    // ✔ Create transaction (kid → parent)
-// 1️⃣ Kid Debit Entry
-Transaction::create([
-    'parent_id'   => $user->parent_id,
-    'kid_id'      => $user->id,
-    'amount'      => $request->amount,
-    'type'        => 'debit',
-    'status'      => 'completed',
-    'source'      => 'kid_to_parent',
-    'description' => $request->description,
-]);
+    // 🧠 Fix description
+    $description = "Money returned to parent";
 
+    if ($request->goal_id) {
+        $goal = Goal::find($request->goal_id);
+        if ($goal) {
+            $description = "Returned savings for goal: " . $goal->title;
+        }
+    }
+
+    // 🎯 Decide proper transaction source
+    $source = $request->goal_id
+        ? 'goal_refund'      // ⚠ this does NOT reduce balance
+        : 'kid_to_parent';   // normal deduction
+
+    // 📝 Create transaction
+    Transaction::create([
+        'parent_id'   => $user->parent_id,
+        'kid_id'      => $user->id,
+        'amount'      => $request->amount,
+        'type'        => 'debit',
+        'status'      => 'completed',
+        'source'      => $source,
+        'description' => $description,
+    ]);
 
     return response()->json([
         'success' => true,
         'message' => 'Money sent to parent successfully!',
-        'available_balance' => $balance - $request->amount,
+        'available_balance' => $request->goal_id
+            ? $balance        // refund → balance stays SAME
+            : $balance - $request->amount, // normal → reduce
     ]);
 }
 

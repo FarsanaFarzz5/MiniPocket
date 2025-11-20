@@ -18,7 +18,6 @@
     <div class="inner-container">
 
       @include('sidebar.sidebar')
-
       @include('headerparent')
 
       <h1>Transaction History</h1>
@@ -34,10 +33,12 @@
         <div class="transaction-list">
           @foreach($parentTransactions as $txn)
             <div class="transaction-card">
+
               <div class="left">
                 <img src="{{ $txn->kid && $txn->kid->profile_img 
-                  ? asset('storage/'.$txn->kid->profile_img) 
-                  : asset('images/default-profile.png') }}" alt="Kid Avatar">
+                    ? asset('storage/'.$txn->kid->profile_img) 
+                    : asset('images/default-profile.png') }}" 
+                  alt="Kid Avatar">
 
                 <div class="details">
                   <h4>{{ ucfirst($txn->kid->first_name ?? 'Unknown Kid') }}</h4>
@@ -46,10 +47,11 @@
               </div>
 
               <div class="right">
-                <h4>₹{{ number_format($txn->amount, 2) }}</h4>
+                <h4>₹{{ number_format($txn->amount,2) }}</h4>
                 <span>{{ $txn->created_at->format('d M Y') }}</span><br>
                 <span class="type type-parent">Debit</span>
               </div>
+
             </div>
           @endforeach
         </div>
@@ -66,55 +68,81 @@
         <div class="transaction-list">
           @foreach($kidTransactions as $txn)
             <div class="transaction-card">
-              
+
               <div class="left">
                 <img src="{{ $txn->kid && $txn->kid->profile_img 
-                  ? asset('storage/'.$txn->kid->profile_img) 
-                  : asset('images/default-profile.png') }}" alt="Kid Avatar">
+                    ? asset('storage/'.$txn->kid->profile_img) 
+                    : asset('images/default-profile.png') }}" 
+                  alt="Kid Avatar">
 
                 <div class="details">
                   <h4>{{ ucfirst($txn->kid->first_name ?? 'Kid') }}</h4>
 
-                  {{-- Description: choose sensible text per source (avoid default "spent for need" for kid_to_parent) --}}
                   <p>
                     @if($txn->source == 'kid_spending')
                         Spent for need
+
                     @elseif($txn->source == 'goal_payment')
-                       {{ $txn->description ? ' ' . $txn->description : '' }}
+                        {{ $txn->description ?? '' }}
+
                     @elseif($txn->source == 'gift_payment')
-                        {{ $txn->description ? ' ' . $txn->description : '' }}
+                        {{ $txn->description ?? '' }}
+
                     @elseif($txn->source == 'goal_saving')
-                        Saved for goal{{ $txn->description ? '' . $txn->description : '' }}
+                        Saved for goal {{ $txn->description ?? '' }}
+
                     @elseif($txn->source == 'gift_saving')
-                        Saved for gift{{ $txn->description ? '' . $txn->description : '' }}
-                    @elseif($txn->source == 'kid_to_parent')
-                        Recieved by kid
+                        Saved for gift {{ $txn->description ?? '' }}
+
+                    {{-- 🟡 Kid returned money to parent (normal or goal refund) --}}
+@elseif($txn->source == 'kid_to_parent' || $txn->source == 'goal_refund')
+
+    @php
+        $desc = trim($txn->description ?? '');
+        $message = "Money returned to parent";
+
+        // (1) Returned savings for goal
+        if (str_starts_with($desc, 'Returned savings for goal:')) {
+            $message = $desc;
+        }
+        // (2) Returned savings for gift (future-safe)
+        elseif (str_starts_with($desc, 'Returned savings for gift:')) {
+            $message = $desc;
+        }
+        // (3) No description → generic message
+        elseif ($desc === '' || $desc === null) {
+            $message = "Money returned to parent";
+        }
+    @endphp
+
+    {{ $message }}
+
                     @elseif($txn->source == 'parent_to_kid')
                         Received from parent
+
                     @else
                         {{ $txn->description ?? 'Activity' }}
                     @endif
                   </p>
+
                 </div>
               </div>
 
               <div class="right">
-                <h4>₹{{ number_format($txn->amount, 2) }}</h4>
+                <h4>₹{{ number_format($txn->amount,2) }}</h4>
                 <span>{{ $txn->created_at->format('d M Y') }}</span><br>
 
-                {{-- Type badge with classes for styling --}}
-                {{-- Type badge with forced logic --}}
-<span class="type
-    @if($txn->source == 'kid_to_parent')
-        type-credit       {{-- parent receives money --}}
+                <span class="type
+    @if($txn->source == 'kid_to_parent' || $txn->source == 'goal_refund')
+        type-credit
     @elseif($txn->type == 'credit')
         type-credit
     @else
         type-debit
     @endif
 ">
-    @if($txn->source == 'kid_to_parent')
-        Credit
+    @if($txn->source == 'kid_to_parent' || $txn->source == 'goal_refund')
+        Debit
     @elseif($txn->type == 'credit')
         Credit
     @else
@@ -124,6 +152,7 @@
 
 
               </div>
+
             </div>
           @endforeach
         </div>

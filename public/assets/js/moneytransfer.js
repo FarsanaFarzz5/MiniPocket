@@ -1,14 +1,15 @@
 /* **********************************************************
-   🔎 Detect Transfer Type (parent / normal / gift / goal)
+   🔎 Detect Transfer Type (parent / normal / gift / goal refund)
 ********************************************************** */
 
 const urlParams = new URLSearchParams(window.location.search);
-const transferType = urlParams.get("type"); // ← "parent" when kid → parent transfer
+const transferType = urlParams.get("type"); // "parent" for kid → parent return
 
 const amountInput = document.getElementById("amountInput");
 const hiddenAmount = document.getElementById("hiddenAmount");
 const form = document.querySelector("form");
 const toast = document.getElementById("alertToast");
+
 
 /* **********************************************************
    🔔 Toast
@@ -24,47 +25,68 @@ function redirect(message) {
   setTimeout(() => (window.location.href = DASHBOARD_URL), 1500);
 }
 
+
 /* **********************************************************
-   📌 PREFILL (Gift / Goal)
+   📌 PREFILL (Gift / Goal Payment / Goal Refund to Parent)
 ********************************************************** */
 
-// Gift
+// 1️⃣ Gift Payment
 const savedGiftAmount = localStorage.getItem("giftAmount");
 const savedGiftReason = localStorage.getItem("giftReason");
 
-// Goal
+// 2️⃣ Goal Payment
 const savedGoalAmount = localStorage.getItem("goalAmount");
 const savedGoalReason = localStorage.getItem("goalReason");
 const savedGoalId = localStorage.getItem("goalId");
 
-// Decide fill values
-const fillAmount = savedGiftAmount || savedGoalAmount;
-const fillReason = savedGiftReason || savedGoalReason;
+// 3️⃣ Goal Refund → Parent
+const parentReturnAmount = localStorage.getItem("parentReturnAmount");
+const parentReturnReason = localStorage.getItem("parentReturnReason");
+const parentReturnGoalId = localStorage.getItem("parentReturnGoalId");
 
-// Insert prefill amount (NOT on scan page)
+// Decide which to use
+let fillAmount =
+  parentReturnAmount || savedGiftAmount || savedGoalAmount;
+
+let fillReason =
+  parentReturnReason || savedGiftReason || savedGoalReason;
+
+
+// Insert amount (NOT on scan page)
 if (window.location.pathname !== "/kid/pay" && fillAmount) {
   amountInput.value = fillAmount;
   hiddenAmount.value = fillAmount;
+
+  // UI auto-width
   amountInput.style.width = amountInput.value.length * 24 + 40 + "px";
 }
 
-// Insert description
+// Insert description (text box)
 if (fillReason) {
   const reasonBox = form.querySelector('[name="description"]');
   if (reasonBox) reasonBox.value = fillReason;
 }
 
+
+// Clear all stored data
 function clearPrefillData() {
   localStorage.removeItem("giftAmount");
   localStorage.removeItem("giftReason");
+
   localStorage.removeItem("goalAmount");
   localStorage.removeItem("goalReason");
   localStorage.removeItem("goalId");
+
+  localStorage.removeItem("parentReturnAmount");
+  localStorage.removeItem("parentReturnReason");
+  localStorage.removeItem("parentReturnGoalId");
 }
+
 
 /* **********************************************************
    🚀 FORM SUBMIT — Final Payment API
 ********************************************************** */
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -79,23 +101,32 @@ form.addEventListener("submit", async (e) => {
   }
 
   /* ******************************************************
-     🔗 DECIDE BACKEND ENDPOINT
+     🔗 Decide BACKEND ENDPOINT
   ****************************************************** */
 
-  let targetUrl = SEND_URL; // normal spending
+  let targetUrl = SEND_URL; // Normal spending by default
 
-  if (transferType === "parent") {
-    targetUrl = "/kid/sendtoparent"; // ⬅ money to parent
+  // Highest priority → refund to parent
+  if (parentReturnAmount) {
+    targetUrl = "/kid/sendtoparent";
   }
-
-  if (savedGiftAmount) {
+  // Gift purchase
+  else if (savedGiftAmount) {
     targetUrl = "/kid/sendgiftmoney";
   }
-
-  if (savedGoalAmount) {
+  // Goal purchase
+  else if (savedGoalAmount) {
     targetUrl = "/kid/sendgoalpayment";
   }
+  // Manual parent transfer
+  else if (transferType === "parent") {
+    targetUrl = "/kid/sendtoparent";
+  }
 
+
+  /* ******************************************************
+     📨 API CALL
+  ****************************************************** */
   try {
     const response = await fetch(targetUrl, {
       method: "POST",
@@ -106,7 +137,13 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify({
         amount: enteredAmount,
         description: description,
-        goal_id: savedGoalId ?? null,
+
+        // CORRECTED logic (VERY IMPORTANT)
+        goal_id: parentReturnGoalId
+          ? Number(parentReturnGoalId)
+          : savedGoalId
+          ? Number(savedGoalId)
+          : null,
       }),
     });
 
@@ -117,42 +154,48 @@ form.addEventListener("submit", async (e) => {
       return;
     }
 
-    showToast(`₹${enteredAmount} spent successfully!`, "success");
+    showToast(`₹${enteredAmount} processed successfully!`, "success");
+
 
     /* ******************************************************
-       🎯 SUCCESS REDIRECTIONS
+       🎯 Success Redirections
     ****************************************************** */
     setTimeout(() => {
-      /* 🎁 Gift payment */
-      if (savedGiftAmount) {
-        clearPrefillData();
-        showToast("Gift paid successfully!", "success");
-        return setTimeout(() => (window.location.href = "/kid/gifts"), 1200);
-      }
 
-      /* 🎯 Goal payment */
+      // Goal Payment
       if (savedGoalAmount) {
         clearPrefillData();
-        showToast("Goal payment successful!", "success");
-        return setTimeout(() => (window.location.href = "/kid/goals"), 1200);
+        return (window.location.href = "/kid/goals");
       }
 
-      /* 👨‍👧 Kid → Parent transfer */
+      // Gift Payment
+      if (savedGiftAmount) {
+        clearPrefillData();
+        return (window.location.href = "/kid/gifts");
+      }
+
+      // Goal Refund → Parent
+      if (parentReturnAmount) {
+        clearPrefillData();
+        return (window.location.href = "/kid/dashboard");
+      }
+
+      // Manual parent transfer
       if (transferType === "parent") {
-        showToast("Money sent to parent successfully!", "success");
-        return setTimeout(() => (window.location.href = "/kid/dashboard"), 1200);
+        return (window.location.href = "/kid/dashboard");
       }
 
-      /* 💸 Normal spending */
-      return setTimeout(() => {
-        window.location.href = DASHBOARD_URL;
-      }, 1200);
+      // Normal spending
+      return (window.location.href = DASHBOARD_URL);
+
     }, 1200);
+
   } catch (err) {
     console.error(err);
     redirect("Network error. Redirecting...");
   }
 });
+
 
 /* **********************************************************
    🔢 Input Validation

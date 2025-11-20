@@ -209,6 +209,7 @@
       text-decoration: none;
       box-shadow: 0 4px 12px rgba(16,185,129,0.3);
       transition: transform 0.2s, box-shadow 0.3s;
+      border:none;
     }
 
  
@@ -471,13 +472,26 @@
           <button type="submit">Add</button>
         </form>
 @else
+<!-- PAY NOW Button -->
 <button class="pay-btn"
         id="payGoalBtn"
         data-amount="{{ $goal->saved_amount }}"
         data-title="{{ $goal->title }}"
         data-goal-id="{{ $goal->id }}">
-    Pay Now 
+    Pay Now
 </button>
+
+<!-- SEND MONEY TO PARENT Button -->
+<button class="pay-btn"
+        style="margin-top:12px; background:#2563eb;"
+        id="sendToParentBtn"
+        data-amount="{{ $goal->saved_amount }}"
+        data-title="{{ $goal->title }}"
+        data-goal-id="{{ $goal->id }}">
+    Send Money To Parent
+</button>
+
+
 @endif
 
 <!-- 🛒 BEST PRICE SECTION -->
@@ -554,6 +568,26 @@ document.getElementById("payGoalBtn")?.addEventListener("click", function () {
     window.location.href = "/kid/scan-qr";  // ✅ FIXED redirection
   }, 1200);
 });
+
+document.getElementById("sendToParentBtn")?.addEventListener("click", function () {
+
+  const amount = this.dataset.amount;
+  const title = this.dataset.title;
+  const goalId = this.dataset.goalId;
+
+  // Save details
+ localStorage.setItem("parentReturnAmount", amount);
+localStorage.setItem("parentReturnReason", title);   // goal name
+localStorage.setItem("parentReturnGoalId", goalId);
+
+
+  showToast("Redirecting to Money Transfer...", "success");
+
+  setTimeout(() => {
+      window.location.href = "/kid/moneytransfer?type=parent";
+  }, 800);
+});
+
 </script>
 
 

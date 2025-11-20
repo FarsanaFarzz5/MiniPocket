@@ -32,8 +32,14 @@
         <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
       </div>
 
-      <!-- Title -->
-      <h1>Send Money</h1>
+  <h1>
+  @if(request('type') === 'parent')
+      Send Money to Parent
+  @else
+      Send Money
+  @endif
+</h1>
+
 
       <!-- Amount Field -->
       <div class="amount-wrapper">
