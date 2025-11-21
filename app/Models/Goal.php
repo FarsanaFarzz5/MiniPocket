@@ -16,7 +16,8 @@ protected $fillable = [
     'saved_amount',
     'status',
     'image',
-    'is_hidden',   // NEW
+    'is_hidden', 
+    'is_locked',  // NEW
 ];
 
 

@@ -17,6 +17,57 @@
 </head>
 
 <style>
+
+  /* Side-by-side button row */
+.gift-buttons-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* Both buttons same width */
+.gift-buttons-row button {
+  flex: 1;
+}
+
+/* Pay Button (green) */
+.pay-now-btn {
+  background: #22c55e;
+  border: none;
+  padding: 12px 0;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(34, 197, 94, 0.25);
+  transition: 0.3s ease;
+}
+
+.pay-now-btn:hover {
+  background: #16a34a;
+  transform: translateY(-2px);
+}
+
+/* Send Button (orange) */
+.send-to-parent-btn {
+  background: #ffb84d;
+  border: none;
+  padding: 12px 0;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(255, 165, 50, 0.3);
+  transition: 0.3s ease;
+}
+
+.send-to-parent-btn:hover {
+  background: #ff9800;
+  transform: translateY(-2px);
+}
+
 /* ======================================
    🛒 PERFECT MATCH – BEST PRICE SECTION
 ====================================== */
@@ -102,6 +153,8 @@
   white-space: nowrap;
 }
 
+
+
 @media (max-width: 430px) {
   .store-logo { width: 40px; height: 40px; }
   .price { font-size: 15px; }
@@ -149,14 +202,16 @@
 
       <!-- Gift List -->
 <section class="gift-section">
-@forelse($gifts as $gift)
+@forelse($gifts->where('status', 0) as $gift)
+
 
   @php
     $progress = $gift->target_amount > 0 ? min(($gift->saved_amount / $gift->target_amount) * 100, 100) : 0;
     $needed   = max($gift->target_amount - $gift->saved_amount, 0);
   @endphp
 
-  <div class="gift-card">
+  <div class="gift-card" id="gift-card-{{ $gift->id }}">
+
     <div class="gift-header">
       <h5>{{ ucfirst($gift->title) }}</h5>
 
@@ -177,16 +232,27 @@
     </div>
 
     <!-- CONDITION PART FIXED -->
-    @if($gift->saved_amount >= $gift->target_amount)
+@if($gift->saved_amount >= $gift->target_amount)
 
-      <button class="pay-now-btn"
-        data-id="{{ $gift->id }}"
-        data-amount="{{ $gift->saved_amount }}"
-        data-title="{{ $gift->title }}">
-        Pay Now
-      </button>
+  <div class="gift-buttons-row">
+    <button class="pay-now-btn"
+      data-id="{{ $gift->id }}"
+      data-amount="{{ $gift->saved_amount }}"
+      data-title="{{ $gift->title }}">
+      Pay
+    </button>
 
-    @else
+    <button class="send-to-parent-btn"
+      data-id="{{ $gift->id }}"
+      data-amount="{{ $gift->saved_amount }}"
+      data-title="{{ $gift->title }}">
+      Send to parent
+    </button>
+</div>
+
+
+@else
+
 
       <!-- Saving Form -->
       <form action="{{ route('kid.gifts.add') }}" method="POST" class="gift-form mt-3">
@@ -272,11 +338,22 @@ function showToast(msg, type = "success") {
   setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
+function hideGiftCard(giftId) {
+    const card = document.getElementById("gift-card-" + giftId);
+    if (card) {
+        card.style.display = "none";
+    }
+}
+
 // Pay Now Action
 document.querySelectorAll(".pay-now-btn").forEach(btn => {
   btn.addEventListener("click", () => {
+
     const amount = btn.dataset.amount;
     const title = btn.dataset.title;
+    const giftId = btn.dataset.id;
+
+    // ❌ REMOVE hideGiftCard here
 
     localStorage.setItem("giftAmount", amount);
     localStorage.setItem("giftReason", title);
@@ -288,6 +365,32 @@ document.querySelectorAll(".pay-now-btn").forEach(btn => {
     }, 1200);
   });
 });
+
+
+// ⭐ SEND GIFT SAVINGS BACK TO PARENT
+// ⭐ SEND GIFT SAVINGS BACK TO PARENT
+document.querySelectorAll(".send-to-parent-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+
+      const amount = btn.dataset.amount;
+      const title = btn.dataset.title;
+      const giftId = btn.dataset.id;
+
+      // ❌ REMOVE hideGiftCard here
+
+      localStorage.setItem("parentReturnAmount", amount);
+      localStorage.setItem("parentReturnReason", title + " (Gift)");
+      localStorage.setItem("parentReturnGiftId", giftId);
+
+      showToast("Redirecting to Money Transfer...", "success");
+
+      setTimeout(() => {
+          window.location.href = "/kid/moneytransfer?type=parent";
+      }, 800);
+  });
+});
+
+
 </script>
 
 </body>

@@ -11,52 +11,48 @@
   <link rel="stylesheet" href="{{ asset('assets/css/header.css') }}">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
 
-    html, body {
-      height: 100%;
-      width: 100%;
-      background: #f9f9f9;
-      overflow-x: hidden;
-    }
+  /* ========== GLOBAL RESET ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
 
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #f2f2f2;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: hidden;
+}
 
-    /* ✅ Corrected Main Container Layout */
-    .container {
-      width: 100%;
-      max-width: 420px;
-      height: 100dvh;
-      background: #fff;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      overflow: hidden;
-      position: relative;
-      border-radius: 0;
-    }
+/* ================= CONTAINER ================= */
+.container {
+  width: 100%;
+  max-width: 420px;
+  height: 100dvh;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
 
-    .inner-container {
-      width: 100%;
-      height: 100%;
-      overflow-y: auto;
-      padding: 16px 20px 70px;
-      text-align: center;
-      position: relative;
-      z-index: 1;
-      scroll-behavior: smooth;
-    }
+.inner-container {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  padding: 16px 20px 90px; /* bottom space for FAB */
+  position: relative;
+  z-index: 1;
+}
+
 
     /* 🏷 HEADER */
     .headers {
@@ -194,23 +190,38 @@
 
     .add-form button:hover { transform: translateY(-2px); }
 
-    /* 💳 PAY NOW BUTTON */
-    .pay-btn {
-      display: block;
-      width: 100%;
-       background: linear-gradient(135deg, #23a541, #33c56c);
-      color: #fff;
-      font-weight: 600;
-      text-align: center;
-      padding: 12px 0;
-      border-radius: 12px;
-      font-size: 14px;
-      margin-top: 18px;
-      text-decoration: none;
-      box-shadow: 0 4px 12px rgba(16,185,129,0.3);
-      transition: transform 0.2s, box-shadow 0.3s;
-      border:none;
-    }
+/* ================================
+   🌟 50-50 Side-by-Side Buttons
+   (Perfect Matching Green Style)
+================================ */
+
+.goal-btn-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 18px 0;
+}
+
+.goal-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #23a541, #33c56c); /* same Pay Now gradient */
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 14px 0;
+    border-radius: 12px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(16,185,129,0.25);
+    transition: 0.25s ease;
+}
+
+.goal-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16,185,129,0.35);
+}
+
 
  
 
@@ -472,24 +483,27 @@
           <button type="submit">Add</button>
         </form>
 @else
-<!-- PAY NOW Button -->
-<button class="pay-btn"
+
+<div class="goal-btn-row">
+
+    <button class="goal-btn"
         id="payGoalBtn"
         data-amount="{{ $goal->saved_amount }}"
         data-title="{{ $goal->title }}"
         data-goal-id="{{ $goal->id }}">
-    Pay Now
-</button>
+        Pay 
+    </button>
 
-<!-- SEND MONEY TO PARENT Button -->
-<button class="pay-btn"
-        style="margin-top:12px; background:#2563eb;"
+    <button class="goal-btn"
         id="sendToParentBtn"
         data-amount="{{ $goal->saved_amount }}"
         data-title="{{ $goal->title }}"
         data-goal-id="{{ $goal->id }}">
-    Send Money To Parent
-</button>
+        Send to parent
+    </button>
+
+</div>
+
 
 
 @endif

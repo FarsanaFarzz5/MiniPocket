@@ -27,64 +27,68 @@ function redirect(message) {
 
 
 /* **********************************************************
-   📌 PREFILL (Gift / Goal Payment / Goal Refund to Parent)
+   📌 PREFILL (Gift / Goal Payment / Refund to Parent)
 ********************************************************** */
 
-// 1️⃣ Gift Payment
+/* ---------- 1️⃣ Gift Payment ------------ */
 const savedGiftAmount = localStorage.getItem("giftAmount");
 const savedGiftReason = localStorage.getItem("giftReason");
 
-// 2️⃣ Goal Payment
+/* ---------- 2️⃣ Goal Payment ------------ */
 const savedGoalAmount = localStorage.getItem("goalAmount");
 const savedGoalReason = localStorage.getItem("goalReason");
 const savedGoalId = localStorage.getItem("goalId");
 
-// 3️⃣ Goal Refund → Parent
+/* ---------- 3️⃣ Refund → Parent (Goal/Gift) ------------ */
 const parentReturnAmount = localStorage.getItem("parentReturnAmount");
 const parentReturnReason = localStorage.getItem("parentReturnReason");
-const parentReturnGoalId = localStorage.getItem("parentReturnGoalId");
+const parentReturnGoalId = localStorage.getItem("parentReturnGoalId");  // goal
+const parentReturnGiftId = localStorage.getItem("parentReturnGiftId");  // gift ✔
 
-// Decide which to use
+/* ---------- SELECT FINAL PREFILL ------------ */
 let fillAmount =
   parentReturnAmount || savedGiftAmount || savedGoalAmount;
 
 let fillReason =
   parentReturnReason || savedGiftReason || savedGoalReason;
 
-
-// Insert amount (NOT on scan page)
+/* ---------- Insert amount ------------ */
 if (window.location.pathname !== "/kid/pay" && fillAmount) {
   amountInput.value = fillAmount;
   hiddenAmount.value = fillAmount;
-
-  // UI auto-width
   amountInput.style.width = amountInput.value.length * 24 + 40 + "px";
 }
 
-// Insert description (text box)
+/* ---------- Insert description ------------ */
 if (fillReason) {
   const reasonBox = form.querySelector('[name="description"]');
   if (reasonBox) reasonBox.value = fillReason;
 }
 
 
-// Clear all stored data
+/* **********************************************************
+   🧹 Clear Prefill Storage
+********************************************************** */
 function clearPrefillData() {
+  // Gift Payment
   localStorage.removeItem("giftAmount");
   localStorage.removeItem("giftReason");
 
+  // Goal Payment
   localStorage.removeItem("goalAmount");
   localStorage.removeItem("goalReason");
   localStorage.removeItem("goalId");
 
+  // Refunds (goal or gift)
   localStorage.removeItem("parentReturnAmount");
   localStorage.removeItem("parentReturnReason");
   localStorage.removeItem("parentReturnGoalId");
+  localStorage.removeItem("parentReturnGiftId");
 }
 
 
 /* **********************************************************
-   🚀 FORM SUBMIT — Final Payment API
+   🚀 FORM SUBMIT — Final API Trigger
 ********************************************************** */
 
 form.addEventListener("submit", async (e) => {
@@ -104,29 +108,26 @@ form.addEventListener("submit", async (e) => {
      🔗 Decide BACKEND ENDPOINT
   ****************************************************** */
 
-  let targetUrl = SEND_URL; // Normal spending by default
+  let targetUrl = SEND_URL; // default normal spending
 
-  // Highest priority → refund to parent
   if (parentReturnAmount) {
-    targetUrl = "/kid/sendtoparent";
-  }
-  // Gift purchase
+    targetUrl = "/kid/sendtoparent";   // refund (gift/goal)
+  } 
   else if (savedGiftAmount) {
-    targetUrl = "/kid/sendgiftmoney";
-  }
-  // Goal purchase
+    targetUrl = "/kid/sendgiftmoney";  // gift purchase
+  } 
   else if (savedGoalAmount) {
-    targetUrl = "/kid/sendgoalpayment";
-  }
-  // Manual parent transfer
+    targetUrl = "/kid/sendgoalpayment";  // goal purchase
+  } 
   else if (transferType === "parent") {
-    targetUrl = "/kid/sendtoparent";
+    targetUrl = "/kid/sendtoparent";  // manual parent transfer
   }
 
 
   /* ******************************************************
      📨 API CALL
   ****************************************************** */
+
   try {
     const response = await fetch(targetUrl, {
       method: "POST",
@@ -135,11 +136,26 @@ form.addEventListener("submit", async (e) => {
         "X-CSRF-TOKEN": CSRF_TOKEN,
       },
       body: JSON.stringify({
+
         amount: enteredAmount,
         description: description,
 
-        // CORRECTED logic (VERY IMPORTANT)
-        goal_id: parentReturnGoalId
+        /* -----------------------------------------------
+            Sending IDs properly
+            priority order:
+            1) Refund Gift
+            2) Refund Goal
+            3) Goal Purchase
+        ------------------------------------------------ */
+        gift_id: parentReturnGiftId
+          ? Number(parentReturnGiftId)   // refund
+          : savedGiftAmount
+          ? Number(localStorage.getItem("giftId"))   // payment
+          : null,
+
+        goal_id: parentReturnGiftId
+          ? null
+          : parentReturnGoalId
           ? Number(parentReturnGoalId)
           : savedGoalId
           ? Number(savedGoalId)
@@ -158,23 +174,24 @@ form.addEventListener("submit", async (e) => {
 
 
     /* ******************************************************
-       🎯 Success Redirections
+       🎯 Success Redirection
     ****************************************************** */
+
     setTimeout(() => {
 
-      // Goal Payment
+      // Goal purchase
       if (savedGoalAmount) {
         clearPrefillData();
         return (window.location.href = "/kid/goals");
       }
 
-      // Gift Payment
+      // Gift purchase
       if (savedGiftAmount) {
         clearPrefillData();
         return (window.location.href = "/kid/gifts");
       }
 
-      // Goal Refund → Parent
+      // Refund (goal or gift)
       if (parentReturnAmount) {
         clearPrefillData();
         return (window.location.href = "/kid/dashboard");
@@ -198,7 +215,7 @@ form.addEventListener("submit", async (e) => {
 
 
 /* **********************************************************
-   🔢 Input Validation
+   🔢 Input Validation & Auto Resize
 ********************************************************** */
 
 function validateAmountInput(input) {
@@ -207,7 +224,6 @@ function validateAmountInput(input) {
   if (num > 100000) input.value = "100000";
 }
 
-// Auto-resize
 amountInput.addEventListener("input", () => {
   amountInput.style.width = amountInput.value.length * 24 + 40 + "px";
 });

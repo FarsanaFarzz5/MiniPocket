@@ -95,27 +95,29 @@
                         Saved for gift {{ $txn->description ?? '' }}
 
                     {{-- 🟡 Kid returned money to parent (normal or goal refund) --}}
-@elseif($txn->source == 'kid_to_parent' || $txn->source == 'goal_refund')
+{{-- 🟡 Kid returned money to parent (normal / goal refund / gift refund) --}}
+@elseif(in_array($txn->source, ['kid_to_parent', 'goal_refund', 'gift_refund']))
 
     @php
         $desc = trim($txn->description ?? '');
         $message = "Money returned to parent";
 
-        // (1) Returned savings for goal
+        // Returned savings for goal
         if (str_starts_with($desc, 'Returned savings for goal:')) {
             $message = $desc;
         }
-        // (2) Returned savings for gift (future-safe)
+        // Returned savings for gift
         elseif (str_starts_with($desc, 'Returned savings for gift:')) {
             $message = $desc;
         }
-        // (3) No description → generic message
+        // Empty => generic
         elseif ($desc === '' || $desc === null) {
             $message = "Money returned to parent";
         }
     @endphp
 
     {{ $message }}
+
 
                     @elseif($txn->source == 'parent_to_kid')
                         Received from parent
@@ -133,13 +135,14 @@
                 <span>{{ $txn->created_at->format('d M Y') }}</span><br>
 
                 <span class="type
-    @if($txn->source == 'kid_to_parent' || $txn->source == 'goal_refund')
-        type-credit
-    @elseif($txn->type == 'credit')
-        type-credit
-    @else
-        type-debit
-    @endif
+@if(in_array($txn->source, ['kid_to_parent', 'goal_refund', 'gift_refund']))
+    Debit
+@elseif($txn->type == 'credit')
+    Credit
+@else
+    Debit
+@endif
+
 ">
     @if($txn->source == 'kid_to_parent' || $txn->source == 'goal_refund')
         Debit

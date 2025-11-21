@@ -57,12 +57,19 @@ class KidController extends Controller
             : null;
 
         // ✅ All related transactions
-        $transactions = Transaction::where('kid_id', $user->id)
+$transactions = Transaction::where('kid_id', $user->id)
     ->where(function ($query) {
         $query->where('type', 'credit')
               ->orWhere(function ($q) {
                   $q->where('type', 'debit')
-                    ->whereIn('source', ['kid_spending', 'goal_payment', 'gift_payment','kid_to_parent']);
+                    ->whereIn('source', [
+                        'kid_spending',
+                        'goal_payment',
+                        'gift_payment',
+                        'goal_refund',   // ⭐ Added
+                        'gift_refund',   // ⭐ Added
+                        'kid_to_parent'
+                    ]);
               });
     })
     ->orderBy('created_at', 'desc')
@@ -300,7 +307,8 @@ $transactions = Transaction::where('kid_id', $user->id)
                         'goal_payment',
                         'gift_payment',
                         'kid_to_parent',
-                        'goal_refund'  // ⭐ ADD THIS
+                        'goal_refund',
+                        'gift_refund' // ⭐ ADD THIS
                     ]);
               });
     })
@@ -350,16 +358,17 @@ public function kidGoals()
     if ($user->role != 2) abort(403, 'Unauthorized');
 
     // 🟡 Active goals (On progress or Completed)
-    $goals = Goal::with('savings')
-        ->where('kid_id', $user->id)
-        ->whereIn('status', [0, 1])
-        ->orderByRaw("FIELD(status, 0, 1)")
-        ->get();
+$goals = Goal::with('savings')
+    ->where('kid_id', $user->id)
+    ->whereIn('status', [0, 1])
+    ->orderByRaw("FIELD(status, 0, 1)")
+    ->get();
 
-    // ⚪ Paid goals — only for silver star highlight
-    $paidGoals = Goal::where('kid_id', $user->id)
-        ->where('status', 2)
-        ->get();
+$paidGoals = Goal::where('kid_id', $user->id)
+    ->where('status', 2)
+    ->get();
+
+
 
     return view('kid.goals', compact('goals', 'paidGoals', 'user'));
 }
@@ -691,8 +700,11 @@ public function sendGiftMoney(Request $request)
 
     if ($gift) {
         // Reset saved amount and target (so it becomes 0 and disappears from summary)
-     $gift->status = 1;   // ✅ mark as paid
-$gift->save();
+$gift->update([
+    'status'        => 1,
+    'saved_amount'  => 0,
+    'target_amount' => 0,  // 🔥 MUST RESET
+]);
 
         // ✅ This hides the gift card from UI
         session(['paid_gift_id' => $gift->id]);
@@ -811,11 +823,13 @@ public function sendGoalPayment(Request $request)
     ]);
 
     // ⭐ Mark as paid + unhide
-    $goal->update([
-        'status' => 2,        // Paid
-        'saved_amount' => 0,  
-        'is_hidden' => 0,     // <-- ⭐ Make visible to parent after paid
-    ]);
+ $goal->update([
+    'status' => 2,         // paid
+    'saved_amount' => 0,
+    'target_amount' => 0,  // 🔥 reset target
+    'is_hidden' => 0
+]);
+
 
     return response()->json([
         'success' => true,
@@ -832,6 +846,7 @@ public function kidSendToParent(Request $request)
         'amount'      => 'required|numeric|min:1',
         'description' => 'nullable|string|max:255',
         'goal_id'     => 'nullable|integer',
+        'gift_id'     => 'nullable|integer',
     ]);
 
     if (!$user->parent_id) {
@@ -841,8 +856,10 @@ public function kidSendToParent(Request $request)
         ], 400);
     }
 
-    // 🧮 Calculate REAL balance 
-    // ❌ DO NOT deduct goal_refund (refund should NOT reduce balance)
+    /* ----------------------------------------------------------
+        🧮 Calculate REAL balance 
+        Gift refund / goal refund must NOT reduce balance
+    ---------------------------------------------------------- */
     $received = Transaction::where('kid_id', $user->id)
         ->where('type', 'credit')
         ->sum('amount');
@@ -853,36 +870,74 @@ public function kidSendToParent(Request $request)
             'kid_spending',
             'goal_saving',
             'gift_saving',
-            'kid_to_parent' // only normal parent transfer reduces balance
+            'kid_to_parent'
         ])
         ->sum('amount');
 
     $balance = $received - $spent;
 
-    // ❌ Only normal transfer should check balance
-    if (!$request->goal_id && $request->amount > $balance) {
+    // ❌ Only normal parent transfer should check available balance
+    if (!$request->goal_id && !$request->gift_id && $request->amount > $balance) {
         return response()->json([
             'success' => false,
             'message' => 'Insufficient balance.',
         ], 400);
     }
 
-    // 🧠 Fix description
+
+    /* ----------------------------------------------------------
+        📝 Determine transaction source + description
+    ---------------------------------------------------------- */
+    $source = 'kid_to_parent';  // default
     $description = "Money returned to parent";
 
-    if ($request->goal_id) {
-        $goal = Goal::find($request->goal_id);
-        if ($goal) {
-            $description = "Returned savings for goal: " . $goal->title;
+
+    // ⭐ GOAL REFUND
+// ⭐ GOAL REFUND
+if ($request->goal_id) {
+
+    $goal = Goal::find($request->goal_id);
+
+    if ($goal) {
+
+        $source = 'goal_refund';
+        $description = "Returned savings for goal: " . $goal->title;
+
+        // IMPORTANT: FULL RESET
+        $goal->update([
+            'saved_amount' => 0,
+            'target_amount' => 0, // 🔥 reset target
+            'status' => 1,        // completed
+            'is_locked' => 1,
+        ]);
+    }
+}
+
+
+    // ⭐ GIFT REFUND
+    if ($request->gift_id) {
+
+        $gift = Gift::find($request->gift_id);
+
+        if ($gift) {
+
+            $source = 'gift_refund';
+            $description = "Returned savings for gift: " . $gift->title;
+
+            // Hide gift after refund
+            $gift->update([
+    'status'        => 1,
+    'saved_amount'  => 0,
+    'target_amount' => 0,   // 🔥 MUST RESET
+]);
+
         }
     }
 
-    // 🎯 Decide proper transaction source
-    $source = $request->goal_id
-        ? 'goal_refund'      // ⚠ this does NOT reduce balance
-        : 'kid_to_parent';   // normal deduction
 
-    // 📝 Create transaction
+    /* ----------------------------------------------------------
+        📝 Create the Transaction
+    ---------------------------------------------------------- */
     Transaction::create([
         'parent_id'   => $user->parent_id,
         'kid_id'      => $user->id,
@@ -893,13 +948,43 @@ public function kidSendToParent(Request $request)
         'description' => $description,
     ]);
 
+
+    /* ----------------------------------------------------------
+        🟢 Return JSON response
+    ---------------------------------------------------------- */
     return response()->json([
         'success' => true,
         'message' => 'Money sent to parent successfully!',
-        'available_balance' => $request->goal_id
-            ? $balance        // refund → balance stays SAME
-            : $balance - $request->amount, // normal → reduce
+        'available_balance' => ($request->goal_id || $request->gift_id)
+            ? $balance        // refunds keep balance SAME
+            : $balance - $request->amount, // normal transfer reduces
     ]);
+}
+
+public function achievements()
+{
+    $user = Auth::user();
+    if ($user->role != 2) abort(403, 'Unauthorized');
+
+    // ✔ Paid Goals
+    $paidGoals = Goal::where('kid_id', $user->id)
+        ->where('status', 2)   // paid
+        ->get();
+
+    // ✔ Paid Gifts
+    $paidGifts = Gift::where('kid_id', $user->id)
+        ->where('target_amount', 0)
+        ->where('saved_amount', 0)
+        ->get();
+
+    // ✔ Money sent to parent (goal refund + gift refund)
+    $refunds = Transaction::where('kid_id', $user->id)
+        ->where('type', 'debit')
+        ->whereIn('source', ['goal_refund', 'gift_refund'])
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return view('kid.achievements', compact('user', 'paidGoals', 'paidGifts', 'refunds'));
 }
 
 

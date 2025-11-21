@@ -102,8 +102,36 @@
     opacity: 0;
     transition: opacity 0.6s ease;
     z-index: 999;
-  ">Amount Paid Successfully ✅</div>
+  "></div>
+
+
+
 
   <script src="{{ asset('assets/js/paykid.js') }}"></script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const success = "{{ session('success') }}";
+    const error = "{{ session('error') }}";
+
+    if (success) {
+        setTimeout(() => {
+            showAlert(success, "success");
+        }, 200); 
+    }
+
+    if (error) {
+        setTimeout(() => {
+            showAlert(error, "error");
+        }, 200);
+    }
+
+});
+</script>
+
+
+
 </body>
 </html>

@@ -686,6 +686,13 @@ input:checked + .slider:before {
 
       <div class="headers"><h1>My Goals</h1></div>
 
+      @php
+    // after refund/reset, totals should become 0 automatically
+    $savedTotal  = $goals->sum('saved_amount');
+    $targetTotal = $goals->sum('target_amount');
+@endphp
+
+
       <!-- ✅ Stats -->
 <div class="stats">
   <div class="stat-card">
@@ -754,10 +761,16 @@ input:checked + .slider:before {
     </div>
 
     <!-- ⭐ Active Goals (Now SILVER for status 0 & 1) -->
-    @foreach ($goals as $goal)
+    @foreach ($goals->where('is_locked', 0) as $goal)
+
 
       <div class="highlight"
-     onclick="window.location.href='{{ route('goals.details', $goal->id) }}'">
+     @if($goal->is_locked == 1)
+         onclick="return false"
+     @else
+         onclick="window.location.href='{{ route('goals.details', $goal->id) }}'"
+     @endif>
+
 
     @if ($goal->status == 0)
         <div class="goal-silver">
@@ -797,14 +810,16 @@ input:checked + .slider:before {
 
 
 @php
-    // status: 1 = Completed, 0 = On Progress
     $sortedGoals = $goals->sortByDesc('status')->values();
+    $visibleGoals = $sortedGoals->where('is_locked', 0);
 @endphp
 
-@forelse ($sortedGoals as $index => $goal)
-    <div class="goal-card 
-         @if (strtolower($goal->title) == 'football') football-highlight @endif"
-         onclick="window.location.href='{{ route('goals.details', $goal->id) }}'">
+@forelse ($visibleGoals as $index => $goal)
+
+    <div class="goal-card"
+         @if($goal->is_locked == 1) onclick="return false"
+         @else onclick="window.location.href='{{ route('goals.details', $goal->id) }}'"
+         @endif>
 
         <div class="goal-item">
             <div class="goal-left">
@@ -819,9 +834,11 @@ input:checked + .slider:before {
         </div>
 
     </div>
+
 @empty
     <p class="empty">No goals found.</p>
 @endforelse
+
 
 
     </div>

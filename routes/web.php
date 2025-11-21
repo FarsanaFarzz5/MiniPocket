@@ -93,6 +93,8 @@ Route::post('/kid/gifts/add', [KidController::class, 'addGiftSaving'])->name('ki
 Route::post('/kid/sendgiftmoney', [KidController::class, 'sendGiftMoney'])->name('kid.sendgiftmoney');
 Route::post('/kid/sendtoparent', [KidController::class, 'kidSendToParent'])
     ->name('kid.sendtoparent');
+Route::get('/kid/achievements', [KidController::class, 'achievements'])->name('kid.achievements');
+
 });
 
 
@@ -135,10 +137,10 @@ Route::middleware('auth')->group(function () {
         ->name('parent.editprofile');
 
     // 🔄 Update Profile (Form Submission)
-    Route::post('/parent/update-profile', [ParentController::class, 'updateProfile'])
-        ->name('parent.update.profile');
+Route::post('/parent/update-profile', [ParentController::class, 'updateProfile'])
+    ->name('parent.update.profile');
 
-    
+
 
     // ➕ Store new kid
     Route::post('/kids/store', [ParentController::class, 'storeKid'])

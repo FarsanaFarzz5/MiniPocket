@@ -96,15 +96,20 @@
         {{-- ✅ FIRST LINE --}}
         <div style="display:flex;justify-content:space-between;">
 <span style="font-size:14px;font-weight:600;color:#333;">
-    @if($txn->source === 'goal_payment')
-        Paid for goal
-    @elseif($txn->source === 'gift_payment')
-        Paid for gift
-    @elseif($txn->source === 'kid_to_parent')
-        Transaction
-    @else
-        Transaction
-    @endif
+    @if($txn->type === 'credit')
+    Received from Parent
+@else
+    @switch($txn->source)
+        @case('goal_payment') Paid for goal @break
+        @case('gift_payment') Paid for gift @break
+        @case('goal_refund') Returned Goal Savings @break
+        @case('gift_refund') Returned Gift Savings @break
+        @case('kid_spending') Spent for Needs @break
+        @case('kid_to_parent') Sent to Parent @break
+        @default Transaction @break
+    @endswitch
+@endif
+
 </span>
 
 
@@ -118,18 +123,21 @@
         <div style="display:flex;justify-content:space-between;margin-top:2px;">
           <span style="font-size:12px;color:#777;">
              
-    @if($txn->type === 'credit')
+  @if($txn->type === 'credit')
     Received from Parent
 @else
     @switch($txn->source)
         @case('goal_payment') {{ $itemName }} @break
         @case('gift_payment') {{ $itemName }} @break
-        @case('goal_saving')  {{ $itemName }} @break
+        @case('goal_refund')  {{ $itemName }} @break
+        @case('gift_refund') {{ $itemName }} @break
         @case('kid_spending') Spent for Needs @break
         @case('kid_to_parent') Sent to Parent @break
         @default Spent @break
     @endswitch
 @endif
+
+
 
 
           </span>

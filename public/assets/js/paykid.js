@@ -7,37 +7,47 @@ const form = document.querySelector("form");
 // ===============================
 // ✅ Handle Form Submission
 // ===============================
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
+function showAlert(message, type = "success") {
+    const successMsg = document.getElementById("successMsg");
+    if (!successMsg) return;
 
-  const amount = parseFloat(amountInput.value.trim()) || 0;
+    successMsg.innerText = message;
+    successMsg.style.background = type === "success" ? "#00c853" : "#d32f2f";
+    successMsg.style.opacity = 1;
 
-  // ✅ Check for invalid, empty, or zero amount
-  if (isNaN(amount) || amount <= 0) {
-    limitNote.textContent = "⚠️ Please enter a valid amount greater than ₹0";
-    limitNote.style.display = "block";
-    limitNote.style.color = "#d32f2f";
-    return; // stop submission
-  }
+    // 🔥 After 2 seconds → redirect to parent dashboard
+    setTimeout(() => {
+        successMsg.style.opacity = 0;
 
-  // ✅ Check for max limit
-  if (amount > 100000) {
-    limitNote.textContent = "⚠️ Maximum limit is ₹1,00,000";
-    limitNote.style.display = "block";
-    limitNote.style.color = "#d32f2f";
-    return; // stop submission
-  }
+        if (type === "success") {
+            window.location.href = "/parent";  // <-- FINAL REDIRECT HERE
+        }
+    }, 1000);
+}
 
-  // ✅ Amount is valid — proceed
-  limitNote.style.display = "none";
-  hiddenAmount.value = amount;
 
-  successMsg.style.opacity = "1";
-  setTimeout(() => {
-    successMsg.style.opacity = "0";
-    form.submit(); // continue actual submission after showing message
-  }, 1500);
-});
+function setAmountBeforeSubmit() {
+    const amount = parseFloat(amountInput.value.trim()) || 0;
+
+    if (isNaN(amount) || amount <= 0) {
+        limitNote.textContent = "⚠️ Please enter a valid amount greater than ₹0";
+        limitNote.style.display = "block";
+        limitNote.style.color = "#d32f2f";
+        return false;
+    }
+
+    if (amount > 100000) {
+        limitNote.textContent = "⚠️ Maximum limit is ₹1,00,000";
+        limitNote.style.display = "block";
+        limitNote.style.color = "#d32f2f";
+        return false;
+    }
+
+    // Allow normal submission (VERY IMPORTANT)
+    hiddenAmount.value = amount;
+    return true;
+}
+
 
 // ===============================
 // ✅ Handle Input Events

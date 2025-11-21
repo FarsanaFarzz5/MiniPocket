@@ -55,14 +55,37 @@
             Received from Parent
           @else
             @switch($txn->source)
-              @case('goal_payment') Goal Achieved @break
-              @case('gift_payment') Gift Purchased @break
-              @case('kid_spending') Spent for Needs @break
-              @case('kid_to_parent') Send to Parent @break
-              @case('goal_refund') Returned Goal Savings @break
 
-              @default Spent @break
-            @endswitch
+    @case('goal_payment')
+        Goal Achieved
+    @break
+
+    @case('gift_payment')
+        Gift Purchased
+    @break
+
+    @case('goal_refund')
+        Returned Goal Savings
+    @break
+
+    @case('gift_refund')
+        Returned Gift Savings
+    @break
+
+    @case('kid_to_parent')
+        Sent to Parent
+    @break
+
+    @case('kid_spending')
+        Spent for Needs
+    @break
+
+    @default
+        Spent
+    @break
+
+@endswitch
+
           @endif
         </h4>
         <span>{{ $txn->created_at->format('d M Y, h:i A') }}</span>

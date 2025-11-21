@@ -1,6 +1,5 @@
 <link rel="stylesheet" href="{{ asset('assets/css/profile.css') }}">
 
-<!-- ===== KID FOOTER NAVIGATION ===== -->
 <div class="footer-container">
   <nav class="footer-nav">
 
@@ -15,8 +14,7 @@
       </div>
     </a>
 
-
-    <!-- 🎯 Goals (Updated Icon) -->
+    <!-- 🎯 Goals -->
     <a href="{{ route('kid.goals') }}" class="nav-item">
       <div class="icon-wrapper">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
@@ -28,7 +26,17 @@
       </div>
     </a>
 
-
+    <!-- 🏅 Reward -->
+    <a href="{{ route('kid.achievements') }}" class="nav-item">
+      <div class="icon-wrapper">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+             stroke="#23a541" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M8.5 12.5L7 22l5-3 5 3-1.5-9.5"/>
+        </svg>
+        <span>Reward</span>
+      </div>
+    </a>
 
     <!-- 💸 Transactions -->
     <a href="{{ route('kid.transactions') }}" class="nav-item">
@@ -56,5 +64,3 @@
 
   </nav>
 </div>
-
-

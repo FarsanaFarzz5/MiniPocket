@@ -26,9 +26,10 @@
       <!-- ✅ Heading -->
       <h1>Edit Profile</h1>
 
-      <form id="profileForm" method="POST" action="{{ route('parent.update.profile') }}" class="profile-form" novalidate>
-        @csrf
 
+
+     <form id="profileForm" method="POST" action="{{ route('parent.update.profile') }}" class="profile-form">
+    @csrf
         <div class="row-2">
           <div class="floating-group">
             <input type="text" name="first_name" id="first_name" value="{{ old('first_name', $user->first_name) }}" required placeholder="First Name">
@@ -72,6 +73,12 @@
   </div>
 
   <div id="alertToast" class="alert-toast"></div>
+
   <script src="{{ asset('assets/js/editprofile.js') }}"></script>
+  <script>
+  @if(session('success'))
+      showToast("{{ session('success') }}", "success");
+  @endif
+</script>
 </body>
 </html>

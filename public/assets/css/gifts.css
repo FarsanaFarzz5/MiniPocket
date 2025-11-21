@@ -368,26 +368,6 @@ html, body {
     justify-content: space-between !important;
     margin: 12px 0px;
 }
-    .pay-now-btn {
-      display: block;
-      width: 100%;
-      background: linear-gradient(135deg, #23a541, #33c56c);
-      color: #fff;
-      font-weight: 600;
-      font-size: 0.95rem;
-      padding: 10px 0;
-      border: none;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(35,165,65,0.25);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin-top: 10px;
-    }
-
-    .pay-now-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 7px 20px rgba(35,165,65,0.35);
-    }
 
     .fab {
       position: fixed;

@@ -159,7 +159,8 @@ public function kidManagement()
                 'goal_payment',
                 'gift_payment',
                 'kid_to_parent',
-                'goal_refund'
+                'goal_refund',
+                'gift_refund'
             ])
             ->sum('amount');
 
@@ -301,7 +302,8 @@ public function storeKid(Request $request)
         /** @var \App\Models\User $user */
         $user->save();
 
-        return back()->with('success', 'Profile updated successfully!');
+        return redirect()->back()->with('success', 'Profile updated successfully!');
+
     }
 
     /**
@@ -347,8 +349,8 @@ public function storeKid(Request $request)
         ]);
 
         return redirect()
-            ->route('parent.sendmoney.page')
-            ->with('success', 'Money sent successfully!');
+        ->back()
+        ->with('success', 'money sent successfully');
     }
 
     /**
@@ -396,7 +398,8 @@ $kidTransactions = Transaction::with('kid')
         'goal_payment',
         'gift_payment',
         'kid_to_parent',
-        'goal_refund'   // ⭐ FIXED
+        'goal_refund',
+        'gift_refund'  // ⭐ FIXED
     ])
 
 
