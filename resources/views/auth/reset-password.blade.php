@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Set Password - Mini Pocket</title>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <!-- Google Font -->
@@ -52,12 +53,11 @@
         <img src="{{ asset('images/logo.png') }}" alt="Mini Pocket Logo">
       </div>
 
-      <!-- Title -->
       <h1>Set Your Password</h1>
 
-      <!-- Validation Errors -->
+      <!-- Errors -->
       @if ($errors->any())
-        <div class="alert">
+        <div class="alert error">
           <ul class="mb-0">
             @foreach ($errors->all() as $error)
               <li>{{ $error }}</li>
@@ -66,18 +66,19 @@
         </div>
       @endif
 
-      <!-- Reset Password Form -->
-      <form method="POST" action="{{ route('kid.resetpassword.submit', ['token' => $token]) }}" class="reset-form">
+      <form method="POST" action="{{ route('password.update') }}" class="reset-form">
         @csrf
 
-        <input type="email" value="{{ $email }}" disabled placeholder="Email">
+        <input type="hidden" name="token" value="{{ $token }}">
+
+        <input type="email" name="email" placeholder="Email" value="{{ request()->email }}" required>
 
         <!-- NEW PASSWORD -->
         <div class="password-wrapper">
-          <input type="password" id="kid-password" name="password" placeholder="New Password" required>
+          <input type="password" id="new-password" name="password" placeholder="New Password" required>
 
           <span class="toggle-eye"
-            onclick="togglePassword('kid-password','eye-open-1','eye-close-1')">
+            onclick="togglePassword('new-password','eye-open-1','eye-close-1')">
 
             <!-- Eye Open -->
             <svg id="eye-open-1" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -103,11 +104,11 @@
 
         <!-- CONFIRM PASSWORD -->
         <div class="password-wrapper">
-          <input type="password" id="kid-confirm-password" name="password_confirmation"
+          <input type="password" id="confirm-password" name="password_confirmation"
                  placeholder="Confirm Password" required>
 
           <span class="toggle-eye"
-            onclick="togglePassword('kid-confirm-password','eye-open-2','eye-close-2')">
+            onclick="togglePassword('confirm-password','eye-open-2','eye-close-2')">
 
             <!-- Eye Open -->
             <svg id="eye-open-2" xmlns="http://www.w3.org/2000/svg" fill="none"

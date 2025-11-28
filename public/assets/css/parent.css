@@ -121,7 +121,7 @@ body {
   font-size: 14px;
   color: #4a4a4a;
   font-weight: 500;
-    margin: 1px 0; /* ⬇ reduced gap between Wallet ID & Kids Linked */
+  margin: 1px 0; /* ⬇ reduced gap between Wallet ID & Kids Linked */
   line-height: 1.7;
 }
 
@@ -246,11 +246,12 @@ button,
 
 
 .no-data {
-  text-align: center;
+  text-align: center !important;
   color: #aaa;
   font-size: 13px;
   margin-top: 10px;
 }
+
 
 .all-transactions {
   text-align: center;
@@ -296,11 +297,14 @@ button,
 
 /* Scroll Row */
 .goals-scroll {
-    display: flex;
+
+      display: flex;
     gap: 12px;
     overflow-x: auto;
     padding: 10px 0;
     scroll-snap-type: x mandatory;
+    justify-content: center;
+    align-items: center;
 }
 .goals-scroll::-webkit-scrollbar {
     display: none;

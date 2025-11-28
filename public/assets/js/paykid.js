@@ -5,31 +5,56 @@ const successMsg = document.getElementById("successMsg");
 const form = document.querySelector("form");
 
 // ===============================
-// ✅ Handle Form Submission
+// 🚀 FIX STARTS HERE
+// STOP FORM FROM RELOADING PAGE
+// ===============================
+form.addEventListener("submit", function(e) {
+    e.preventDefault(); 
+
+    if (!setAmountBeforeSubmit()) return;
+
+    // show alert
+    showAlert("Money sent successfully!", "success");
+
+    const formData = new FormData(form);
+
+    // send form WITHOUT reload
+    fetch(form.action, {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            // redirect AFTER alert
+            setTimeout(() => {
+                window.location.href = "/parent";
+            }, 1000);
+        }
+    });
+});
+
+// ===============================
+// ALERT BOX
 // ===============================
 function showAlert(message, type = "success") {
-    const successMsg = document.getElementById("successMsg");
-    if (!successMsg) return;
-
     successMsg.innerText = message;
     successMsg.style.background = type === "success" ? "#00c853" : "#d32f2f";
     successMsg.style.opacity = 1;
 
-    // 🔥 After 2 seconds → redirect to parent dashboard
+    // Redirect immediately after 1 second
     setTimeout(() => {
-        successMsg.style.opacity = 0;
-
-        if (type === "success") {
-            window.location.href = "/parent";  // <-- FINAL REDIRECT HERE
-        }
+        window.location.href = "/parent";
     }, 1000);
 }
 
-
+// ===============================
+// VALIDATION
+// ===============================
 function setAmountBeforeSubmit() {
     const amount = parseFloat(amountInput.value.trim()) || 0;
 
-    if (isNaN(amount) || amount <= 0) {
+    if (amount <= 0) {
         limitNote.textContent = "⚠️ Please enter a valid amount greater than ₹0";
         limitNote.style.display = "block";
         limitNote.style.color = "#d32f2f";
@@ -43,40 +68,33 @@ function setAmountBeforeSubmit() {
         return false;
     }
 
-    // Allow normal submission (VERY IMPORTANT)
     hiddenAmount.value = amount;
     return true;
 }
 
-
 // ===============================
-// ✅ Handle Input Events
+// INPUT EVENTS
 // ===============================
 amountInput.addEventListener("input", () => {
-  // Remove leading zeros (e.g. 00005 → 5)
-  if (/^0\d+/.test(amountInput.value)) {
-    amountInput.value = amountInput.value.replace(/^0+/, "");
-  }
 
-  // Prevent negative numbers
-  if (parseFloat(amountInput.value) < 0) {
-    amountInput.value = "0";
-  }
+    if (/^0\d+/.test(amountInput.value)) {
+        amountInput.value = amountInput.value.replace(/^0+/, "");
+    }
 
-  // Smooth input width resizing
-  amountInput.style.width = (amountInput.value.length * 22 + 50) + "px";
+    if (parseFloat(amountInput.value) < 0) {
+        amountInput.value = "0";
+    }
 
-  const value = parseFloat(amountInput.value) || 0;
+    amountInput.style.width = (amountInput.value.length * 22 + 50) + "px";
 
-  // Cap the value at ₹1,00,000
-  if (value > 100000) {
-    amountInput.value = 100000;
-    limitNote.textContent = "⚠️ Maximum limit is ₹1,00,000";
-    limitNote.style.display = "block";
-    limitNote.style.color = "#d32f2f";
-  } 
-  // Hide note for valid range
-  else if (value > 0) {
-    limitNote.style.display = "none";
-  }
+    const value = parseFloat(amountInput.value) || 0;
+
+    if (value > 100000) {
+        amountInput.value = 100000;
+        limitNote.textContent = "⚠️ Maximum limit is ₹1,00,000";
+        limitNote.style.display = "block";
+        limitNote.style.color = "#d32f2f";
+    } else if (value > 0) {
+        limitNote.style.display = "none";
+    }
 });

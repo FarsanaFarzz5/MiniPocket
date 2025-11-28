@@ -114,9 +114,10 @@
 
             </div>
 
-        @empty
-            <p class="no-goals">No goals found.</p>
-        @endforelse
+  @empty
+    <p class="no-data" style="margin-top:-10px">No goals found.</p>
+@endforelse
+
 
     </div>
 </div>

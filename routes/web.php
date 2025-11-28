@@ -6,6 +6,8 @@ use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\Kid\KidController;
 use App\Http\Controllers\Kid\KidInvitationController;
 use App\Http\Controllers\Homepage\HomeController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +44,23 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout')
     ->middleware('auth');
+
+
+// Show forgot password form
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
+    ->name('password.request');
+
+// Send email reset link
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+    ->name('password.email');
+
+    // SHOW RESET PASSWORD FORM (GET)
+Route::get('/reset-password', [ResetPasswordController::class, 'showResetForm'])
+    ->name('password.reset');
+
+// HANDLE RESET PASSWORD SUBMIT (POST)
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
+    ->name('password.update');
 
 
 // ====================================================
@@ -104,11 +123,12 @@ Route::get('/kid/achievements', [KidController::class, 'achievements'])->name('k
 Route::get('/invite/{token}', [KidInvitationController::class, 'acceptInvite'])
     ->name('kid.invite.accept');
 
-Route::get('/reset-password/{token}', [KidInvitationController::class, 'showResetPasswordForm'])
+Route::get('/kid/reset-password/{token}', [KidInvitationController::class, 'showResetPasswordForm'])
     ->name('kid.resetpassword.form');
 
-Route::post('/reset-password/{token}', [KidInvitationController::class, 'resetPassword'])
+Route::post('/kid/reset-password/{token}', [KidInvitationController::class, 'resetPassword'])
     ->name('kid.resetpassword.submit');
+
 
 
 // ====================================================

@@ -12,7 +12,8 @@
 html, body {
   height: 100%;
   width: 100%;
-  overflow: hidden; /* no scroll */
+  overflow-x: hidden;
+  overflow-y: auto;   /* allow natural scroll */
 }
 
 body {
@@ -20,7 +21,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100lvh; /* ✅ low viewport height handles mobile bars */
+  min-height: 100dvh; /* Modern fix for mobile browser height */
 }
 
 /* ===========================
@@ -32,11 +33,10 @@ body {
   background: #fff;
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
   padding: 20px;
-  height: 100%; /* ✅ fills body completely */
+  min-height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 0;
 }
 
 /* ===========================
@@ -45,6 +45,7 @@ body {
 .inner-container {
   text-align: center;
   width: 100%;
+  margin-top: 80px;
 }
 
 /* ===========================
@@ -80,6 +81,60 @@ form input:focus {
   box-shadow: 0 0 6px rgba(244, 115, 29, 0.25);
 }
 
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-inner {
+  position: relative;
+}
+
+.password-inner input {
+  height: 44px;                 /* FIXED height for perfect alignment */
+  padding-right: 45px;          /* Space for eye icon */
+  display: flex;
+  align-items: center;
+}
+
+.toggle-eye {
+  position: absolute;
+  right: 20px;
+  top: 38%;                     /* Vertically centered */
+  transform: translateY(-50%);  /* Perfect alignment FIX */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  width: 20px;
+}
+
+.toggle-eye svg {
+  stroke: #7d7d7d7a;
+}
+
+/* ===========================
+   FORGOT PASSWORD (MATCHED STYLE)
+=========================== */
+.forgot-password {
+  margin-top: 0px;
+  font-size: 14px;
+  color: #555;
+  text-align: right;   /* Same as register link */
+}
+
+.forgot-password a {
+    font-size: 14px;
+    color: #555;
+    text-decoration: none;
+}
+
+.forgot-password a:hover {
+  color: #e05500;
+}
+
+
 /* ===========================
    NAME ROW
 =========================== */
@@ -103,7 +158,7 @@ button,
   display: block;
   width: 70%;
   margin: 20px auto;
-  height: 44px;
+  height: 44px;             /* Proper button height */
   border: none;
   border-radius: 8px;
   font-size: 15px;
@@ -113,6 +168,8 @@ button,
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(255, 102, 0, 0.2);
+
+ 
   padding-bottom: 39px;
 }
 
@@ -152,60 +209,88 @@ input,
 button,
 select,
 textarea {
-  font-size: 16px !important; /* prevent zoom */
+  font-size: 16px !important; /* prevent zoom on iPhones */
 }
 
-/* ===========================
-   VALIDATION MESSAGES
-=========================== */
-.error-text {
-  color: #e74c3c;
-  font-size: 13px;
-  margin-top: -10px;
-  margin-bottom: 10px;
-  text-align: left;
-  padding-left: 4px;
-}
+/* ===========================================================
+   🔥 MODERN TOAST / ALERT
+=========================================================== */
 
-/* ===========================
-   ERROR AND ALERT STYLES
-=========================== */
-.alert-error {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto 16px;
-  padding: 10px 12px;
-  background: #fdecea;
-  color: #b71c1c;
-  border: 1px solid #f5c6cb;
-  border-radius: 6px;
+.alert-toast {
+  width: 90%;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 12px 18px;
+  border-radius: 12px;
   font-size: 14px;
+  font-weight: 600;
   text-align: center;
-  animation: fadeIn 0.3s ease;
+  opacity: 0;
+  transform: translateY(-12px);
+  visibility: hidden;
+
+  transition: all 0.35s ease;
+  animation: fadeSlideIn 0.4s ease-out;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.20);
 }
 
-.error-text {
-  color: #e74c3c;
-  font-size: 13px;
-  margin-top: -10px;
-  margin-bottom: 10px;
-  text-align: left;
-  padding-left: 4px;
+/* ===== Visible State ===== */
+.alert-toast.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
+/* ===== Types ===== */
+.alert-success {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+}
+
+.alert-error {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+}
+
+.alert-warning {
+  background: linear-gradient(135deg, #facc15, #eab308);
+  color: #000;
+}
+
+/* Animation */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Input error state */
 .input-error {
-  border-color: #e74c3c !important;
-  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.15);
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
 }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 
 /* ===========================
-   MOBILE UPWARD ADJUSTMENT
+   Toast Fixed at Bottom
+=========================== */
+.toast-bottom {
+  position: fixed;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 80%;
+  max-width: 440px;
+  padding: 15px 20px;
+  box-sizing: border-box;
+}
+
+/* ===========================
+   MOBILE ADJUSTMENT
 =========================== */
 @media (max-width: 768px) {
   .container {
@@ -213,8 +298,7 @@ textarea {
     padding-top: 60px;
   }
 
-  /* ✅ LOGIN PAGE ONLY - Move slightly down */
   .logo-login {
-    margin-top: 90px; /* adjust this value (20–60px) for perfect position */
+    margin-top: 90px;
   }
 }

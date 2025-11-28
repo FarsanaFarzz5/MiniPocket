@@ -130,6 +130,8 @@ public function kidManagement()
     // Fetch all kids
     $children = User::where('parent_id', $user->id)->get();
 
+    $allEmails = User::pluck('email')->toArray();
+
     foreach ($children as $child) {
 
         // ⭐ 1. Money parent sent to kid (credit)
@@ -168,7 +170,7 @@ public function kidManagement()
         $child->balance = $totalCredits - $kidDebits;
     }
 
-    return view('parent.kid', compact('user', 'children'));
+    return view('parent.kid', compact('user', 'children', 'allEmails'));
 }
 
 
@@ -348,9 +350,10 @@ public function storeKid(Request $request)
             'status'    => 'completed',
         ]);
 
-        return redirect()
-        ->back()
-        ->with('success', 'money sent successfully');
+       return response()->json([
+    'success' => true
+]);
+
     }
 
     /**

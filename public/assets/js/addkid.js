@@ -1,20 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const avatarOptions = document.querySelectorAll(".avatar-option");
-  const profileInput = document.getElementById("profile_img"); // image upload input
 
-  /* ✅ Avatar selection highlight */
+  const avatarOptions = document.querySelectorAll(".avatar-option");
+  const profileInput = document.getElementById("profile_img");
+
+  /* ============================================================
+      ✅ AVATAR SELECTION
+  ============================================================ */
   avatarOptions.forEach(option => {
     option.addEventListener("click", function () {
       avatarOptions.forEach(opt => opt.classList.remove("selected"));
       this.classList.add("selected");
       this.querySelector("input").checked = true;
 
-      // Clear file input if avatar is selected
       if (profileInput) profileInput.value = "";
     });
   });
 
-  /* ✅ Clear avatar if custom image chosen */
+  /* ============================================================
+      ✅ CLEAR AVATAR IF CUSTOM IMAGE CHOSEN
+  ============================================================ */
   if (profileInput) {
     profileInput.addEventListener("change", () => {
       if (profileInput.files.length > 0) {
@@ -26,17 +30,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ✅ Auto scroll input to center when keyboard appears */
+  /* ============================================================
+      ✅ AUTO SCROLL FOR MOBILE
+  ============================================================ */
   document.querySelectorAll("input, select").forEach(input => {
     input.addEventListener("focus", () => {
-      setTimeout(() => input.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
+      setTimeout(() =>
+        input.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
     });
   });
 
-  /* ✅ Form validation */
+  /* ============================================================
+      ✅ MAIN FORM VALIDATION
+  ============================================================ */
   document.getElementById("kidForm").addEventListener("submit", function (e) {
     e.preventDefault();
-    document.querySelectorAll(".error-text").forEach(el => el.textContent = "");
 
     const name = document.getElementById("first_name").value.trim();
     const dob = document.getElementById("dob").value.trim();
@@ -46,49 +54,76 @@ document.addEventListener("DOMContentLoaded", () => {
     const avatarSelected = document.querySelector('input[name="avatar_choice"]:checked');
     const profileSelected = profileInput && profileInput.files.length > 0;
 
-    const namePattern = /^[A-Za-z_][A-Za-z_]*$/;
-    const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+    const namePattern = /^[A-Za-z]+$/;
+    const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,4}$/;
     const phonePattern = /^[0-9]{10}$/;
-    const today = new Date(); today.setHours(0, 0, 0, 0);
+
+    const minDOB = new Date("2020-01-01");
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const selectedDate = new Date(dob);
 
-    let valid = true;
+    /* -------------------- NAME -------------------- */
+    if (!name)
+      return showToast("warning", "Please enter child's name.");
+    if (!namePattern.test(name))
+      return showToast("warning", "Name should contain only alphabets.");
 
-    if (!name || !namePattern.test(name)) valid = false;
-    if (!dob || selectedDate >= today) valid = false;
-    if (!email || !emailPattern.test(email)) valid = false;
-    if (!phone || !phonePattern.test(phone)) valid = false;
-    if (!gender) valid = false;
+    /* -------------------- DATE OF BIRTH -------------------- */
+    if (!dob)
+      return showToast("warning", "Please select date of birth.");
+    if (selectedDate < minDOB)
+      return showToast("warning", "Date of birth should be from 2020 onwards.");
+    if (selectedDate >= today)
+      return showToast("warning", "DOB cannot be today or future date.");
 
-    // Avatar or image required
-    if (!avatarSelected && !profileSelected) valid = false;
+    /* -------------------- EMAIL -------------------- */
+    if (!email)
+      return showToast("warning", "Please enter email address.");
+    if (!emailPattern.test(email))
+      return showToast("warning", "Invalid email format.");
 
-    // Additional check for selected file (image)
+    /* -------------------- UNIQUE EMAIL CHECK (FRONTEND ONLY) -------------------- */
+    if (window.existingAllEmails.includes(email)) {
+      return showToast("warning", "This email is already registered.");
+    }
+
+    /* -------------------- PHONE -------------------- */
+    if (!phone)
+      return showToast("warning", "Please enter mobile number.");
+    if (!phonePattern.test(phone))
+      return showToast("warning", "Mobile number must be exactly 10 digits.");
+
+    /* -------------------- GENDER -------------------- */
+    if (!gender)
+      return showToast("warning", "Please select gender.");
+
+    /* -------------------- AVATAR / IMAGE -------------------- */
+    if (!avatarSelected && !profileSelected)
+      return showToast("warning", "Please select an avatar or upload an image.");
+
+    /* -------------------- IMAGE FORMAT -------------------- */
     if (profileSelected) {
       const file = profileInput.files[0];
       const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/gif"];
-      if (!allowedTypes.includes(file.type) || file.size > 2 * 1024 * 1024)
-        valid = false;
+
+      if (!allowedTypes.includes(file.type))
+        return showToast("warning", "Only JPG, PNG, GIF images are allowed.");
+
+      if (file.size > 2 * 1024 * 1024)
+        return showToast("warning", "Image size must be less than 2 MB.");
     }
 
-    // 🚫 Validation failed
-    if (!valid) {
-      showToast("warning", " Please correct errors and try again.");
-      return;
-    }
-
-    // ✅ Success toast
-    showToast("success", " Kid added successfully!");
+    /* -------------------- SUCCESS -------------------- */
+    showToast("success", "Kid added successfully!");
 
     setTimeout(() => this.submit(), 1200);
   });
 });
 
-
-
-/* ===========================================================
-✅ TOAST FUNCTION (Unified & Smooth)
-=========================================================== */
+/* ============================================================
+      ✅ TOAST FUNCTION
+============================================================ */
 function showToast(type, message) {
   const toast = document.getElementById("alertToast");
   if (!toast) return;

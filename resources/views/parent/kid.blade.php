@@ -64,7 +64,9 @@
           </div>
 
           <div class="floating-group">
-            <input type="text" name="phone_no" id="phone_no" placeholder="Mobile Number" maxlength="10" required>
+            <input type="tel" name="phone_no" id="phone_no" placeholder="Mobile Number"
+       maxlength="10" pattern="[0-9]*" inputmode="numeric" required>
+
           </div>
 
           <div class="floating-group">
@@ -144,6 +146,11 @@
     <div id="alertToast" class="alert-toast"></div>
   </div>
 
+  <script>
+    window.existingAllEmails = @json($allEmails);
+</script>
+
+
   <!-- ✅ Scripts -->
   <script src="{{ asset('assets/js/addkid.js') }}"></script>
   <script src="{{ asset('assets/js/kiddetails.js') }}"></script>
@@ -171,3 +178,7 @@
   </script>
 </body>
 </html>
+
+
+
+

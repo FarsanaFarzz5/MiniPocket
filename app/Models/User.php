@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Mail\PasswordResetMail;
+use Illuminate\Support\Facades\Mail;
 
 class User extends Authenticatable
 {
@@ -41,4 +43,12 @@ protected $fillable = [
     {
         return $this->belongsTo(User::class, 'parent_id');
     }
+
+    public function sendPasswordResetNotification($token)
+{
+    $url = url('/reset-password?token=' . $token . '&email=' . urlencode($this->email));
+
+    Mail::to($this->email)->send(new PasswordResetMail($this->first_name, $url));
+}
+    
 }   
