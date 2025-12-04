@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="{{ asset('assets/css/editprofile.css') }}">
 </head>
 
+
 <body>
   <div class="container">
     <div class="inner-container">
@@ -31,22 +32,27 @@
      <form id="profileForm" method="POST" action="{{ route('parent.update.profile') }}" class="profile-form">
     @csrf
         <div class="row-2">
-          <div class="floating-group">
-            <input type="text" name="first_name" id="first_name" value="{{ old('first_name', $user->first_name) }}" required placeholder="First Name">
-          </div>
+<div class="floating-group">
+    <input type="text" name="first_name" id="first_name" value="{{ old('first_name', $user->first_name) }}" placeholder=" ">
+    <label for="first_name">First Name</label>
+</div>
 
-          <div class="floating-group">
-            <input type="text" name="second_name" id="second_name" value="{{ old('second_name', $user->second_name) }}" placeholder="Last Name">
-          </div>
-        </div>
+  <div class="floating-group">
+    <input type="text" name="second_name" id="second_name" value="{{ old('second_name', $user->second_name) }}">
+    <label for="second_name">Last Name</label>
+  </div>
+</div>
 
-        <div class="floating-group">
-          <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" required placeholder="Email Address">
-        </div>
 
-        <div class="floating-group">
-          <input type="tel" name="phone_no" id="phone_no" maxlength="10" value="{{ old('phone_no', $user->phone_no) }}" placeholder="Phone Number">
-        </div>
+    <div class="floating-group">
+  <input type="email" name="email" id="email" value="{{$user->email }}" >
+  <label for="email">Email Address</label>
+</div>
+
+    <div class="floating-group">
+  <input type="tel" name="phone_no" id="phone_no" maxlength="10" value="{{ old('phone_no', $user->phone_no) }}">
+  <label for="phone_no">Phone Number</label>
+</div>
 
         {{-- <div class="floating-group">
           <input type="date" name="dob" id="dob" value="{{ old('dob', $user->dob) }}" placeholder="Date of Birth">

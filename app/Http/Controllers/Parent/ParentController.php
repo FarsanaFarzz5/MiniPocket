@@ -29,28 +29,14 @@ public function dashboard()
     $kidIds = $children->pluck('id');
 
     // ⭐ COMBINED TRANSACTIONS (Parent to kid + Kid activity + Kid sends to parent)
-    $transactions = Transaction::with('kid')
-        ->where(function ($q) use ($user) {
-            // 1️⃣ Parent → Kid transfers (debit for parent)
-            $q->where('parent_id', $user->id)
-              ->where('source', 'parent_to_kid');
-        })
-        ->orWhere(function ($q) use ($user) {
-            // 2️⃣ Kid → Parent transfers (credit for parent)
-            $q->where('parent_id', $user->id)
-              ->where('source', 'kid_to_parent');
-        })
-        ->orWhere(function ($q) use ($kidIds) {
-            // 3️⃣ Kid activities (spending, goals, gifts)
-            $q->whereIn('kid_id', $kidIds)
-              ->whereIn('source', [
-                  'kid_spending',
-                  'goal_payment',
-                  'gift_payment'
-              ]);
-        })
-        ->orderBy('created_at', 'desc')
-        ->get();
+   // ⭐ ONLY Parent → Kid sent transactions (debit)
+$transactions = Transaction::with('kid')
+    ->where('parent_id', $user->id)
+    ->where('source', 'parent_to_kid')
+    ->where('type', 'debit')
+    ->orderBy('created_at', 'desc')
+    ->get();
+
 
     // Total amount parent sent to all kids
     $totalSent = Transaction::where('parent_id', $user->id)
@@ -100,13 +86,21 @@ public function dashboard()
     /**
      * 💰 Show "Send Money" page (list of kids)
      */
-    public function showSendMoneyPage()
-    {
-        $user = Auth::user();
-        $children = User::where('parent_id', $user->id)->get();
+public function showSendMoneyPage()
+{
+    $user = Auth::user();
 
-        return view('parent.sendmoney', compact('user', 'children'));
+    // 🛑 No bank? Redirect
+    if (BankAccount::where('user_id', $user->id)->count() == 0) {
+        return redirect()->route('parent.addbankaccount')
+            ->with('error', 'Please add a bank account before sending money.');
     }
+
+    $children = User::where('parent_id', $user->id)->get();
+
+    return view('parent.sendmoney', compact('user', 'children'));
+}
+
 
     /**
      * 💵 Show individual kid payment page
@@ -123,6 +117,7 @@ public function dashboard()
         return view('parent.paykid', compact('user', 'kid'));
     }
 
+    
 public function kidManagement()
 {
     $user = Auth::user();
@@ -244,17 +239,22 @@ public function storeKid(Request $request)
         'password'     => Hash::make($temporaryPassword),
     ]);
 
-    // ✅ 4️⃣ Try sending invitation mail
-    try {
-        Mail::to($kid->email)->send(new KidInvitationMail($kid));
-    } catch (\Exception $e) {
-        // Silent fail - continue if email fails
-    }
+// After sending email
+try {
+    Mail::to($kid->email)->send(new KidInvitationMail($kid));
+} catch (\Exception $e) {
+    // Silent fail
+}
 
-    // ✅ 5️⃣ Redirect to Kid Details page with success message
-   return redirect()
+// Add kid email to session for popup
+session()->flash('kid_email', $kid->email);
+
+// Redirect
+return redirect()
     ->route('parent.kid.management')
-    ->with('success', 'Kid added successfully!');
+    ->with('kid_added', true);
+
+
 }
 
     /**
@@ -280,6 +280,7 @@ public function storeKid(Request $request)
         return back()->with('success', 'Invitation email sent successfully!');
     }
 
+    
         /**
      * 🧍‍♂️ Update Parent Profile (without profile image)
      */
@@ -287,19 +288,27 @@ public function storeKid(Request $request)
     {
         $user = Auth::user();
 
-        $request->validate([
-            'first_name'  => 'required|string|max:50',
-            'second_name' => 'nullable|string|max:50',
-            'email'       => 'required|string|email|max:100|unique:users,email,' . $user->id,
-            'phone_no'    => 'nullable|string|max:15',
-            'dob'         => 'nullable|date',
-        ]);
+            $request->validate([
+                'first_name'  => 'required|string|max:50',
+                'second_name' => 'nullable|string|max:50',
+
+                // ✅ Email must be unique except current user
+                'email'       => 'required|string|email|max:100|unique:users,email,' . $user->id,
+
+                // ✅ Phone also unique except current user
+                'phone_no'    => 'nullable|string|max:15|unique:users,phone_no,' . $user->id,
+
+                'dob'         => 'nullable|date',
+            ]);
+
 
         $user->first_name  = $request->first_name;
         $user->second_name = $request->second_name;
         $user->email       = $request->email;
         $user->phone_no    = $request->phone_no;
         $user->dob         = $request->dob;
+
+        // dd($user);
 
         /** @var \App\Models\User $user */
         $user->save();
@@ -320,41 +329,56 @@ public function storeKid(Request $request)
     /**
      * 💸 Send money to a Kid
      */
-    public function sendMoney(Request $request)
-    {
-        $request->validate([
-            'kid_id' => 'required|exists:users,id',
-            'amount' => 'required|numeric|min:1',
-        ]);
+   public function sendMoney(Request $request)
+{
+    $request->validate([
+        'kid_id' => 'required|exists:users,id',
+        'amount' => 'required|numeric|min:1',
+    ]);
 
-        $parentId = Auth::id();
-        $kid = User::where('id', $request->kid_id)
-            ->where('parent_id', $parentId)
-            ->firstOrFail();
+    $user = Auth::user();
 
-        // Create debit (parent) and credit (kid) transactions
-        Transaction::create([
-            'parent_id' => $parentId,
-            'kid_id'    => $kid->id,
-            'amount'    => $request->amount,
-            'type'      => 'debit',
-            'status'    => 'completed',
-            'source'    => 'parent_to_kid',
-        ]);
-
-        Transaction::create([
-            'parent_id' => $parentId,
-            'kid_id'    => $kid->id,
-            'amount'    => $request->amount,
-            'type'      => 'credit',
-            'status'    => 'completed',
-        ]);
-
-       return response()->json([
-    'success' => true
-]);
-
+    // 🛑 BLOCK sending money if parent has NO bank account
+    if (BankAccount::where('user_id', $user->id)->count() == 0) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Please add a bank account first.'
+        ], 403);
     }
+
+    $parentId = $user->id;
+
+    // Ensure kid belongs to this parent
+    $kid = User::where('id', $request->kid_id)
+        ->where('parent_id', $parentId)
+        ->firstOrFail();
+
+    // 💳 Create debit transaction (parent → kid)
+    Transaction::create([
+        'parent_id' => $parentId,
+        'kid_id'    => $kid->id,
+        'amount'    => $request->amount,
+        'type'      => 'debit',
+        'status'    => 'completed',
+        'source'    => 'parent_to_kid',
+    ]);
+
+    // 💰 Create credit transaction (kid receives)
+    Transaction::create([
+        'parent_id' => $parentId,
+        'kid_id'    => $kid->id,
+        'amount'    => $request->amount,
+        'type'      => 'credit',
+        'status'    => 'completed',
+        'source'    => 'parent_to_kid',
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Money sent successfully.'
+    ]);
+}
+
 
     /**
      * 💰 Set daily limit for a kid
@@ -386,12 +410,14 @@ public function transactionHistory()
     $kidIds = User::where('parent_id', $user->id)->pluck('id');
 
     // 1️⃣ Parent → Kid Transfers
-    $parentTransactions = Transaction::with('kid')
-        ->where('parent_id', $user->id)
-        ->whereIn('kid_id', $kidIds)
-        ->where('source', 'parent_to_kid')
-        ->orderBy('created_at', 'desc')
-        ->get();
+ $parentTransactions = Transaction::with('kid')
+    ->where('parent_id', $user->id)
+    ->whereIn('kid_id', $kidIds)
+    ->where('source', 'parent_to_kid')
+    ->where('type', 'debit')   // SHOW ONLY PARENT'S DEBITS
+    ->orderBy('created_at', 'desc')
+    ->get();
+
 
     // 2️⃣ Kid Spending + Goal Payment + Gift Payment
 $kidTransactions = Transaction::with('kid')
@@ -431,11 +457,18 @@ $kidTransactions = Transaction::with('kid')
     /**
      * ➕ Show Add Bank Account Page
      */
-    public function addBankAccount()
-    {
-        $user = Auth::user();
-        return view('parent.addbankaccount', compact('user'));
-    }
+ public function addBankAccount()
+{
+    $user = Auth::user();
+
+    // Default values (to avoid undefined variable errors)
+    $bankName = 'Select Bank';
+    $bankFile = 'defaultbank.png'; // make sure this exists in /public/images
+    $cardColor = '#1976d2';
+
+    return view('parent.addbankaccount', compact('user', 'bankName', 'bankFile', 'cardColor'));
+}
+
 
     public function addSpecificBank($bank)
 {
@@ -544,5 +577,56 @@ public function unsetPrimaryBank($bankId)
     return response()->json(['success' => true]);
 }
 
+public function editKid($id)
+{
+    $kid = User::where('id', $id)
+        ->where('parent_id', Auth::id())
+        ->firstOrFail();
+
+    return view('parent.editkid', compact('kid'));
+}
+
+public function updateKid(Request $request, $id)
+{
+    $kid = User::where('id', $id)
+        ->where('parent_id', Auth::id())
+        ->firstOrFail();
+
+    $request->validate([
+        'first_name' => 'required|string|max:50',
+        'email' => 'required|email|max:100|unique:users,email,' . $id,
+        'dob' => 'nullable|date',
+        'gender' => 'nullable|string'
+    ]);
+
+    $kid->update([
+        'first_name' => $request->first_name,
+        'email' => $request->email,
+        'dob' => $request->dob,
+        'gender' => $request->gender
+    ]);
+
+    return redirect()
+        ->route('parent.kid.management')
+        ->with('success', 'Kid updated successfully!');
+}
+
+
+public function deleteKid($kidId)
+{
+    $parent = Auth::user();
+
+    $kid = User::where('id', $kidId)
+        ->where('parent_id', $parent->id)
+        ->firstOrFail();
+
+    $kid->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Kid deleted successfully.',
+        'kidId' => $kidId
+    ]);
+}
 
 }

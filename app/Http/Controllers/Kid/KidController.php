@@ -413,20 +413,23 @@ public function addSavings(Request $request, Goal $goal)
         'saved_amount' => 'required|numeric|min:1|max:' . $remaining,
     ]);
 
-    $received = Transaction::where('kid_id', $user->id)->where('type', 'credit')->sum('amount');
+    // Correct balance calculation
+    $received = Transaction::where('kid_id', $user->id)
+        ->where('type', 'credit')
+        ->sum('amount');
+
     $spent = Transaction::where('kid_id', $user->id)
         ->where('type', 'debit')
-        ->where('source', 'kid_spending')
+        ->whereIn('source', ['kid_spending','goal_saving','gift_saving'])
         ->sum('amount');
-    $goalSavings = GoalSaving::where('kid_id', $user->id)->sum('saved_amount');
 
-    $balance = $received - ($spent + $goalSavings);
+    $balance = $received - $spent;
 
     if ($request->saved_amount > $balance) {
         return back()->withErrors(['error' => 'Insufficient balance. Available ₹' . number_format($balance, 2)]);
     }
 
-    // ✅ Save record
+    // Save record
     GoalSaving::create([
         'goal_id'      => $goal->id,
         'parent_id'    => $user->parent_id,
@@ -438,12 +441,13 @@ public function addSavings(Request $request, Goal $goal)
 
     $goal->increment('saved_amount', $request->saved_amount);
 
-    // ✅ Auto mark goal completed when reached
+    // Mark goal complete
     if ($goal->saved_amount >= $goal->target_amount) {
-        $goal->status = 1; // Completed
+        $goal->status = 1;
         $goal->save();
     }
 
+    // Add transaction record
     Transaction::create([
         'parent_id'   => $user->parent_id,
         'kid_id'      => $user->id,
@@ -454,12 +458,12 @@ public function addSavings(Request $request, Goal $goal)
         'description' => 'Paid for goal: ' . $goal->title,
     ]);
 
-    return back()->with('success', '₹' . $request->saved_amount . ' added to your goal successfully!');
+    return back()->with('success', '₹' . $request->saved_amount . ' added successfully!');
 }
 
 
 
-    public function goalDetails(Goal $goal)
+public function goalDetails(Goal $goal)
 {
     $user = Auth::user();
     if ($user->role != 2) abort(403, 'Unauthorized');
@@ -473,59 +477,73 @@ public function addSavings(Request $request, Goal $goal)
         : 0;
 
     // ----------------------------
-    //  PRODUCT IMAGE & PRICE LOGIC
+    // PRODUCT IMAGE & PRICE LOGIC
     // ----------------------------
 
     $title = strtolower($goal->title);
     $productImage = null;
-    $basePrice = $goal->target_amount; // user-entered amount (lipstick=1000 etc)
+    $basePrice = $goal->target_amount; // user-entered amount
 
+    // Default price structure based on item type
     if (str_contains($title, 'shoe')) {
         $productImage = asset('images/shoe.png');
         $prices = [
             'amazon'   => $basePrice - 101,
-            'myntra'   => $basePrice - 90,
-            'flipkart' => $basePrice - 50,
+            'myntra'   => $basePrice - 87,
+            'flipkart' => $basePrice - 46,
         ];
     }
     elseif (str_contains($title, 'football')) {
         $productImage = asset('images/football.png');
         $prices = [
-            'amazon'   => $basePrice - 250,
-            'myntra'   => $basePrice - 180,
-            'flipkart' => $basePrice - 120,
+            'amazon'   => $basePrice - 246,
+            'myntra'   => $basePrice - 173,
+            'flipkart' => $basePrice - 114,
         ];
     }
     elseif (str_contains($title, 'book')) {
         $productImage = asset('images/book.png');
         $prices = [
-            'amazon'   => $basePrice - 40,
+            'amazon'   => $basePrice - 38,
             'myntra'   => $basePrice - 20,
             'flipkart' => $basePrice - 10,
         ];
     }
-        elseif (str_contains($title, 'lipstick')) {
+    elseif (str_contains($title, 'lipstick')) {
         $productImage = asset('images/lipstick.png');
         $prices = [
-            'amazon'   => $basePrice - 400,
-            'myntra'   => $basePrice - 200,
-            'flipkart' => $basePrice - 350,
+            'amazon'   => $basePrice - 383,
+            'myntra'   => $basePrice - 184,
+            'flipkart' => $basePrice - 342,
         ];
     }
     else {
-        // default image
         $productImage = asset('images/products/default.png');
         $prices = [
-            'amazon'   => $basePrice - 100,
+            'amazon'   => $basePrice - 82,
             'myntra'   => $basePrice - 50,
             'flipkart' => $basePrice - 20,
         ];
     }
 
-    // Find best price
+    // ⭐ NEW SMOOTH PRICING RULE FOR AMOUNTS UP TO ₹200
+    if ($basePrice <= 200) {
+        $prices = [
+            'amazon'   => $basePrice - 30,  // small discount
+            'myntra'   => $basePrice - 20,
+            'flipkart' => $basePrice - 10,
+        ];
+    }
+
+    // ⭐ FIX: Prevent negative prices
+    foreach ($prices as $key => $value) {
+        $prices[$key] = max($value, 1);
+    }
+
+    // Identify best store
     $bestStore = array_search(min($prices), $prices);
 
-    // Convert to proper format for view
+    // Data to view
     $bestPrices = [
         [
             'store'   => 'Amazon.in',
@@ -555,6 +573,7 @@ public function addSavings(Request $request, Goal $goal)
 
     return view('kid.goaldetails', compact('goal', 'progress', 'bestPrices'));
 }
+
 
     /**
      * 🎁 GIFT FUNCTIONS
@@ -721,50 +740,66 @@ private function generateBestPricesForGift($gift)
     $title = strtolower($gift->title);
     $basePrice = $gift->target_amount;
 
-    // Detect the product
+    // ----------------------------
+    // PRODUCT IMAGE & PRICE LOGIC
+    // ----------------------------
+
     if (str_contains($title, 'shoe')) {
         $productImage = asset('images/gshoe.png');
         $prices = [
-            'amazon'   => $basePrice - 100,
-            'myntra'   => $basePrice - 80,
+            'amazon'   => $basePrice - 91,
+            'myntra'   => $basePrice - 74,
             'flipkart' => $basePrice - 60,
         ];
     }
     elseif (str_contains($title, 'bag')) {
         $productImage = asset('images/bag.png');
         $prices = [
-            'amazon'   => $basePrice - 150,
-            'myntra'   => $basePrice - 120,
-            'flipkart' => $basePrice - 90,
+            'amazon'   => $basePrice - 148,
+            'myntra'   => $basePrice - 118,
+            'flipkart' => $basePrice - 87,
         ];
     }
     elseif (str_contains($title, 'football')) {
         $productImage = asset('images/football.png');
         $prices = [
-            'amazon'   => $basePrice - 200,
-            'myntra'   => $basePrice - 160,
-            'flipkart' => $basePrice - 110,
+            'amazon'   => $basePrice - 192,
+            'myntra'   => $basePrice - 164,
+            'flipkart' => $basePrice - 107,
         ];
     }
     elseif (str_contains($title, 'cap')) {
         $productImage = asset('images/cap.png');
         $prices = [
-            'amazon'   => $basePrice - 40,
-            'myntra'   => $basePrice - 20,
+            'amazon'   => $basePrice - 37,
+            'myntra'   => $basePrice - 24,
             'flipkart' => $basePrice - 10,
         ];
     }
     else {
-        // Default
         $productImage = asset('images/products/default.png');
         $prices = [
-            'amazon'   => $basePrice - 80,
-            'myntra'   => $basePrice - 50,
-            'flipkart' => $basePrice - 30,
+            'amazon'   => $basePrice - 42,
+            'myntra'   => $basePrice - 73,
+            'flipkart' => $basePrice - 12,
         ];
     }
 
-    // Highlight lowest price
+    // ⭐ NEW SMOOTH PRICING RULE FOR AMOUNTS UP TO ₹200
+    if ($basePrice <= 200) {
+        $prices = [
+            'amazon'   => $basePrice - 30,
+            'myntra'   => $basePrice - 20,
+            'flipkart' => $basePrice - 10,
+        ];
+    }
+
+    // ⭐ FIX: Prevent negative or zero prices
+    foreach ($prices as $key => $value) {
+        $prices[$key] = max($value, 1);
+    }
+
+    // Identify best store
     $bestStore = array_search(min($prices), $prices);
 
     return [
@@ -794,6 +829,7 @@ private function generateBestPricesForGift($gift)
         ],
     ];
 }
+
 
 /**
  * ✅ GOAL PAYMENT (similar to gift payment)
@@ -892,7 +928,7 @@ public function kidSendToParent(Request $request)
     $description = "Money returned to parent";
 
 
-    // ⭐ GOAL REFUND
+
 // ⭐ GOAL REFUND
 if ($request->goal_id) {
 
@@ -903,15 +939,17 @@ if ($request->goal_id) {
         $source = 'goal_refund';
         $description = "Returned savings for goal: " . $goal->title;
 
-        // IMPORTANT: FULL RESET
-        $goal->update([
-            'saved_amount' => 0,
-            'target_amount' => 0, // 🔥 reset target
-            'status' => 1,        // completed
-            'is_locked' => 1,
-        ]);
+        // ⭐ Corrected: goal refund = Paid (status 2)
+    $goal->update([
+    'saved_amount'  => 0,
+    'target_amount' => 0,
+    'status'        => 2, // paid
+    'is_locked'     => 1,
+    'is_hidden'     => 0,  // ⭐ UNHIDE FOR PARENT
+]);
     }
 }
+
 
 
     // ⭐ GIFT REFUND
@@ -966,28 +1004,84 @@ public function achievements()
     $user = Auth::user();
     if ($user->role != 2) abort(403, 'Unauthorized');
 
-    // ✔ Paid Goals
-    $paidGoals = Goal::where('kid_id', $user->id)
-        ->where('status', 2)   // paid
-        ->get();
-
-    // ✔ Paid Gifts
-    $paidGifts = Gift::where('kid_id', $user->id)
-        ->where('target_amount', 0)
-        ->where('saved_amount', 0)
-        ->get();
-
-    // ✔ Money sent to parent (goal refund + gift refund)
+    /* --------------------------------------------------
+     * 1️⃣  FETCH REFUNDS FIRST  
+     * --------------------------------------------------
+     */
     $refunds = Transaction::where('kid_id', $user->id)
         ->where('type', 'debit')
         ->whereIn('source', ['goal_refund', 'gift_refund'])
-        ->orderBy('created_at', 'desc')
-        ->get();
+        ->get()
+        ->map(function($r){
+            $r->type = 'refund';
+            $r->date = $r->created_at;
+            return $r;
+        });
 
-    return view('kid.achievements', compact('user', 'paidGoals', 'paidGifts', 'refunds'));
+    // Collect refunded goal IDs & gift IDs to EXCLUDE from Paid list
+    $refundedGoalIDs = $refunds
+        ->filter(fn($x) => $x->source == 'goal_refund')
+        ->map(function($r){
+            // extract goal title from description
+            // 'Returned savings for goal: Book'
+            $title = trim(str_replace("Returned savings for goal:", "", $r->description));
+            $goal = Goal::where('kid_id', $r->kid_id)->where('title', $title)->first();
+            return $goal?->id;
+        })
+        ->filter()
+        ->toArray();
+
+    $refundedGiftTitles = $refunds
+        ->filter(fn($x) => $x->source == 'gift_refund')
+        ->map(function($r){
+            return trim(str_replace("Returned savings for gift:", "", $r->description));
+        })
+        ->toArray();
+
+
+    /* --------------------------------------------------
+     * 2️⃣  PAID GOALS → EXCLUDE refunded ones
+     * --------------------------------------------------
+     */
+    $paidGoals = Goal::where('kid_id', $user->id)
+        ->where('status', 2)
+        ->whereNotIn('id', $refundedGoalIDs)   // ⭐ FIX
+        ->get()
+        ->map(function($g){
+            $g->type = 'goal';
+            $g->date = $g->updated_at;
+            return $g;
+        });
+
+
+    /* --------------------------------------------------
+     * 3️⃣  PAID GIFTS → EXCLUDE refunded ones
+     * --------------------------------------------------
+     */
+    $paidGifts = Gift::where('kid_id', $user->id)
+        ->where('target_amount', 0)
+        ->where('saved_amount', 0)
+        ->whereNotIn('title', $refundedGiftTitles)  // ⭐ FIX
+        ->get()
+        ->map(function($g){
+            $g->type = 'gift';
+            $g->date = $g->updated_at;
+            return $g;
+        });
+
+
+    /* --------------------------------------------------
+     * 4️⃣  MERGE EVERYTHING PROPERLY
+     * --------------------------------------------------
+     */
+    $allAchievements = collect()
+        ->merge($paidGoals)
+        ->merge($paidGifts)
+        ->merge($refunds)
+        ->sortByDesc('date')
+        ->values();
+
+    return view('kid.achievements', compact('user', 'allAchievements'));
 }
-
-
-
 
 }

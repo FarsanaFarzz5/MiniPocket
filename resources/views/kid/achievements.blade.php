@@ -2,19 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🏆 Achievements – Mini Pocket</title>
 
-  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Sidebar + Header -->
   <link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/header.css') }}">
+<style>
+:root {
+  --green: #23a541;
+  --green-soft: rgba(35, 165, 65, 0.10);
+  --text-main: #1e293b;
+  --text-subtle: #6b7280;
+  --line: #e3e7ef;
+  --card-bg: #ffffff;
+}
 
-  <style>
-
-  /* ========== GLOBAL RESET ========== */
 * {
   margin: 0;
   padding: 0;
@@ -22,311 +25,277 @@
   font-family: 'Poppins', sans-serif;
 }
 
-html, body {
+body, html {
   width: 100%;
   height: 100%;
-  background: #f2f2f2;
+  background: #eef2f7;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
   overflow: hidden;
 }
 
-/* ================= CONTAINER ================= */
 .container {
   width: 100%;
   max-width: 420px;
-  height: 100dvh;
+  height: 100vh;
   background: #fff;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  position: relative;
   overflow: hidden;
 }
 
 .inner-container {
   flex: 1;
-  width: 100%;
   overflow-y: auto;
-  padding: 16px 20px 110px; /* bottom space for FAB */
-  position: relative;
-  z-index: 1;
+  padding: 16px 20px 110px;
+  background: #fff;
 }
 
-
-/* PURE CLEAN PREMIUM HEADING */
+/* ---------------------- */
+/*       PAGE TITLE       */
+/* ---------------------- */
+/* ---------------------- */
+/*       PAGE TITLE       */
+/* ---------------------- */
 .page-heading {
-  width: 100%;
   text-align: center;
-  margin: 10px 0 15px;
+  margin: 18px 0 30px;
 }
 
 .page-heading h2 {
-
- 
-  text-transform: capitalize;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-main);
   position: relative;
   display: inline-block;
-  padding-bottom: 6px;
-      font-size: 22px;
-    font-weight: 600;
-    color: #1e293b;
-    text-align: center;
-    letter-spacing: 0.3px;
-    margin-bottom: 20px;
-    font-family: 'Poppins', sans-serif;
-    
+  padding-bottom: 12px;
+  letter-spacing: 0.5px;
 }
 
-/* Nice underline highlight */
 .page-heading h2::after {
   content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
-  width: 60%;
+  width: 110px;
   height: 3px;
-  background:  #23a541;
+  background: var(--green);
   transform: translateX(-50%);
-  border-radius: 3px;
+  border-radius: 30px;
+  opacity: 0.9;
 }
 
 
-/* -------------------------------------------------------
-   🎯 Premium Vertical Timeline Line
-------------------------------------------------------- */
+/* ---------------------- */
+/*        TIMELINE        */
+/* ---------------------- */
 .timeline {
   position: relative;
-  margin-top: 20px;
   padding-left: 30px;
+  margin-top: 10px;
 }
 
 .timeline::before {
   content: "";
   position: absolute;
-  left: 13px;
+  left: 15px;
   top: 0;
   width: 3px;
   height: 100%;
-  background: linear-gradient(#e5e6ee, #dcdde7);
-  border-radius: 20px;
+  background: var(--line);
+  border-radius: 10px;
 }
 
-/* -------------------------------------------------------
-   🟦 Elegant Timeline Card
-------------------------------------------------------- */
+/* ---------------------- */
+/*         CARD           */
+/* ---------------------- */
 .item {
-  position: relative;
-  background: #fff;
-  padding: 18px 18px;
-  border-radius: 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  background: var(--card-bg);
+  padding: 18px 18px 20px;
   margin-bottom: 40px;
-  border-left: 6px solid transparent;
-  transition: 0.25s ease;
-  margin-left: 20px;         /* reduced gap */
+  margin-left: 22px;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.05);
+  position: relative;
+  border: 1px solid #f6f7fb;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* Dot closer to the card */
+.item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+/* timeline dot */
 .dot {
   width: 18px;
   height: 18px;
   background: #fff;
-  border: 4px solid #23a541;
-  position: absolute;
-  left: -50px;               /* closer to the card */
-  top: 10%;                  /* perfect vertical center */
-  transform: translateY(-50%);
+  border: 4px solid var(--green);
   border-radius: 50%;
+  position: absolute;
+  left: -45px;
+  top: 5%;
+  transform: translateY(-50%);
   box-shadow: 0 0 0 3px #fff;
-  z-index: 5;
 }
 
-/* -------------------------------------------------------
-   🟢 Category Badges (More professional)
-------------------------------------------------------- */
+/* ---------------------- */
+/*        BADGES          */
+/* ---------------------- */
 .badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 5px 12px;
-  border-radius: 50px;
+  padding: 6px 14px;
+  border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
-  margin-bottom: 8px;
-  margin-left: -7px;
+  margin-bottom: 10px;
+  display: inline-block;
 }
 
-.goal-badge {
-  border-color: #6FAF8C;
-  background: rgba(111, 175, 140, 0.12);
-  color: #2E6148;
+.badge {
+  background: var(--green-soft);
+  color: #25653e;
 }
 
 .gift-badge {
-  border-color: #6FAF8C;
-  background: rgba(111, 175, 140, 0.12);
-  color: #2E6148;
+  background: var(--green-soft);
+  color: #25653e;
 }
 
 .refund-badge {
-  border-color: #6FAF8C;
-  background: rgba(111, 175, 140, 0.12);
-  color: #2E6148;
+  background: rgba(251, 146, 60, 0.18);
+  color: #8a3600;
 }
 
-/* -------------------------------------------------------
-   📌 Card Content
-------------------------------------------------------- */
+/* ---------------------- */
+/* TEXT STYLING           */
+/* ---------------------- */
 .title {
-  font-size: 16px;
+  font-size: 16.5px;
   font-weight: 600;
-  color: #2d2d2d;
+  color: var(--text-main);
+  letter-spacing: 0.2px;
 }
 
 .subtitle {
   font-size: 13px;
-  color: #707070;
+  color: var(--text-subtle);
   margin-top: 4px;
 }
 
 .amount {
-  margin-top: 8px;
   font-size: 18px;
   font-weight: 700;
-  color: #23a541;
+  margin-top: 10px;
+  color: var(--green);
 }
 
-/* Empty Message */
+/* EMPTY STATE */
 .empty {
-  color: #b4b4b4;
-  font-size: 14px;
-  margin: 12px 0;
   text-align: center;
+  color: #b6b6b6;
+  font-size: 15px;
+  margin-top: 25px;
+  letter-spacing: 0.2px;
 }
 
-  </style>
+@media (max-width: 480px) {
+  .inner-container {
+    padding-bottom: 150px !important;
+  }
+}
+
+/* ============================
+   📦 Standard Empty Box Style
+============================ */
+.empty-box {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 12px 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin: 0;
+    text-align: left;
+}
+
+.empty-msg {
+    font-size: 13px;
+    font-weight: 500;
+    color: #aaa;
+    padding-left: 2px;
+    text-align: center;
+}
+
+
+</style>
+
 </head>
 
 <body>
 
 <div class="container">
   @include('sidebar.profile')
-  
-
- 
 
   <div class="inner-container">
+    @include('header')
 
-@include('header')
     <div class="page-heading">
-    <h2>My Achievements</h2>
-</div>
-
-
-    <div class="timeline">
-
-      <!-- ------------------ PAID GOALS ------------------ -->
-      <div class="section-title"></div>
-@forelse($paidGoals as $goal)
-    <div class="item">
-      <div class="dot"></div>
-
-      <span class="badge goal-badge">Paid Goal</span>
-
-      <!-- Title -->
-      <div class="title">{{ $goal->title }}</div>
-
-      <!-- Completed message -->
-      <div class="subtitle">Completed successfully</div>
-
-   
-
-      <!-- Date -->
-      <div class="subtitle">
-        {{ $goal->updated_at->format('d M Y, h:i A') }}
-      </div>
-    </div>
-@empty
-  <p class="empty">No paid goals yet.</p>
-@endforelse
-
-
-      <!-- ------------------ PAID GIFTS ------------------ -->
-@forelse($paidGifts as $gift)
-    <div class="item">
-      <div class="dot"></div>
-
-      <span class="badge gift-badge">Paid Gift</span>
-
-      <!-- Title -->
-      <div class="title">{{ $gift->title }}</div>
-
-      <!-- Message -->
-      <div class="subtitle">completed successfully</div>
-
-      <!-- Date -->
-      <div class="subtitle">
-        {{ $gift->updated_at->format('d M Y, h:i A') }}
-      </div>
-    </div>
-@empty
-  <p class="empty">No paid gifts yet.</p>
-@endforelse
-
-
-@forelse($refunds as $refund)
-
-    @php
-        // Extract item name from description
-        $itemName = str_replace(['Returned savings for goal:', 'Returned savings for gift:'], '', $refund->description);
-        $itemName = trim($itemName);
-
-        // Detect whether it was goal or gift refund
-        $isGoal = str_contains($refund->description, 'Returned savings for goal:');
-        $isGift = str_contains($refund->description, 'Returned savings for gift:');
-    @endphp
-
-    <div class="item">
-        <div class="dot"></div>
-
-        <span class="badge refund-badge">Money Returned</span>
-
-        <!-- 1️⃣ Item Name -->
-        <div class="title">
-            {{ $itemName }}
-        </div>
-
-        <!-- 2️⃣ Returned savings line (NO item name here!) -->
-        <div class="subtitle">
-            @if($isGoal)
-                Returned savings for goal
-            @elseif($isGift)
-                Returned savings for gift
-            @endif
-        </div>
-
-        <!-- 3️⃣ Amount -->
-        <div class="amount">
-            ₹{{ number_format($refund->amount) }}
-        </div>
-
-        <!-- 4️⃣ Date -->
-        <div class="subtitle">
-            {{ $refund->created_at->format('d M Y, h:i A') }}
-        </div>
+      <h2>My Achievements</h2>
     </div>
 
-@empty
-    <p class="empty">No money returned yet.</p>
-@endforelse
-
-
-    </div>
+    {{-- EMPTY → NO TIMELINE --}}
+    @if($allAchievements->isEmpty())
+        <div class="empty-box">
+      <p class="empty-msg">No achievements yet.</p>
   </div>
 
+    {{-- NOT EMPTY → SHOW TIMELINE --}}
+    @else
+      <div class="timeline">
+        @foreach($allAchievements as $item)
+
+          <div class="item">
+            <div class="dot"></div>
+
+            {{-- GOAL --}}
+            @if($item->type == 'goal')
+              <span class="badge">Paid Goal</span>
+              <div class="title">{{ $item->title }}</div>
+              <div class="subtitle">Completed successfully</div>
+              <div class="subtitle">{{ $item->date->format('d M Y, h:i A') }}</div>
+
+            {{-- GIFT --}}
+            @elseif($item->type == 'gift')
+              <span class="badge gift-badge">Paid Gift</span>
+              <div class="title">{{ $item->title }}</div>
+              <div class="subtitle">Completed successfully</div>
+              <div class="subtitle">{{ $item->date->format('d M Y, h:i A') }}</div>
+
+            {{-- REFUND --}}
+            @elseif($item->type == 'refund')
+              @php
+                $title = trim(str_replace(['Returned savings for goal:', 'Returned savings for gift:'], '', $item->description));
+                $isGoal = str_contains($item->description, 'goal');
+              @endphp
+
+              <span class="badge refund-badge">Money Returned</span>
+              <div class="title">{{ $title }}</div>
+
+              <div class="subtitle">
+                {{ $isGoal ? 'Returned savings for goal' : 'Returned savings for gift' }}
+              </div>
+
+              <div class="amount">₹{{ number_format($item->amount) }}</div>
+              <div class="subtitle">{{ $item->date->format('d M Y, h:i A') }}</div>
+            @endif
+          </div>
+
+        @endforeach
+      </div>
+    @endif
+
+  </div>
 </div>
 
 </body>

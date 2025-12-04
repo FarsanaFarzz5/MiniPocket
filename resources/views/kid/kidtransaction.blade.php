@@ -54,37 +54,44 @@
           @if($txn->type === 'credit')
             Received from Parent
           @else
-            @switch($txn->source)
+@switch($txn->source)
 
+    {{-- 🎯 Goal Paid --}}
     @case('goal_payment')
-        Goal Achieved
+        Goal Item: {{ str_replace('Paid for goal: ', '', $txn->description) }}
     @break
 
+    {{-- 🎁 Gift Paid --}}
     @case('gift_payment')
-        Gift Purchased
+        Gift Item: {{ str_replace('Paid for gift: ', '', $txn->description) }}
     @break
 
+    {{-- 🔄 Goal Refund --}}
     @case('goal_refund')
-        Returned Goal Savings
+        Goal money returned: {{ str_replace('Returned savings for goal: ', '', $txn->description) }}
     @break
 
+    {{-- 🔄 Gift Refund --}}
     @case('gift_refund')
-        Returned Gift Savings
+        Gift Money Returned: {{ str_replace('Returned savings for gift: ', '', $txn->description) }}
     @break
 
+    {{-- 💸 Sent to Parent --}}
     @case('kid_to_parent')
         Sent to Parent
     @break
 
+    {{-- 🛍 Kid Spending --}}
     @case('kid_spending')
         Spent for Needs
     @break
 
     @default
-        Spent
+        Transaction
     @break
 
 @endswitch
+
 
           @endif
         </h4>
@@ -98,7 +105,9 @@
 @endforeach
 
         @else
-          <div class="no-transactions">No transactions found.</div>
+         <div class="empty-box">
+    <p class="empty-msg">No transactions found.</p>
+</div>
         @endif
       </div>
     </div>

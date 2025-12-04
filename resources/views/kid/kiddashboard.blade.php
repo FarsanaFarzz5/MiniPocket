@@ -9,6 +9,35 @@
   <link rel="stylesheet" href="{{asset('assets/css/kiddashboard.css')}}">
   <link rel="stylesheet" href="{{asset('assets/css/header.css')}}">
 
+  <style>
+    /* ===========================================================
+   📦 EMPTY BOX STYLE (Same as Parent Dashboard)
+=========================================================== */
+.empty-box {
+    width: 100%;
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.empty-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.empty-msg {
+    font-size: 13px;
+    font-weight: 500;
+    color: #aaa;
+    padding-left: 2px;
+}
+
+  </style>
 
 
 </head>
@@ -71,98 +100,105 @@
         <img src="{{ asset('images/pig.png') }}" alt="Piggy Bank" />
       </div>
 
-      <!-- ✅ Transaction Section (won’t affect any card sizes) -->
+      
 <!-- ✅ Transaction Section (won’t affect any card sizes) -->
+<!-- ⭐ Recent Transactions (Same Empty Card Style as Parent) -->
 <div style="width:100%; margin-top:26px; text-align:left; display:block; box-sizing:border-box;">
-  <h3 style="font-size:15px;font-weight:600;color:#333;margin-bottom:10px;">Recent Transactions</h3>
 
-  @if($transactions->isEmpty())
-      <p style="text-align:center;color:#aaa;font-size:13px;">No transactions yet.</p>
-  @else
+    @if($transactions->isEmpty())
 
-  <div style="background:#fff;border-radius:14px;box-shadow:0 4px 10px rgba(0,0,0,0.05);padding:14px;width:100%;box-sizing:border-box;">
-
-      @foreach($transactions as $txn)
-
-      @php
-          // Split description: "paid for goal: Happy"
-          $parts = explode(':', $txn->description);
-          $mainText = ucfirst(trim($parts[0]));       // Paid for goal
-          $itemName = ucfirst(trim($parts[1] ?? '')); // Happy
-      @endphp
-
-      <div style="padding:8px 0;border-bottom:1px solid #eee;">
-        
-        {{-- ✅ FIRST LINE --}}
-        <div style="display:flex;justify-content:space-between;">
-<span style="font-size:14px;font-weight:600;color:#333;">
-    @if($txn->type === 'credit')
-    Received from Parent
-@else
-    @switch($txn->source)
-        @case('goal_payment') Paid for goal @break
-        @case('gift_payment') Paid for gift @break
-        @case('goal_refund') Returned Goal Savings @break
-        @case('gift_refund') Returned Gift Savings @break
-        @case('kid_spending') Spent for Needs @break
-        @case('kid_to_parent') Sent to Parent @break
-        @default Transaction @break
-    @endswitch
-@endif
-
-</span>
-
-
-          <span style="font-size:14px;font-weight:600;
-                      color:{{ $txn->type == 'credit' ? '#23a541' : '#e53935' }}">
-            {{ $txn->type == 'credit' ? '+' : '-' }}₹{{ number_format($txn->amount, 2) }}
-          </span>
+        <!-- 🌟 SAME EMPTY CARD STYLE AS PARENT -->
+        <div class="empty-box">
+            <h4 class="empty-title">Recent Transactions</h4>
+            <p class="empty-msg">No transactions yet.</p>
         </div>
 
-        {{-- ✅ SECOND LINE --}}
-        <div style="display:flex;justify-content:space-between;margin-top:2px;">
-          <span style="font-size:12px;color:#777;">
-             
-  @if($txn->type === 'credit')
-    Received from Parent
-@else
-    @switch($txn->source)
-        @case('goal_payment') {{ $itemName }} @break
-        @case('gift_payment') {{ $itemName }} @break
-        @case('goal_refund')  {{ $itemName }} @break
-        @case('gift_refund') {{ $itemName }} @break
-        @case('kid_spending') Spent for Needs @break
-        @case('kid_to_parent') Sent to Parent @break
-        @default Spent @break
-    @endswitch
-@endif
+    @else
 
+        <h3 style="font-size:15px;font-weight:600;color:#333;margin-bottom:10px;">
+          Recent Transactions
+        </h3>
 
+        <div style="background:#fff;border-radius:14px;box-shadow:0 4px 10px rgba(0,0,0,0.05);padding:14px;width:100%;box-sizing:border-box;">
 
+            @foreach($transactions as $txn)
 
-          </span>
+            @php
+                $parts = explode(':', $txn->description);
+                $mainText = ucfirst(trim($parts[0]));
+                $itemName = ucfirst(trim($parts[1] ?? ''));
+            @endphp
 
-          <span style="font-size:12px;color:#999;">
-              {{ $txn->created_at->format('d-m-Y') }}
-          </span>
+            <div style="padding:8px 0;border-bottom:1px solid #eee;">
+                
+                <!-- FIRST LINE -->
+                <div style="display:flex;justify-content:space-between;">
+
+                    <span style="font-size:14px;font-weight:600;color:#333;">
+                        @if($txn->type === 'credit')
+                            Parent
+                        @else
+                            @switch($txn->source)
+                                @case('goal_payment') Paid for goal @break
+                                @case('gift_payment') Paid for gift @break
+                                @case('goal_refund') Returned Goal Savings @break
+                                @case('gift_refund') Returned Gift Savings @break
+                                @case('kid_spending') Spent for Needs @break
+                                @case('kid_to_parent') Parent @break
+                                @default Transaction @break
+                            @endswitch
+                        @endif
+                    </span>
+
+                    <span style="font-size:14px;font-weight:600;
+                                 color:{{ $txn->type == 'credit' ? '#23a541' : '#e53935' }}">
+                        {{ $txn->type == 'credit' ? '+' : '-' }}₹{{ number_format($txn->amount, 2) }}
+                    </span>
+
+                </div>
+
+                <!-- SECOND LINE -->
+                <div style="display:flex;justify-content:space-between;margin-top:2px;">
+
+                    <span style="font-size:12px;color:#777;">
+                        @if($txn->type === 'credit')
+                            Received from Parent
+                        @else
+                            @switch($txn->source)
+                                @case('goal_payment') {{ $itemName }} @break
+                                @case('gift_payment') {{ $itemName }} @break
+                                @case('goal_refund') {{ $itemName }} @break
+                                @case('gift_refund') {{ $itemName }} @break
+                                @case('kid_spending') Spent for Needs @break
+                                @case('kid_to_parent') Sent money to Parent @break
+                                @default Spent @break
+                            @endswitch
+                        @endif
+                    </span>
+
+                    <span style="font-size:12px;color:#999;">
+                        {{ $txn->created_at->format('d-m-Y') }}
+                    </span>
+
+                </div>
+            </div>
+
+            @endforeach
+
+            <div style="text-align:center;margin-top:12px;">
+                <button onclick="window.location.href='{{ route('kid.transactions') }}'"
+                        style="width:100%;background:#f4f4f4;border:none;color:#333;font-size:14px;
+                              font-weight:600;padding:12px 0;border-radius:10px;cursor:pointer;
+                              box-shadow:0 3px 6px rgba(0,0,0,0.05);transition:all 0.3s ease;">
+                    All Transactions
+                </button>
+            </div>
+
         </div>
-      </div>
 
-      @endforeach
+    @endif
 
-      <div style="text-align:center;margin-top:12px;">
-        <button onclick="window.location.href='{{ route('kid.transactions') }}'"
-                style="width:100%;background:#f4f4f4;border:none;color:#333;font-size:14px;
-                      font-weight:600;padding:12px 0;border-radius:10px;cursor:pointer;
-                      box-shadow:0 3px 6px rgba(0,0,0,0.05);transition:all 0.3s ease;">
-          All Transactions
-        </button>
-      </div>
-
-  </div>
-  @endif
 </div>
-
 
 
     </div>

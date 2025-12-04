@@ -133,13 +133,12 @@ html, body {
   input[type="date"]::-webkit-datetime-edit-year-field {
     text-align: left; color: #333;
   }
-
-  .field input:focus,
-  .field select:focus {
-    border-color: #4caf50;
-    box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
-    outline: none;
-  }
+.field input:focus,
+.field select:focus {
+    border-color: #dcdcdc !important;   /* Light gray border */
+    box-shadow: none !important;         /* Remove green glow */
+    outline: none !important;
+}
 
   .field label {
     position: absolute;

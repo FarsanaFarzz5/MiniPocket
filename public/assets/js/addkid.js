@@ -54,7 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const avatarSelected = document.querySelector('input[name="avatar_choice"]:checked');
     const profileSelected = profileInput && profileInput.files.length > 0;
 
-    const namePattern = /^[A-Za-z]+$/;
     const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,4}$/;
     const phonePattern = /^[0-9]{10}$/;
 
@@ -64,18 +63,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedDate = new Date(dob);
 
     /* -------------------- NAME -------------------- */
-    if (!name)
-      return showToast("warning", "Please enter child's name.");
-    if (!namePattern.test(name))
-      return showToast("warning", "Name should contain only alphabets.");
+/* -------------------- NAME -------------------- */
+if (!name.trim())
+  return showToast("warning", "Please enter child's name.");
+
+const namePattern = /^[A-Za-z ]+$/;
+
+if (!namePattern.test(name))
+  return showToast("warning", "Name should contain only alphabets and spaces.");
+
 
     /* -------------------- DATE OF BIRTH -------------------- */
-    if (!dob)
-      return showToast("warning", "Please select date of birth.");
-    if (selectedDate < minDOB)
-      return showToast("warning", "Date of birth should be from 2020 onwards.");
-    if (selectedDate >= today)
-      return showToast("warning", "DOB cannot be today or future date.");
+   /* -------------------- DATE OF BIRTH -------------------- */
+if (!dob)
+  return showToast("warning", "Please select date of birth.");
+
+const cutoff = new Date("2020-01-01");
+
+if (selectedDate >= cutoff)
+  return showToast("warning", "Date of birth must be before the year 2020.");
+
+if (selectedDate >= today)
+  return showToast("warning", "DOB cannot be today or a future date.");
+
 
     /* -------------------- EMAIL -------------------- */
     if (!email)
@@ -113,9 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (file.size > 2 * 1024 * 1024)
         return showToast("warning", "Image size must be less than 2 MB.");
     }
-
-    /* -------------------- SUCCESS -------------------- */
-    showToast("success", "Kid added successfully!");
 
     setTimeout(() => this.submit(), 1200);
   });

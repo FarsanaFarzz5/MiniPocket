@@ -153,6 +153,27 @@
   white-space: nowrap;
 }
 
+/* ============================
+   📦 Standard Empty Box (Global)
+============================ */
+.empty-box {
+    width: 100%;
+    background: #fff;
+    border-radius: 14px;
+    padding: 10px 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin: 10px 0;
+    text-align: left;
+}
+
+.empty-msg {
+    font-size: 13px;
+    font-weight: 500;
+    color: #aaa;
+    padding-left: 2px;
+    text-align: center;
+}
+
 
 
 @media (max-width: 430px) {
@@ -181,24 +202,24 @@
         <div class="coin"></div><div class="coin"></div><div class="coin"></div>
       </div>
 
-      <!-- Summary -->
-      <div class="summary-wrapper">
-        <div class="summary-card">
-          <h4>Total Saved</h4>
-          <h2>₹{{ number_format($gifts->where('status', 0)->sum('saved_amount')) }}</h2>
-        </div>
+<!-- 📊 Stats (Same as Goals Page) -->
+<div class="stats">
+  <div class="stat-card">
+    <h3>Total</h3>
+    <p>{{ $gifts->where('status', 0)->count() }}</p>
+  </div>
 
-        <div class="target-card">
-          @php
-            $totalTarget = $gifts->sum('target_amount');
-            $totalSaved  = $gifts->sum('saved_amount');
-            $remaining   = max($totalTarget - $totalSaved, 0);
-          @endphp
+  <div class="stat-card">
+    <h3>Saved ₹</h3>
+    <p>{{ number_format($gifts->where('status', 0)->sum('saved_amount')) }}</p>
+  </div>
 
-          <h4>Pending Target</h4>
-          <div class="amount">₹{{ number_format($remaining) }}</div>
-        </div>
-      </div>
+  <div class="stat-card">
+    <h3>Target ₹</h3>
+    <p>{{ number_format($gifts->where('status', 0)->sum('target_amount')) }}</p>
+  </div>
+</div>
+
 
       <!-- Gift List -->
 <section class="gift-section">
@@ -302,12 +323,15 @@
       @endforeach
     </div>
 
+
   </div>
+
 @empty
-  <div class="text-center text-muted fs-6 p-3">
-    <p>No gifts added yet. Start your savings adventure!</p>
+  <div class="empty-box">
+      <p class="empty-msg">No gifts added yet.</p>
   </div>
 @endforelse
+
 </section>
 
     </div>

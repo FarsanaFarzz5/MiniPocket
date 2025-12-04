@@ -40,6 +40,83 @@
       height: 22px;
       stroke: #7d7d7d7a;
     }
+
+    /* ===========================================================
+🔔 CUSTOM ALERT TOAST (Matches your Mini Pocket theme)
+=========================================================== */
+.alert-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  width: 88%;
+  max-width: 360px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  text-align: center;
+  background: linear-gradient(135deg, #f4731d, #ff9240);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  z-index: 99999;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+/* Slide Up Animation */
+.alert-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* SUCCESS TOAST */
+.alert-success {
+  background: linear-gradient(135deg, #2ecc71, #4be08c);
+}
+
+/* WARNING / ERROR TOAST */
+.alert-warning {
+  background: linear-gradient(135deg, #f4731d, #ff9240);
+}
+
+/* MOBILE FIX */
+@media (max-width: 480px) {
+  .alert-toast {
+    width: 92%;
+    font-size: 13px;
+    bottom: 18px;
+  }
+}
+
+/* ===========================================================
+📌 FULL ERROR ALERT BOX (Appears after mistake)
+=========================================================== */
+.full-alert-box {
+  width: 100%;
+  padding: 14px 16px;
+  background: #fff3e4;
+  border-left: 5px solid #f4731d;
+  border-radius: 12px;
+  color: #4a4a4a;
+  font-size: 14px;
+  margin-bottom: 18px;
+  line-height: 1.55;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+  animation: slideDown 0.35s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.full-alert-box strong {
+  color: #d65a00;
+}
+
+
   </style>
 </head>
 
@@ -54,6 +131,16 @@
 
       <!-- Title -->
       <h1>Set Your Password</h1>
+
+      <div id="full-error-box" class="full-alert-box" style="display:none;">
+  <strong>Password Requirements:</strong><br>
+  • Must contain at least <b>1 uppercase</b><br>
+  • Must contain at least <b>1 lowercase</b><br>
+  • Must contain at least <b>1 digit</b><br>
+  • Must contain at least <b>1 special character</b><br>
+  • Must be <b>minimum 6 characters</b>
+</div>
+
 
       <!-- Validation Errors -->
       @if ($errors->any())
@@ -137,6 +224,7 @@
   </div>
 
 <script>
+  // Toggle Password Visibility
   function togglePassword(inputId, eyeOpenId, eyeCloseId) {
     const field = document.getElementById(inputId);
     const openIcon = document.getElementById(eyeOpenId);
@@ -152,7 +240,51 @@
       closeIcon.style.display = "none";
     }
   }
+
+  /* ===============================
+      PASSWORD VALIDATION
+  ================================ */
+  const form = document.querySelector(".reset-form");
+  const errorBox = document.getElementById("full-error-box");
+
+  form.addEventListener("submit", function (e) {
+    const password = document.getElementById("kid-password").value;
+    const confirmPassword = document.getElementById("kid-confirm-password").value;
+
+    // Hide error box initially
+    errorBox.style.display = "none";
+
+    // Validation Rules
+    const rules = {
+      uppercase: /[A-Z]/,
+      lowercase: /[a-z]/,
+      digit: /[0-9]/,
+      special: /[!@#$%^&*(),.?":{}|<>]/,
+      length: /.{6,}/   // minimum 6 characters
+    };
+
+    // Validate password
+    if (
+      !rules.uppercase.test(password) ||
+      !rules.lowercase.test(password) ||
+      !rules.digit.test(password) ||
+      !rules.special.test(password) ||
+      !rules.length.test(password)
+    ) {
+      e.preventDefault();
+      errorBox.style.display = "block";  // Show big alert box
+      return;
+    }
+
+    // Password match validation
+    if (password !== confirmPassword) {
+      e.preventDefault();
+      errorBox.style.display = "block";  // Same alert box shows
+      return;
+    }
+  });
 </script>
+
 
 </body>
 </html>

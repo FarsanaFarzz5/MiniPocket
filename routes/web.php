@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Parent\ParentController;
+use Illuminate\Support\Facades\Request;
 use App\Http\Controllers\Kid\KidController;
-use App\Http\Controllers\Kid\KidInvitationController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Homepage\HomeController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Parent\ParentController;
+use App\Http\Controllers\Kid\KidInvitationController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -200,4 +201,10 @@ Route::post('/parent/bank/unset-primary/{bankId}', [ParentController::class, 'un
     // 💰 Set kid limit
     Route::post('/kids/{id}/set-limit', [ParentController::class, 'setKidLimit'])->name('kids.set.limit');
 
+    // Kid Edit + Update
+Route::get('/parent/kids/{id}/edit', [ParentController::class, 'editKid'])->name('kids.edit');
+Route::post('/parent/kids/{id}/update', [ParentController::class, 'updateKid'])->name('kids.update');
+
+Route::delete('/parent/kid/{kidId}', [ParentController::class, 'deleteKid'])
+    ->name('parent.kid.delete');
 });

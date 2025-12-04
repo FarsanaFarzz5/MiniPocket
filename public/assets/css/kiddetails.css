@@ -21,44 +21,39 @@ html, body {
 
 body {
   background: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
   min-height: -webkit-fill-available;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* ===========================================================
-🧱 MAIN CONTAINER (Fixed frame — Non-scrollable)
+🧱 FIXED MAIN APP CONTAINER
 =========================================================== */
 .container {
   width: 100%;
   max-width: 420px;
-  height: 100dvh; /* ✅ Mobile-safe full height */
+  height: 100dvh;
   background: #fff;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  padding: 0 22px 0;
+  padding: 0 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  position: fixed; /* ✅ Keeps it centered and fixed */
-  top: 0;
+  position: fixed;
   left: 50%;
+  top: 0;
   transform: translateX(-50%);
-  overflow: hidden; /* ✅ Prevents body scroll */
-  z-index: 1;
+  overflow: hidden;
+  z-index: 10;
 }
 
 /* ===========================================================
-🧭 INNER CONTAINER (Scrolls independently)
+🧭 INNER SCROLL AREA
 =========================================================== */
 .inner-container {
   width: 100%;
   flex: 1;
-  text-align: center;
-  overflow-y: auto; /* ✅ Only inner content scrolls */
+  overflow-y: auto;
+  padding-bottom: 100px;
   -webkit-overflow-scrolling: touch;
-  padding: 0 0 100px;
+  text-align: center;
 }
 
 @supports (padding: max(0px)) {
@@ -72,12 +67,10 @@ body {
 =========================================================== */
 h1 {
   text-align: center;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
   color: #2c3e50;
-  text-transform: capitalize;
-  margin-bottom: 22px;
-  margin-top: 15px;
+  margin: 20px 0;
   letter-spacing: 0.3px;
 }
 
@@ -89,97 +82,84 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: #fafafa;
   padding: 12px 14px;
-  border: 1px solid #e7e7e7;
-  border-radius: 10px;
-  background: #fbfbfb;
+  border-radius: 12px;
+  border: 1px solid #eaeaea;
   margin-bottom: 12px;
-  transition: all 0.3s ease;
+  transition: 0.25s ease;
   cursor: pointer;
 }
 
-/* ✅ Hover behavior */
 .kid-card:hover {
-  transform: none;
-  box-shadow: none;
-  background: #fbfbfb;
-  border-color: #e7e7e7;
+  background: #f3f3f3;
 }
 
 .kid-card.active {
   background: #fff;
-  border-color: #f4731d;
-  box-shadow: 0 4px 10px rgba(244, 115, 29, 0.08);
+  border-color: #ff7f32;
+  box-shadow: 0 4px 12px rgba(255, 120, 50, 0.15);
 }
 
-.kid-card.active:hover {
-  background: #fff;
-  border-color: #f4731d;
-  transform: translateY(-1px);
-}
-
-/* Left section */
+/* Left */
 .kid-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .kid-left img {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #00c853;
-  box-shadow: 0 0 6px rgba(0,200,83,0.25);
+  box-shadow: 0 0 6px rgba(0, 200, 83, 0.20);
 }
 
 .kid-info {
   text-align: left;
-  line-height: 1.3;
 }
 
 .kid-info .name {
+  font-size: 14px;
   font-weight: 600;
-  font-size: 13.5px;
   color: #2c3e50;
 }
 
 .kid-info .gender {
-  font-size: 11.5px;
-  color: #8c8c8c;
+  font-size: 12px;
+  color: #777;
 }
 
-/* Right section */
+/* Right */
 .amount-box {
   text-align: right;
 }
 
 .amount-box .amount {
   font-weight: 700;
+  font-size: 14px;
   color: #111;
-  font-size: 13.5px;
 }
 
 .amount-box .limit-label {
   font-size: 11px;
-  color: #8c8c8c;
-  margin-top: 2px;
+  color: #999;
 }
 
 /* ===========================================================
-🌟 DETAILS SECTION
+🌟 DETAILS DROPDOWN
 =========================================================== */
 .details {
   background: #fff;
   border-radius: 12px;
   padding: 16px;
-  width: 100%;
-  margin-bottom: 16px;
-  text-align: left;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
   display: none;
+  text-align: unset !important;
   animation: fadeIn 0.3s ease;
+  margin-bottom: 16px;
 }
 
 @keyframes fadeIn {
@@ -187,98 +167,226 @@ h1 {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.details p {
-  font-size: 13.5px;
-  color: #444;
-  margin-bottom: 6px;
-}
-
-.details p strong {
-  color: #2c3e50;
-}
-
-.details p.balance-line {
-  font-weight: 600;
-  color: #00b386;
-  font-size: 13.5px;
-}
-
 /* ===========================================================
-🌟 INPUT + BUTTON
+🌟 3-ACTION BUTTONS (EDIT – LIMIT – DELETE)
 =========================================================== */
-.input-box {
+.kid-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
   width: 100%;
-  height: 46px;
-  padding: 0 14px;
-  border: 1.6px solid #e4e4e4;
-  border-radius: 10px;
-  font-size: 14px;
-  color: #222;
-  margin-top: 6px;
-  transition: border-color 0.25s, box-shadow 0.25s;
 }
 
-.input-box:focus {
-  border-color: #f4731d;
-  box-shadow: 0 0 0 3px rgba(244,115,29,0.15);
-  outline: none;
-}
-
-.btn {
-  display: block;
-  width: 100%;
-  padding: 14px 0;
-  background: linear-gradient(135deg, #f4731d, #ff9240);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  border: none;
+.kid-btn {
+  flex: 1;
+  height: 48px;
+  padding: 12px 0;
   border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   cursor: pointer;
-  margin-top: 20px;
-  box-shadow: 0 6px 15px rgba(244,115,29,0.25);
-  transition: all 0.3s ease;
+  transition: 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  text-decoration: none;
 }
 
-.btn:hover {
-  background: linear-gradient(135deg, #e8680d, #f68832);
-  transform: translateY(-2px);
+.kid-btn i {
+  font-size: 18px;
+  text-decoration: none !important;
+}
+
+/* Colors */
+.edit-btn {
+  background: linear-gradient(135deg, #ff7a33, #ff914d);
+  text-decoration: none;
+}
+.limit-btn {
+  background: linear-gradient(135deg, #00b37a, #00d68f);
+}
+.delete-btn {
+  background: linear-gradient(135deg, #ff4d4d, #ff6b6b);
+}
+
+.kid-btn:hover { opacity: 0.9; }
+
+/* 🔥 Completely remove underline/bottom border from EDIT button link */
+.kid-actions .edit-btn,
+.kid-actions .edit-btn:link,
+.kid-actions .edit-btn:visited,
+.kid-actions .edit-btn:hover,
+.kid-actions .edit-btn:active {
+    text-decoration: none !important;
+    border: none !important;
+    border-bottom: none !important;
+    outline: none !important;
+}
+
+
+/* ===========================================================
+🌟 DAILY LIMIT POPUP
+=========================================================== */
+
+
+/* Overlay */
+.limit-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    padding: 20px;
+}
+
+/* Popup container */
+.limit-popup-box {
+    background: #ffffff;
+    width: 90%;
+    max-width: 340px;
+    padding: 26px 22px;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: none !important;
+    animation: popupShow 0.25s ease;
+}
+
+/* Same shadow for both popup buttons */
+.limit-save-btn,
+.limit-close-btn {
+    box-shadow: 0 3px 10px rgba(0,0,0,0.10) !important;
+}
+
+/* Disable TAP ONLY, prevent click-through, keep normal look */
+body.popup-open .bottom-nav,
+body.popup-open .footer-nav,
+body.popup-open .nav-bar,
+body.popup-open .mobile-nav,
+body.popup-open .sidebar,
+body.popup-open .bottom-tabs {
+    pointer-events: none !important; /* Disable only interaction */
+}
+
+/* Animation */
+@keyframes popupShow {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* Title */
+.limit-popup-box h2 {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0px 0 14px;
+    letter-spacing: 0.3px;
+    text-align: left;
+}
+
+/* Input */
+/* ===========================================================
+🌟 DAILY LIMIT INPUT — MATCH FLOATING INPUT DESIGN
+=========================================================== */
+.limit-popup-box input {
+    width: 100%;
+    height: 54px;
+    padding: 14px;
+    border: 1.6px solid #e4e4e4 !important;
+    border-radius: 10px !important;
+    font-size: 15px !important;
+    color: #222 !important;
+    background: #fff !important;
+    transition: all 0.25s ease !important;
+    outline: none !important;
+}
+
+/* Focus state — SAME as floating-group input */
+.limit-popup-box input:focus {
+    border-color: #f4731d !important;
+    box-shadow: 0 0 0 3px rgba(244, 115, 29, 0.1) !important;
+}
+
+
+/* Action buttons wrapper (side by side) */
+.limit-popup-actions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Save + Cancel shared style */
+.limit-save-btn,
+.limit-close-btn {
+    flex: 1;
+    height: 48px;
+    padding: 0;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+
+/* Save button */
+.limit-save-btn {
+    background: linear-gradient(135deg, #ff7a33, #ff914d);
+    color: #fff;
+}
+
+/* Cancel button */
+.limit-close-btn {
+    background: #e6e6e6;
+    color: #444;
+}
+
+
+.limit-description {
+    font-size: 14px;
+    color: #555;
+    margin-top: 6px;
+    margin-bottom: 15px;
+    text-align: left;
+    line-height: 1.4;
 }
 
 /* ===========================================================
-🌟 TOGGLE SWITCH
+🌟 TOGGLE SWITCH (Add Kid | Kid Details)
 =========================================================== */
 .toggle-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
- 
-  padding: 12px 16px;
-  border-radius: 12px;
-  
-  margin: 0 auto 24px auto;
-  width: 90%;
+  width: 92%;
   max-width: 360px;
+  margin: 10px auto 26px auto;
+  display: flex;
+  gap: 12px;
 }
 
 .toggle-btn {
   flex: 1;
-  text-align: center;
   padding: 10px 0;
-  border-radius: 10px;
-  font-family: 'Poppins', sans-serif;
   font-weight: 600;
   font-size: 15px;
-  text-decoration: none;
   color: #555;
   background: #f4f4f4;
   border: 1px solid #eee;
-  transition: all 0.3s ease;
+  border-radius: 10px;
+  transition: 0.3s ease;
 }
 
 .toggle-btn:hover {
-  background: #ffe5cc;
+  background: #ffe2c8;
   color: #ff7a00;
 }
 
@@ -289,68 +397,57 @@ h1 {
   box-shadow: 0 3px 10px rgba(255,138,0,0.3);
 }
 
-
-
-
-
 /* ===========================================================
 🌟 EMPTY STATE
 =========================================================== */
 .empty {
   color: #999;
-  font-size: 13.5px;
+  font-size: 14px;
   text-align: center;
   margin-top: 40px;
 }
 
 /* ===========================================================
-📱 RESPONSIVENESS (MOBILE)
+📱 MOBILE FIXES
 =========================================================== */
 @media (max-width: 480px) {
-  html, body {
-    height: 100%;
-    overflow: hidden; /* ✅ Prevent body scroll */
-  }
+  h1 { font-size: 16px; }
 
-  .container {
-    height: 100dvh; /* ✅ Full viewport height */
-    position: fixed;
-  }
-
-  .inner-container {
-    height: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-  }
-
-  h1 {
-    font-size: 15px;
-    margin-bottom: 20px;
+  .toggle-wrapper {
+    width: 95%;
+    gap: 8px;
   }
 
   .kid-card {
     padding: 10px 12px;
   }
 
-  .input-box {
-    height: 44px;
+  .kid-btn {
+    height: 46px;
+  }
+}
+
+
+.empty-box {
+    width: 100%;
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.empty-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.empty-msg {
     font-size: 13px;
-  }
-
-  .btn {
-    font-size: 14px;
-    padding: 12px 0;
-  }
-
-  .toggle-wrapper {
-    width: 95%;
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .toggle-btn {
-    font-size: 14px;
-    padding: 9px 0;
-  }
+    font-weight: 500;
+    color: #aaa;
+    padding-left: 2px;
 }

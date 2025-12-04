@@ -37,41 +37,44 @@
     </div>
 
     <!-- 💳 Bank List -->
-    <div class="bank-list">
-      @forelse($accounts as $account)
-        @php
-          $bankMap = [
-              'hdfc bank' => 'hdfc.png',
-              'canara bank' => 'canara.png',
-              'sbi bank' => 'sbi.png',
-              'axis bank' => 'axis.png',
-              'icici bank' => 'icici.png',
-              'kotak bank' => 'kotak.png'
-          ];
-          $key = strtolower(trim($account->bank_name));
-          $bankFile = $bankMap[$key] ?? 'kotak.png';
-        @endphp
+    @if($accounts->count() > 0)
+<div class="bank-list">
+        @foreach($accounts as $account)
+            @php
+                $bankMap = [
+                    'hdfc bank' => 'hdfc.png',
+                    'canara bank' => 'canara.png',
+                    'sbi bank' => 'sbi.png',
+                    'axis bank' => 'axis.png',
+                    'icici bank' => 'icici.png',
+                    'kotak bank' => 'kotak.png'
+                ];
+                $key = strtolower(trim($account->bank_name));
+                $bankFile = $bankMap[$key] ?? 'kotak.png';
+            @endphp
 
-        <div class="bank-card {{ session('active_bank_account') == $account->id ? 'active' : '' }}"
-             onclick="confirmPrimary('{{ route('parent.select.bank', $account->id) }}')">
-          <div class="bank-left">
-            <img src="{{ asset('images/' . $bankFile) }}" alt="{{ $account->bank_name }}">
-            <div class="bank-info">
-              <h4>{{ $account->bank_name }}</h4>
-              <p class="card-mask">
-                Card No: <span>•••• {{ substr($account->card_number, -4) }}</span>
-              </p>
+            <div class="bank-card {{ session('active_bank_account') == $account->id ? 'active' : '' }}"
+                onclick="confirmPrimary('{{ route('parent.select.bank', $account->id) }}')">
+
+                <div class="bank-left">
+                    <img src="{{ asset('images/' . $bankFile) }}" alt="{{ $account->bank_name }}">
+                    <div class="bank-info">
+                        <h4>{{ $account->bank_name }}</h4>
+                        <p class="card-mask">
+                            Card No: <span>•••• {{ substr($account->card_number, -4) }}</span>
+                        </p>
+                    </div>
+                </div>
+
+                @if(session('active_bank_account') == $account->id)
+                    <span class="status-tag">Primary Account</span>
+                @endif
             </div>
-          </div>
 
-          @if(session('active_bank_account') == $account->id)
-            <span class="status-tag">Primary Account</span>
-          @endif
-        </div>
-      @empty
-        <p style="text-align:center; color:#999;">No bank accounts added yet.</p>
-      @endforelse
+        @endforeach
     </div>
+
+    @endif
 
     <!-- ➕ Add Bank Shortcut -->
     <div class="add-bank-shortcut" onclick="toggleBankGrid()">

@@ -666,7 +666,134 @@ input:checked + .slider:before {
   .container { height: 100svh; }
 }
 
+/* ================= HERO (Super Green Gradient) ================= */
+.hero {
+  position: relative;
+  background: linear-gradient(145deg, #22c55e 0%, #16a34a 80%);  /* 💚 Fresh Green */
+  border-radius: 22px;
+  margin: 0.5rem 0 1.5rem;
+  padding: 1.8rem 1rem;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(22, 163, 74, 0.25);  /* soft green shadow */
+  overflow: hidden;
+  gap: 25px;
+}
 
+/* Soft white highlight */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.28), transparent 70%);
+}
+
+/* Gloss shine moving */
+.hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255,255,255,0.28) 0%,
+    rgba(255,255,255,0.06) 60%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  animation: shineMove 5s infinite;
+}
+
+@keyframes shineMove {
+  0% { left: -80%; }
+  50% { left: 120%; }
+  100% { left: 120%; }
+}
+
+/* Title style */
+.hero h2 {
+    position: relative;
+    font-weight: 700;
+    font-size: 1.35rem;
+    z-index: 3;
+    margin: 0;
+    letter-spacing: 0.4px;
+    right: 12px;
+}
+
+/* Gift / Goal Image */
+.gift-box {
+  position: absolute;
+  top: 12px;
+  right: 5px;
+  width: 100px;
+  animation: floatGift 3s ease-in-out infinite;
+  z-index: 3;
+}
+
+@keyframes floatGift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.coin {
+  position: absolute;
+  top: -20px;
+  width: 15px;
+  height: 15px;
+  background: radial-gradient(circle at 30% 30%, #ffd700, #ffb347 70%);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  animation: fall 4s linear infinite;
+  z-index: 2;
+  opacity: 0.9;
+}
+
+/* Position each coin differently */
+.coin:nth-child(3) { left: 25%; animation-delay: 0s; }
+.coin:nth-child(4) { left: 55%; animation-delay: 1s; }
+.coin:nth-child(5) { left: 80%; animation-delay: 2s; }
+
+@keyframes fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg) scale(1);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  50% {
+    transform: translateY(80px) rotate(180deg) scale(1.05);
+  }
+  90% { opacity: 1; }
+  100% {
+    transform: translateY(130px) rotate(360deg) scale(0.9);
+    opacity: 0;
+  }
+}
+
+/* ============================
+   📦 Standard Empty Box Style
+============================ */
+.empty-box {
+    width: 100%;
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.empty-msg {
+    font-size: 13px;
+    font-weight: 500;
+    color: #aaa;
+    padding-left: 2px;
+    text-align: center;
+}
+
+   
 
   </style>
 </head>
@@ -684,7 +811,11 @@ input:checked + .slider:before {
   <a href="{{ route('kid.gifts') }}" class="tab">Gifts</a>
 </div>
 
-      <div class="headers"><h1>My Goals</h1></div>
+          <div class="hero">
+        <img src="{{ asset('images/goalhead.png') }}" class="gift-box">
+        <h2>My Goal savings</h2>
+        <div class="coin"></div><div class="coin"></div><div class="coin"></div>
+      </div>
 
       @php
     // after refund/reset, totals should become 0 automatically
@@ -791,17 +922,24 @@ input:checked + .slider:before {
     @endforeach
 
     <!-- ⭐ Paid Goals (Now GOLD for status 2) -->
-    @foreach ($paidGoals as $goal)
-      <div class="highlight">
+@foreach ($paidGoals as $goal)
+  <div class="highlight">
 
-        <div class="goal-gold">
-          <i class="fa-solid fa-award"></i>
-        </div>
-
-        <p>{{ $goal->title }}</p>
-        <span class="status" style="color:#23a541;">Paid</span>
+      <div class="goal-gold">
+        <i class="fa-solid fa-award"></i>
       </div>
-    @endforeach
+
+      <p>{{ $goal->title }}</p>
+
+      @if($goal->is_locked == 1)
+          <span class="status" style="color:#d97706;">Returned</span>
+      @else
+          <span class="status" style="color:#23a541;">Paid</span>
+      @endif
+
+  </div>
+@endforeach
+
 
   </div>
 </div>
@@ -836,7 +974,9 @@ input:checked + .slider:before {
     </div>
 
 @empty
-    <p class="empty">No goals found.</p>
+   <div class="empty-box">
+        <p class="empty-msg">No goals found.</p>
+    </div>
 @endforelse
 
 

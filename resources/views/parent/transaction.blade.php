@@ -25,48 +25,58 @@
       <!-- ================================ -->
       <!-- 1️⃣ PARENT → KID TRANSACTIONS -->
       <!-- ================================ -->
-      <h2 class="section-title">Money Sent to Kids</h2>
+     @if($parentTransactions->isEmpty())
 
-      @if($parentTransactions->isEmpty())
-        <p class="no-data">No money transfers yet.</p>
-      @else
-        <div class="transaction-list">
-          @foreach($parentTransactions as $txn)
-            <div class="transaction-card">
+<div class="empty-box">
+    <h4 class="empty-title">Money Sent to Kids</h4>
+    <p class="empty-msg">No money transfers yet.</p>
+</div>
 
-              <div class="left">
-                <img src="{{ $txn->kid && $txn->kid->profile_img 
-                    ? asset('storage/'.$txn->kid->profile_img) 
-                    : asset('images/default-profile.png') }}" 
-                  alt="Kid Avatar">
+@else
 
-                <div class="details">
-                  <h4>{{ ucfirst($txn->kid->first_name ?? 'Unknown Kid') }}</h4>
-                  <p>Sent to kid</p>
-                </div>
-              </div>
+<h2 class="section-title">Money Sent to Kids</h2>
 
-              <div class="right">
-                <h4>₹{{ number_format($txn->amount,2) }}</h4>
-                <span>{{ $txn->created_at->format('d M Y') }}</span><br>
-                <span class="type type-parent">Debit</span>
-              </div>
+<div class="transaction-list">
+  @foreach($parentTransactions as $txn)
 
-            </div>
-          @endforeach
+    <div class="transaction-card">
+        <div class="left">
+          <img src="{{ $txn->kid && $txn->kid->profile_img 
+            ? asset('storage/'.$txn->kid->profile_img) 
+            : asset('images/default-profile.png') }}">
+          <div class="details">
+              <h4>{{ ucfirst($txn->kid->first_name ?? 'Unknown Kid') }}</h4>
+              <p>Sent to kid</p>
+          </div>
         </div>
-      @endif
+
+        <div class="right">
+          <h4>₹{{ number_format($txn->amount,2) }}</h4>
+          <span>{{ $txn->created_at->format('d M Y') }}</span><br>
+          <span class="type type-parent">Debit</span>
+        </div>
+    </div>
+
+  @endforeach
+</div>
+@endif
 
       <!-- ================================ -->
       <!-- 2️⃣ KID SPENDING / GOALS / GIFTS -->
       <!-- ================================ -->
-      <h2 class="section-title">Kid Spending & Activities</h2>
-
       @if($kidTransactions->isEmpty())
-        <p class="no-data">No kid activities yet.</p>
-      @else
-        <div class="transaction-list">
-          @foreach($kidTransactions as $txn)
+
+<div class="empty-box">
+    <h4 class="empty-title">Kid Spending & Activities</h4>
+    <p class="empty-msg">No activities yet.</p>
+</div>
+
+@else
+
+<h2 class="section-title">Kid Spending & Activities</h2>
+
+<div class="transaction-list">
+  @foreach($kidTransactions as $txn)
             <div class="transaction-card">
 
               <div class="left">
@@ -157,9 +167,10 @@
               </div>
 
             </div>
-          @endforeach
-        </div>
-      @endif
+      @endforeach
+</div>
+
+@endif
 
     </div>
   </div>

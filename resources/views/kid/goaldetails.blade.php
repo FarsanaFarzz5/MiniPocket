@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="{{ asset('assets/css/sidebar.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/header.css') }}">
 
-  <style>
+<style>
 
   /* ========== GLOBAL RESET ========== */
 * {
