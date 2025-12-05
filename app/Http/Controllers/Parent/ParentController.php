@@ -52,9 +52,19 @@ $transactions = Transaction::with('kid')
     $bankAccounts = BankAccount::where('user_id', $user->id)->get();
 
     // Selected bank
-    $selectedBank = session('active_bank_account')
-        ? BankAccount::find(session('active_bank_account'))
-        : $bankAccounts->first();
+   // If session has selected bank → use it
+if (session('active_bank_account')) {
+    $selectedBank = BankAccount::find(session('active_bank_account'));
+}
+// Else if DB has at least 1 bank → pick the first
+elseif ($bankAccounts->count() > 0) {
+    $selectedBank = $bankAccounts->first();
+}
+// Else no bank added
+else {
+    $selectedBank = null;
+}
+
 
     // Wallet ID
     $walletId = str_pad($user->id, 4, '0', STR_PAD_LEFT);
@@ -129,40 +139,32 @@ public function kidManagement()
 
     foreach ($children as $child) {
 
-        // ⭐ 1. Money parent sent to kid (credit)
-        $parentToKid = Transaction::where('kid_id', $child->id)
+        /* ----------------------------------------------------------
+           1️⃣ TOTAL CREDITS → ONLY money parent sent to kid
+        ---------------------------------------------------------- */
+        $credits = Transaction::where('kid_id', $child->id)
+            ->where('type', 'credit')
             ->where('source', 'parent_to_kid')
             ->sum('amount');
 
-        // ⭐ 2. Kid goal savings + gift savings + money received
-        $kidCredits = Transaction::where('kid_id', $child->id)
-            ->where('type', 'credit')
-            ->whereIn('source', [
-                'goal_saving',
-                'gift_saving',
-                'kid_to_parent', // credit in kid panel? No → remove if unwanted
-                
-            ])
-            ->sum('amount');
-
-        // ⭐ Total credits
-        $totalCredits = $parentToKid + $kidCredits;
-
-        // ⭐ 3. Kid spends, goal payments, sending to parent
-        $kidDebits = Transaction::where('kid_id', $child->id)
+        /* ----------------------------------------------------------
+           2️⃣ TOTAL DEBITS → ONLY real spending by kid
+              (these reduce balance)
+        ---------------------------------------------------------- */
+        $debits = Transaction::where('kid_id', $child->id)
             ->where('type', 'debit')
             ->whereIn('source', [
                 'kid_spending',
-                'goal_payment',
-                'gift_payment',
-                'kid_to_parent',
-                'goal_refund',
-                'gift_refund'
+                'goal_saving',
+                'gift_saving',
+                'kid_to_parent'   // kid returns money to parent
             ])
             ->sum('amount');
 
-        // ⭐ Calculate final balance
-        $child->balance = $totalCredits - $kidDebits;
+        /* ----------------------------------------------------------
+           3️⃣ FINAL BALANCE
+        ---------------------------------------------------------- */
+        $child->balance = $credits - $debits;
     }
 
     return view('parent.kid', compact('user', 'children', 'allEmails'));
@@ -241,7 +243,7 @@ public function storeKid(Request $request)
 
 // After sending email
 try {
-    Mail::to($kid->email)->send(new KidInvitationMail($kid));
+    Mail::to($kid->email)->queue(new KidInvitationMail($kid));
 } catch (\Exception $e) {
     // Silent fail
 }
@@ -317,6 +319,7 @@ return redirect()
 
     }
 
+    
     /**
      * ✏️ Show Edit Profile Page
      */
@@ -378,6 +381,7 @@ return redirect()
         'message' => 'Money sent successfully.'
     ]);
 }
+
 
 
     /**
@@ -506,7 +510,8 @@ public function storeBankAccount(Request $request)
         'cvv'         => 'required|string|max:10',
     ]);
 
-    BankAccount::create([
+    // Create bank entry
+    $bank = BankAccount::create([
         'user_id'     => Auth::id(),
         'bank_name'   => $request->bank_name,
         'card_number' => $request->card_number,
@@ -514,6 +519,9 @@ public function storeBankAccount(Request $request)
         'cvv'         => $request->cvv,
         'branch_name' => $request->branch_name,
     ]);
+
+    // ⭐ Set newly added bank as selected automatically
+    session(['active_bank_account' => $bank->id]);
 
     return redirect()->route('parent.bankaccounts')
         ->with('success', 'Card added successfully!');
@@ -628,5 +636,6 @@ public function deleteKid($kidId)
         'kidId' => $kidId
     ]);
 }
+
 
 }

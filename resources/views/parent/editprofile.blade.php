@@ -45,6 +45,7 @@
 
 
     <div class="floating-group">
+    <input type="hidden" id="originalEmail" value="{{ $user->email }}">
   <input type="email" name="email" id="email" value="{{$user->email }}" >
   <label for="email">Email Address</label>
 </div>
@@ -80,11 +81,20 @@
 
   <div id="alertToast" class="alert-toast"></div>
 
+  
+
   <script src="{{ asset('assets/js/editprofile.js') }}"></script>
   <script>
   @if(session('success'))
       showToast("{{ session('success') }}", "success");
   @endif
 </script>
+
+@if($errors->has('email'))
+    <script>
+        showToast("Email already exists.", "warning");
+    </script>
+@endif
+
 </body>
 </html>

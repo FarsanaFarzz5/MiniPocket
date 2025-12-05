@@ -143,7 +143,7 @@
                                 @case('gift_payment') Paid for gift @break
                                 @case('goal_refund') Returned Goal Savings @break
                                 @case('gift_refund') Returned Gift Savings @break
-                                @case('kid_spending') Spent for Needs @break
+                                @case('kid_spending') Needs @break
                                 @case('kid_to_parent') Parent @break
                                 @default Transaction @break
                             @endswitch

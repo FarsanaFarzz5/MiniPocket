@@ -68,7 +68,10 @@
           @endforeach
         </div>
       @else
-        <p class="empty">No kids found.</p>
+        <div class="empty-box">
+    <div class="empty-title">Kids List</div>
+    <div class="empty-msg">No kids found.</div>
+</div>
       @endif
     </div>
   </div>

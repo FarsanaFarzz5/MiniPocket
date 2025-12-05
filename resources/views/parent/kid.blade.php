@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,10 +5,6 @@
   <title>Kid Management - Mini Pocket</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-
-
-
-
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -134,37 +128,6 @@
     cursor: pointer;
 }
 
-
-/* CIRCLE */
-.tick-circle {
-    width: 58px;
-    height: 58px;
-    background: #ff8a00;
-    border-radius: 50%;
-    margin: 0 auto 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: iconPop 0.28s ease-out;
-    box-shadow: 0 4px 14px rgba(255,138,0,0.28);
-}
-
-/* THIN, CLEAN TICK */
-.tick {
-    width: 22px;
-    height: 12px;
-    border-bottom: 3px solid #fff;
-    border-left: 3px solid #fff;
-    transform-origin: left bottom;
-    transform: rotate(-45deg) scale(0);
-    opacity: 0;
-}
-
-.animateTick {
-    animation: drawTick 0.35s ease-out forwards;
-}
-
-
 /* ICON POP */
 @keyframes iconPop {
     0% { transform: scale(0.5); opacity: 0; }
@@ -190,24 +153,72 @@
     text-align: center;
 }
 
-.success-tick {
-    width: 22px;
-    height: 12px;
-    border-bottom: 3px solid #fff;
-    border-left: 3px solid #fff;
-    transform-origin: left bottom;
-    transform: rotate(-45deg) scale(0);
-    opacity: 0;
+.tick-circle {
+    width: 60px;
+    height: 60px;
+    background: #ff8a00;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 14px rgba(255,138,0,0.28);
 }
 
-.animateTick {
-    animation: drawTick 0.35s ease-out forwards;
+.tick-svg {
+    width: 32px;
+    height: 32px;
+}
+
+.tick-path {
+    stroke: #fff;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: tickDraw 0.55s ease-out forwards;
+}
+
+@keyframes tickDraw {
+    from { stroke-dashoffset: 48; }
+    to { stroke-dashoffset: 0; }
+}
+
+/* PERFECT MINI-POCKET MATCHED BALANCE CARD */
+.kid-balance-card {
+    width: 100%;
+    margin: 12px auto;
+    padding: 10px 12px;   /* very compact */
+    border-radius: 14px;
+
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+
+    box-shadow:
+        0 2px 6px rgba(0,0,0,0.06);   /* very soft */
+    
+    text-align: center;
+}
+
+/* AMOUNT */
+.kid-balance-amount {
+    font-size: 18px;
+    font-weight: 700;
+    color: #00b45a;  /* clean green */
+    margin-bottom: 2px;
+}
+
+/* LABEL */
+.kid-balance-text {
+    font-size: 11px;
+    color: #777;
+    margin-top: 0;
 }
 
 
 </style>
 </head>
-
 <body>
   <div class="container">
 
@@ -300,35 +311,38 @@
                 </div>
             </div>
 
-            <div class="details" id="details-{{ $index }}" style="display:none;">
-                <div class="kid-actions">
+<div class="details" id="details-{{ $index }}" style="display:none;">
 
-                    <a href="{{ route('kids.edit', $child->id) }}" class="kid-btn edit-btn">
-                       <i class="ri-pencil-line"></i> Edit
-                    </a>
+<div class="kid-balance-card">
+    <div class="kid-balance-amount">₹{{ $child->balance ?? 0 }}</div>
+    <div class="kid-balance-text">Balance</div>
+</div>
 
-                    <button onclick="openLimitPopup({{ $child->id }}, '{{ $child->first_name }}')"
-                            class="kid-btn limit-btn">
-                        <i class="ri-timer-line"></i> Limit
-                    </button>
 
-                </div>
-            </div>
+
+    <div class="kid-actions">
+
+        <a href="{{ route('kids.edit', $child->id) }}" class="kid-btn edit-btn">
+            <i class="ri-pencil-line"></i> Edit
+        </a>
+
+        <button onclick="openLimitPopup({{ $child->id }}, '{{ $child->first_name }}')"
+                class="kid-btn limit-btn">
+            <i class="ri-timer-line"></i> Limit
+        </button>
+
+    </div>
+</div>
 
         @endforeach
-
     @else
-
         <!-- ⭐ Beautiful Empty Card -->
         <div class="empty-box" style="margin-top: 10px;">
             <h4 class="empty-title">Kid Details</h4>
             <p class="empty-msg">No kids added yet.</p>
         </div>
-
     @endif
 </div>
-
-
 </div>
 <div id="alertToast" class="alert-toast"></div>
 
@@ -382,15 +396,7 @@ document.querySelectorAll(".avatar-option").forEach(option => {
 // ============================================================
 document.getElementById("email").addEventListener("input", function () {
 
-    const email = this.value.trim().toLowerCase();
-    const errorBox = document.getElementById("alertToast");
 
-    if (window.existingAllEmails.includes(email)) {
-        errorBox.innerHTML = "❌ Email already exists!";
-        errorBox.classList.add("show");
-    } else {
-        errorBox.classList.remove("show");
-    }
 });
 
 // ============================================================
@@ -420,25 +426,8 @@ function closeLimitPopup() {
 // ============================================================
 // 6️⃣ SUCCESS POPUP — Kid Added
 // ============================================================
-document.addEventListener("DOMContentLoaded", function() {
-    @if(session('kid_added'))
-        const popup = document.getElementById("kidAddedPopup");
-        const tick = document.querySelector(".success-tick");
 
 
-        popup.style.display = "flex";
-
-        // SMALL DELAY so browser registers the display change
-        setTimeout(() => {
-            tick.classList.add("animateTick");
-        }, 50);
-    @endif
-});
-
-
-function closeKidAddedPopup() {
-    document.getElementById("kidAddedPopup").style.display = "none";
-}
 
 // ============================================================
 // 7️⃣ KID CARD — Expand/Collapse Details
@@ -490,8 +479,11 @@ document.querySelectorAll(".kid-card").forEach(card => {
 
         <!-- Highlight Icon -->
      <div class="popup-success-icon">
-   <div class="tick-circle">
-    <div class="success-tick"></div>
+ <div class="tick-circle">
+    <svg class="tick-svg" viewBox="0 0 52 52">
+        <circle class="tick-circle-bg" cx="26" cy="26" r="25" fill="none"/>
+        <path class="tick-path" fill="none" d="M14 27 l8 8 l16 -16" />
+    </svg>
 </div>
 </div>
 
@@ -509,5 +501,34 @@ document.querySelectorAll(".kid-card").forEach(card => {
 </button>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    @if(session('kid_added'))
+        const popup = document.getElementById("kidAddedPopup");
+        const tick = document.querySelector(".success-tick");
+
+        popup.style.display = "flex";
+
+        setTimeout(() => {
+            tick.classList.add("animateTick");
+        }, 50);
+    @endif
+});
+
+function closeKidAddedPopup() {
+    // Hide popup
+    document.getElementById("kidAddedPopup").style.display = "none";
+
+    // Switch tab styles
+    document.getElementById('toggleAddKid').classList.remove('active');
+    document.getElementById('toggleKidDetails').classList.add('active');
+
+    // Show Kid Details section
+    document.getElementById('addKidSection').classList.remove('active');
+    document.getElementById('kidDetailsSection').classList.add('active');
+}
+
+</script>
 </body> 
 </html>

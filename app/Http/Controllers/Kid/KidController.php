@@ -153,7 +153,9 @@ public function sendMoney(Request $request)
         ], 400);
     }
 
-    // ✅ Calculate total balance
+    /* -----------------------------------------
+        🧮 CALCULATE TOTAL BALANCE
+    ----------------------------------------- */
     $receivedMoney = Transaction::where('kid_id', $user->id)
         ->where('type', 'credit')
         ->sum('amount');
@@ -163,20 +165,34 @@ public function sendMoney(Request $request)
         ->whereIn('source', ['kid_spending', 'goal_saving', 'gift_saving'])
         ->sum('amount');
 
-    $balance = $receivedMoney - $spentMoney; // e.g. ₹11,500
+    $balance = $receivedMoney - $spentMoney;
 
-    // ✅ Calculate today's spending (only kid_spending)
+
+    /* -----------------------------------------
+        📅 TODAY'S SPENDING (kid_spending only)
+    ----------------------------------------- */
     $spentToday = Transaction::where('kid_id', $user->id)
         ->where('type', 'debit')
         ->where('source', 'kid_spending')
         ->whereDate('created_at', now()->toDateString())
         ->sum('amount');
 
-    // ✅ Calculate remaining daily limit
-    $dailyLimit = $user->daily_limit ?? 0;
-    $remainingLimit = max($dailyLimit - $spentToday, 0); // e.g. 600 - 0 = 600
+    /* -----------------------------------------
+        ⭐ DAILY LIMIT HANDLING
+        -1  => UNLIMITED
+    ----------------------------------------- */
+    if (empty($user->daily_limit) || $user->daily_limit == 0) {
+        $dailyLimit = -1;       // unlimited
+        $remainingLimit = -1;   // unlimited
+    } else {
+        $dailyLimit = $user->daily_limit;
+        $remainingLimit = max($dailyLimit - $spentToday, 0);
+    }
 
-    // 🔹 1️⃣ If kid has no balance at all
+
+    /* -----------------------------------------
+        ❌ 1. NO BALANCE
+    ----------------------------------------- */
     if ($balance <= 0) {
         return response()->json([
             'success' => false,
@@ -185,7 +201,9 @@ public function sendMoney(Request $request)
         ], 400);
     }
 
-    // 🔹 2️⃣ If amount > available balance
+    /* -----------------------------------------
+        ❌ 2. AMOUNT > BALANCE
+    ----------------------------------------- */
     if ($request->amount > $balance) {
         return response()->json([
             'success' => false,
@@ -194,17 +212,22 @@ public function sendMoney(Request $request)
         ], 400);
     }
 
-    // 🔹 3️⃣ If daily limit reached (spent full limit)
-    if ($remainingLimit <= 0) {
+
+    /* -----------------------------------------
+        ❌ 3. DAILY LIMIT REACHED (ONLY IF LIMITED)
+    ----------------------------------------- */
+    if ($dailyLimit != -1 && $remainingLimit <= 0) {
         return response()->json([
             'success' => false,
-            'message' => 'Daily limit reached. You cannot spend more today.',
-            'remaining_limit' => 0,
+            'message' => 'Daily limit reached.',
         ], 400);
     }
 
-    // 🔹 4️⃣ If trying to spend above remaining limit
-    if ($request->amount > $remainingLimit) {
+
+    /* -----------------------------------------
+        ❌ 4. AMOUNT EXCEEDS REMAINING LIMIT (ONLY IF LIMITED)
+    ----------------------------------------- */
+    if ($dailyLimit != -1 && $request->amount > $remainingLimit) {
         return response()->json([
             'success' => false,
             'message' => 'You can only spend ₹' . number_format($remainingLimit, 2) . ' more today.',
@@ -212,7 +235,10 @@ public function sendMoney(Request $request)
         ], 400);
     }
 
-    // ✅ If all OK → record transaction
+
+    /* -----------------------------------------
+        ✅ 5. RECORD THE TRANSACTION
+    ----------------------------------------- */
     Transaction::create([
         'parent_id'   => $user->parent_id,
         'kid_id'      => $user->id,
@@ -223,15 +249,23 @@ public function sendMoney(Request $request)
         'description' => $request->description,
     ]);
 
-    // ✅ Update remaining limit after transaction
+
+    /* -----------------------------------------
+        🔄 UPDATE REMAINING LIMIT AFTER SPEND
+    ----------------------------------------- */
     $spentTodayAfter = Transaction::where('kid_id', $user->id)
         ->where('type', 'debit')
         ->where('source', 'kid_spending')
         ->whereDate('created_at', now()->toDateString())
         ->sum('amount');
 
-    $remainingLimitAfter = max($dailyLimit - $spentTodayAfter, 0);
+    $remainingLimitAfter =
+        ($dailyLimit == -1) ? -1 : max($dailyLimit - $spentTodayAfter, 0);
 
+
+    /* -----------------------------------------
+        🟢 SUCCESS RESPONSE
+    ----------------------------------------- */
     return response()->json([
         'success' => true,
         'message' => '✅ ₹' . number_format($request->amount, 2) . ' spent successfully!',
@@ -240,7 +274,6 @@ public function sendMoney(Request $request)
         'spent_today' => $spentTodayAfter,
     ]);
 }
-
 
 
     /**
@@ -628,7 +661,6 @@ public function storeGift(Request $request)
     // ✅ Redirect to Gifts page after saving
     return redirect()->route('kid.gifts')->with('success', 'Gift added successfully!');
 }
-
 
 public function addGiftSaving(Request $request)
 {

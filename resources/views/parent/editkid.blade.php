@@ -408,6 +408,90 @@ h1 {
   transform: translateX(-50%) translateY(0);
 }
 
+/* ===========================================================
+🎯 UNIFORM POPUP SIZE FOR SUCCESS / ERROR ALERTS
+=========================================================== */
+.swal2-popup {
+    width: 360px !important;        /* SAME FIXED SIZE */
+    max-width: 88% !important;
+    border-radius: 18px !important; /* same rounded look */
+    padding: 26px 22px !important;  /* perfect spacing */
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* Icon circle smaller & more modern */
+.swal2-icon {
+    margin-top: 5px !important;
+    margin-bottom: 10px !important;
+    transform: scale(0.78) !important; /* shrink 22% */
+}
+
+/* Success icon border thinner & softer */
+.swal2-icon.swal2-success .swal2-success-ring {
+    border: 3px solid #a4e3a0 !important;
+}
+
+/* Title style */
+.swal2-title {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    margin-top: 0px !important;
+    margin-bottom: 6px !important;
+    letter-spacing: 0.2px;
+}
+
+/* Text style */
+.swal2-html-container {
+    font-size: 14px !important;
+    color: #555 !important;
+    margin-bottom: 18px !important;
+    line-height: 1.45 !important;
+}
+
+/* OK button = exact orange style */
+.swal2-confirm {
+    width: 100% !important;
+    border-radius: 12px !important;
+    background: #f4731d !important;
+    color: white !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    padding: 12px 0 !important;
+    height: 46px !important;
+    box-shadow: 0 4px 12px rgba(244,115,29,0.25) !important;
+    margin-top: 10px !important;
+}
+
+/* Remove extra spacing under button */
+.swal2-actions {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Reduce default SweetAlert2 padding */
+.swal2-content {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* ===========================================================
+ 🔥 HOVER EFFECTS FOR UPDATE & DELETE BUTTONS
+=========================================================== */
+
+/* Update Button Hover */
+.btn-update:hover {
+    background: linear-gradient(135deg, #ff9240, #f4731d); /* reverse gradient */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(244,115,29,0.25);
+}
+
+/* Delete Button Hover */
+.btn-delete:hover {
+    background: #ff3333;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255,77,77,0.25);
+}
+
 
 </style>
 
@@ -525,7 +609,7 @@ document.getElementById('deleteKidBtn').addEventListener('click', function () {
 document.addEventListener("DOMContentLoaded", function() {
     @if ($errors->has('email'))
         let toast = document.getElementById("alertToast");
-        toast.innerHTML = "❌ {{ $errors->first('email') }}";
+        toast.innerHTML = " {{ $errors->first('email') }}";
         toast.classList.add("show");
         setTimeout(() => {
             toast.classList.remove("show");

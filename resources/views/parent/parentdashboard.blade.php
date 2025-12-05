@@ -46,7 +46,8 @@
     {{ $selectedBank ? $selectedBank->bank_name : 'No Bank Added' }} 
   </a>
 </div>
-            <div class="wallet-info">Wallet ID: <span>{{ $walletId ?? '----' }}</span></div>
+    
+<div class="wallet-info">Wallet ID: <span>{{ $walletId ?? '----' }}</span></div>
             <div class="kids-linked" >Kids Linked: <span>{{ $kidsLinked ?? 0 }}</span></div>
           </div>
         </div>

@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         localStorage.removeItem("goalReason");
         localStorage.removeItem("goalId");
     }
-
+    
     const qr = new Html5Qrcode("reader");
     const config = { fps: 10, aspectRatio: 1.0, disableFlip: true };
 

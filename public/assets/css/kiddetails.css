@@ -209,8 +209,11 @@ h1 {
 .limit-btn {
   background: linear-gradient(135deg, #00b37a, #00d68f);
 }
-.delete-btn {
-  background: linear-gradient(135deg, #ff4d4d, #ff6b6b);
+
+.limit-btn:hover {
+    background: linear-gradient(135deg, #009966, #00bb88) !important;
+    opacity: 1 !important;
+    transform: translateY(-2px);
 }
 
 .kid-btn:hover { opacity: 0.9; }

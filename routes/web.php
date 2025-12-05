@@ -207,4 +207,6 @@ Route::post('/parent/kids/{id}/update', [ParentController::class, 'updateKid'])-
 
 Route::delete('/parent/kid/{kidId}', [ParentController::class, 'deleteKid'])
     ->name('parent.kid.delete');
+
+
 });
